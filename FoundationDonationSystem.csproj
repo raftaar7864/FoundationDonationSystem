@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="QuestPDF" Version="2026.8.0" />
+    <PackageReference Include="SkiaSharp" Version="4.151.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="PrivateUploads\" />
+    <Folder Include="wwwroot\uploads\posts\" />
+    <Folder Include="wwwroot\uploads\payment-qr\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\images\foundation\foundation-logo.png" />
+    <None Include="wwwroot\css\posts.css" />
+  </ItemGroup>
+</Project>

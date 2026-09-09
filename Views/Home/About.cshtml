@@ -1,0 +1,495 @@
+﻿@using FoundationDonationSystem.Models
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "About Us";
+    var foundation = await FoundationSettingsService.GetAsync();
+    var foundationName = string.IsNullOrWhiteSpace(foundation.FoundationName)
+        ? "Foundation"
+        : foundation.FoundationName;
+    var tagline = string.IsNullOrWhiteSpace(foundation.Tagline)
+        ? "Serving with compassion • Supporting with purpose"
+        : foundation.Tagline;
+    var logoPath = string.IsNullOrWhiteSpace(foundation.LogoPath)
+        ? Url.Content("~/images/foundation-logo.png")
+        : foundation.LogoPath;
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/about.css"
+          asp-append-version="true" />
+}
+<div class="foundation-about">
+    <!-- =========================================================
+         ABOUT HERO
+         ========================================================= -->
+    <section class="about-hero">
+        <div class="about-container about-hero-container">
+            <div class="about-hero-content">
+                <span class="about-eyebrow">
+                    <span class="about-eyebrow-dot"></span>
+                    About Us
+                </span>
+                <h1>
+                    Together, we can
+                    <span>make a difference.</span>
+                </h1>
+                <p class="about-hero-tagline">
+                    @tagline
+                </p>
+                <p class="about-hero-description">
+                    @foundationName is built around the belief that
+                    compassion, generosity and collective action can
+                    create meaningful and lasting change.
+                </p>
+                <div class="about-hero-actions">
+                    <a class="about-primary-button"
+                       asp-controller="Donation"
+                       asp-action="Index">
+                        Support Our Work
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                    </a>
+                    <a class="about-secondary-button"
+                       href="#mission">
+                        Explore Our Mission
+                    </a>
+                </div>
+            </div>
+            <div class="about-hero-visual">
+                <div class="about-hero-ring about-ring-one"></div>
+                <div class="about-hero-ring about-ring-two"></div>
+                <div class="about-logo-card">
+                    <div class="about-logo-wrapper">
+                        <img src="@logoPath"
+                             alt="@foundationName" />
+                    </div>
+                    <span class="about-logo-label">
+                        Our Foundation
+                    </span>
+                    <strong>
+                        @foundationName
+                    </strong>
+                    <p>
+                        @tagline
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         INTRODUCTION
+         ========================================================= -->
+    <section class="about-introduction"
+             id="mission">
+        <div class="about-container">
+            <div class="about-section-heading">
+                <span class="about-section-eyebrow">
+                    Who We Are
+                </span>
+                <h2>
+                    Driven by purpose,
+                    guided by compassion.
+                </h2>
+                <p>
+                    Our work is centered around people, community and
+                    the belief that every act of kindness has the
+                    potential to create a positive impact.
+                </p>
+            </div>
+            <div class="about-introduction-grid">
+                <div class="about-introduction-content">
+                    <div class="about-section-number">
+                        01
+                    </div>
+                    <h3>
+                        A foundation built on people helping people.
+                    </h3>
+                    <p>
+                        At @foundationName, we believe meaningful change
+                        begins when individuals come together with a
+                        common purpose.
+                    </p>
+                    <p>
+                        Our goal is to channel generosity toward
+                        meaningful initiatives and help create
+                        opportunities for individuals and communities
+                        to move forward.
+                    </p>
+                    <p>
+                        Every contribution represents more than a
+                        financial gift. It represents trust, hope and
+                        a shared commitment to making tomorrow better.
+                    </p>
+                </div>
+                <div class="about-mission-card">
+                    <div class="about-mission-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 21s-7-4.4-9.2-8.2C.8 9.7 2.3 6 5.8 6c2 0 3.3 1.2 4.2 2.6C10.9 7.2 12.2 6 14.2 6c3.5 0 5 3.7 3 6.8C16 16.6 12 21 12 21Z" />
+                        </svg>
+                    </div>
+                    <span>
+                        Our Mission
+                    </span>
+                    <h3>
+                        Turning generosity into meaningful action.
+                    </h3>
+                    <p>
+                        We strive to serve with compassion, encourage
+                        responsible giving and support work that
+                        strengthens the wider community.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         VALUES
+         ========================================================= -->
+    <section class="about-values">
+        <div class="about-container">
+            <div class="about-section-heading about-heading-center">
+                <span class="about-section-eyebrow">
+                    What Guides Us
+                </span>
+                <h2>
+                    Our values
+                </h2>
+                <p>
+                    The principles that shape how we serve,
+                    collaborate and create impact.
+                </p>
+            </div>
+            <div class="about-values-grid">
+                <button type="button"
+                        class="about-value-card is-active"
+                        data-value="compassion">
+                    <span class="about-value-number">
+                        01
+                    </span>
+                    <span class="about-value-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M20.8 8.7c0 5.5-8.8 10.3-8.8 10.3S3.2 14.2 3.2 8.7C3.2 5.8 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.2C13 4.9 14.5 4 16.2 4c2.6 0 4.6 1.8 4.6 4.7Z" />
+                        </svg>
+                    </span>
+                    <strong>
+                        Compassion
+                    </strong>
+                    <small>
+                        People first
+                    </small>
+                </button>
+                <button type="button"
+                        class="about-value-card"
+                        data-value="integrity">
+                    <span class="about-value-number">
+                        02
+                    </span>
+                    <span class="about-value-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 3 4 6v5c0 5.2 3.4 8.8 8 10 4.6-1.2 8-4.8 8-10V6l-8-3Z" />
+                            <path d="m8.5 12 2.2 2.2 4.8-5" />
+                        </svg>
+                    </span>
+                    <strong>
+                        Integrity
+                    </strong>
+                    <small>
+                        Trust through transparency
+                    </small>
+                </button>
+                <button type="button"
+                        class="about-value-card"
+                        data-value="community">
+                    <span class="about-value-number">
+                        03
+                    </span>
+                    <span class="about-value-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <circle cx="9"
+                                    cy="8"
+                                    r="3" />
+                            <path d="M3 20a6 6 0 0 1 12 0" />
+                            <path d="M16 5a3 3 0 0 1 0 6M18 20a5 5 0 0 0-3.2-4.7" />
+                        </svg>
+                    </span>
+                    <strong>
+                        Community
+                    </strong>
+                    <small>
+                        Stronger together
+                    </small>
+                </button>
+                <button type="button"
+                        class="about-value-card"
+                        data-value="impact">
+                    <span class="about-value-number">
+                        04
+                    </span>
+                    <span class="about-value-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M4 19V9M10 19V5M16 19v-8M22 19V3" />
+                        </svg>
+                    </span>
+                    <strong>
+                        Impact
+                    </strong>
+                    <small>
+                        Purposeful action
+                    </small>
+                </button>
+            </div>
+            <div class="about-value-panel"
+                 id="aboutValuePanel"
+                 aria-live="polite">
+                <span class="about-value-panel-label">
+                    Compassion
+                </span>
+                <p>
+                    We put people at the heart of our work and believe
+                    every person deserves dignity, care and opportunity.
+                </p>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         OUR APPROACH
+         ========================================================= -->
+    <section class="about-approach">
+        <div class="about-container">
+            <div class="about-approach-grid">
+                <div class="about-approach-heading">
+                    <span class="about-section-eyebrow">
+                        Our Approach
+                    </span>
+                    <h2>
+                        From generosity
+                        to meaningful impact.
+                    </h2>
+                </div>
+                <div class="about-approach-content">
+                    <div class="about-approach-item">
+                        <span class="about-approach-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M12 3v18M3 12h18" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h3>
+                                Listen
+                            </h3>
+                            <p>
+                                Understand the needs and aspirations
+                                of the communities we aim to support.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="about-approach-item">
+                        <span class="about-approach-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M12 3 4 6v5c0 5.2 3.4 8.8 8 10 4.6-1.2 8-4.8 8-10V6l-8-3Z" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h3>
+                                Serve Responsibly
+                            </h3>
+                            <p>
+                                Approach every contribution with
+                                responsibility, transparency and care.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="about-approach-item">
+                        <span class="about-approach-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M4 19V9M10 19V5M16 19v-8M22 19V3" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h3>
+                                Create Impact
+                            </h3>
+                            <p>
+                                Turn support into purposeful action
+                                that contributes to lasting progress.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         FOUNDATION INFORMATION
+         ========================================================= -->
+    <section class="about-information">
+        <div class="about-container">
+            <div class="about-information-card">
+                <div class="about-information-header">
+                    <span class="about-section-eyebrow">
+                        Foundation Information
+                    </span>
+                    <h2>
+                        About @foundationName
+                    </h2>
+                    <p>
+                        Official information about our foundation.
+                    </p>
+                </div>
+                <div class="about-information-grid">
+                    @if (!string.IsNullOrWhiteSpace(foundation.RegistrationNumber))
+                    {
+                        <div class="about-information-item">
+                            <span class="about-information-label">
+                                Registration Number
+                            </span>
+                            <strong>
+                                @foundation.RegistrationNumber
+                            </strong>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(foundation.PAN))
+                    {
+                        <div class="about-information-item">
+                            <span class="about-information-label">
+                                PAN
+                            </span>
+                            <strong>
+                                @foundation.PAN
+                            </strong>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(foundation.Address))
+                    {
+                        <div class="about-information-item about-information-item-full">
+                            <span class="about-information-label">
+                                Address
+                            </span>
+                            <strong>
+                                @foundation.Address
+                            </strong>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(foundation.Phone))
+                    {
+                        <div class="about-information-item">
+                            <span class="about-information-label">
+                                Phone
+                            </span>
+                            <a href="tel:@foundation.Phone">
+                                @foundation.Phone
+                            </a>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(foundation.Email))
+                    {
+                        <div class="about-information-item">
+                            <span class="about-information-label">
+                                Email
+                            </span>
+                            <a href="mailto:@foundation.Email">
+                                @foundation.Email
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         CTA
+         ========================================================= -->
+    <section class="about-cta">
+        <div class="about-container">
+            <div class="about-cta-content">
+                <div>
+                    <span class="about-section-eyebrow">
+                        Join Us
+                    </span>
+                    <h2>
+                        Your support can become someone's hope.
+                    </h2>
+                    <p>
+                        Every contribution helps us continue our work
+                        with compassion and purpose.
+                    </p>
+                </div>
+                <a class="about-cta-button"
+                   asp-controller="Donation"
+                   asp-action="Index">
+                    Make a Donation
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const valueCards =
+                document.querySelectorAll(".about-value-card");
+            const valuePanel =
+                document.getElementById("aboutValuePanel");
+            if (!valueCards.length || !valuePanel) {
+                return;
+            }
+            const values = {
+                compassion: {
+                    title: "Compassion",
+                    text: "We put people at the heart of our work and believe every person deserves dignity, care and opportunity."
+                },
+                integrity: {
+                    title: "Integrity",
+                    text: "We value honesty, responsibility and transparency in the way we serve and handle every contribution."
+                },
+                community: {
+                    title: "Community",
+                    text: "We believe lasting progress is built when people, organizations and communities work together."
+                },
+                impact: {
+                    title: "Impact",
+                    text: "We focus on turning generosity into purposeful action that can contribute to meaningful and lasting progress."
+                }
+            };
+            valueCards.forEach(function(card) {
+                card.addEventListener("click", function() {
+                    const key =
+                        card.getAttribute("data-value");
+                    const value =
+                        values[key];
+                    if (!value) {
+                        return;
+                    }
+                    valueCards.forEach(function(item) {
+                        item.classList.remove("is-active");
+                    });
+                    card.classList.add("is-active");
+                    valuePanel.classList.add("is-changing");
+                    window.setTimeout(function() {
+                        valuePanel.querySelector(
+                            ".about-value-panel-label"
+                        ).textContent = value.title;
+                        valuePanel.querySelector(
+                            "p"
+                        ).textContent = value.text;
+                        valuePanel.classList.remove("is-changing");
+                    }, 140);
+                });
+            });
+        });
+    </script>
+}

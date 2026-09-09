@@ -1,0 +1,1354 @@
+/* =========================================================
+   USERS PAGE
+   ========================================================= */
+.users-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+    /* =========================================================
+   PAGE HEADER
+   ========================================================= */
+    .users-page .users-header {
+        width: 100%;
+        margin-bottom: 14px;
+    }
+    .users-page .users-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+/* =========================================================
+   TABLE CARD
+   ========================================================= */
+.users-card {
+    width: 100%;
+    min-width: 0;
+}
+/* =========================================================
+   TABLE HEADER
+   ========================================================= */
+.users-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+    .users-card-header .settings-card-title {
+        min-width: 0;
+    }
+/* =========================================================
+   TABLE
+   ========================================================= */
+.users-table {
+    width: 100%;
+    min-width: 1050px;
+}
+    .users-table th {
+        white-space: nowrap;
+    }
+    .users-table td {
+        vertical-align: middle;
+    }
+/* =========================================================
+   USER CELL
+   ========================================================= */
+.users-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 190px;
+}
+.users-user-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #c2410c;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.users-user-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+    .users-user-info strong,
+    .users-username {
+        display: block;
+        max-width: 210px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+.users-username {
+    color: #6b7280;
+    font-size: 11px;
+}
+/* =========================================================
+   ROLE / STATUS
+   ========================================================= */
+.users-table .status-verified,
+.users-table .status-pending,
+.users-table .status-rejected {
+    white-space: nowrap;
+}
+/* =========================================================
+   TABLE ACTIONS
+   ========================================================= */
+.users-table .admin-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    white-space: nowrap;
+}
+    .users-table .admin-table-actions .admin-btn {
+        min-width: 0;
+    }
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+.users-empty-state {
+    width: 100%;
+}
+/* =========================================================
+   USER MODAL
+   IMPORTANT:
+   Modal is outside .users-page
+   Therefore these selectors MUST NOT be scoped
+   with .users-page
+   ========================================================= */
+.payment-account-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+}
+    .payment-account-modal.show {
+        display: flex;
+    }
+/* =========================================================
+   MODAL OVERLAY
+   ========================================================= */
+.payment-account-modal-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+/* =========================================================
+   MODAL DIALOG
+   ========================================================= */
+.payment-account-modal-dialog {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 760px;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    animation: usersModalIn 0.18s ease-out;
+}
+/* =========================================================
+   MODAL ANIMATION
+   ========================================================= */
+@keyframes usersModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+.payment-account-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    min-height: 54px;
+    padding: 13px 18px;
+    background: #fffaf5;
+    border-bottom: 1px solid #e5e7eb;
+    box-sizing: border-box;
+}
+    .payment-account-modal-header h2 {
+        margin: 0;
+        color: #111827;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+/* =========================================================
+   MODAL CLOSE BUTTON
+   ========================================================= */
+.payment-account-modal-close {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #6b7280;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+    .payment-account-modal-close:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+    .payment-account-modal-close:focus-visible {
+        outline: 2px solid #f97316;
+        outline-offset: 2px;
+    }
+/* =========================================================
+   MODAL BODY
+   ========================================================= */
+.payment-account-modal-body {
+    width: 100%;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* =========================================================
+   POPUP CONTENT
+   ========================================================= */
+.payment-popup-content {
+    width: 100%;
+    padding: 18px;
+    box-sizing: border-box;
+}
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+.payment-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 15px;
+    width: 100%;
+}
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+.admin-form-group {
+    min-width: 0;
+}
+/* =========================================================
+   FORM LABEL
+   ========================================================= */
+.admin-form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #374151;
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.3;
+}
+/* =========================================================
+   FORM CONTROL
+   ========================================================= */
+.admin-form-control {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    background: #ffffff;
+    color: #1f2937;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    box-sizing: border-box;
+}
+    .admin-form-control:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.10);
+    }
+    .admin-form-control[readonly] {
+        background: #f9fafb;
+        color: #374151;
+        cursor: default;
+    }
+select.admin-form-control {
+    cursor: pointer;
+}
+/* =========================================================
+   VALIDATION SUMMARY
+   ========================================================= */
+.admin-validation-summary {
+    margin-bottom: 13px;
+}
+    .admin-validation-summary ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+.field-validation {
+    display: block;
+    margin-top: 4px;
+    color: #dc2626;
+    font-size: 10px;
+    line-height: 1.35;
+}
+/* =========================================================
+   ACTIVE STATUS BOX
+   ========================================================= */
+.payment-active-box {
+    min-height: 38px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #f9fafb;
+    box-sizing: border-box;
+}
+.payment-active-label {
+    color: #374151;
+    font-size: 12px;
+    font-weight: 600;
+}
+/* =========================================================
+   SWITCH
+   ========================================================= */
+.admin-switch {
+    position: relative;
+    display: inline-flex;
+    width: 38px;
+    height: 21px;
+    flex: 0 0 auto;
+}
+    .admin-switch input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .admin-switch span {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: #d1d5db;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+        .admin-switch span::before {
+            content: "";
+            position: absolute;
+            width: 17px;
+            height: 17px;
+            left: 2px;
+            top: 2px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.20);
+            transition: transform 0.15s ease;
+        }
+    .admin-switch input:checked + span {
+        background: #16a34a;
+    }
+        .admin-switch input:checked + span::before {
+            transform: translateX(17px);
+        }
+/* =========================================================
+   DETAILS INFORMATION
+   ========================================================= */
+.payment-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 15px;
+    margin-top: 14px;
+}
+.payment-detail-item {
+    min-width: 0;
+}
+    .payment-detail-item label {
+        display: block;
+        margin-bottom: 4px;
+        color: #6b7280;
+        font-size: 10px;
+        font-weight: 600;
+    }
+    .payment-detail-item strong {
+        display: block;
+        color: #1f2937;
+        font-size: 12px;
+        font-weight: 600;
+        word-break: break-word;
+    }
+/* =========================================================
+   POPUP ACTIONS
+   ========================================================= */
+.payment-popup-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    margin-top: 18px;
+    padding-top: 13px;
+    border-top: 1px solid #e5e7eb;
+}
+    .payment-popup-actions .admin-btn {
+        min-height: 36px;
+    }
+/* =========================================================
+   LOADING
+   ========================================================= */
+.payment-account-modal-loading {
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 9px;
+    color: #6b7280;
+    font-size: 12px;
+}
+/* =========================================================
+   LOADING SPINNER
+   ========================================================= */
+.payment-account-spinner {
+    width: 25px;
+    height: 25px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #f97316;
+    border-radius: 50%;
+    animation: usersSpinner 0.7s linear infinite;
+}
+@keyframes usersSpinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+/* =========================================================
+   MODAL ERROR
+   ========================================================= */
+.payment-account-modal-error {
+    padding: 25px 20px;
+    text-align: center;
+}
+    .payment-account-modal-error strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #b91c1c;
+        font-size: 14px;
+    }
+    .payment-account-modal-error p {
+        margin: 0 0 15px;
+        color: #6b7280;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+/* =========================================================
+   MODAL BODY SCROLLBAR
+   ========================================================= */
+.payment-account-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+.payment-account-modal-body::-webkit-scrollbar-track {
+    background: #f9fafb;
+}
+.payment-account-modal-body::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 999px;
+}
+    .payment-account-modal-body::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+/* =========================================================
+   BODY LOCK
+   ========================================================= */
+body.user-modal-open {
+    overflow: hidden;
+}
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+@media (max-width: 900px) {
+    .users-table {
+        min-width: 950px;
+    }
+    .payment-form-grid,
+    .payment-detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .payment-account-modal-dialog {
+        width: calc(100% - 24px);
+        max-height: calc(100vh - 30px);
+    }
+}
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+@media (max-width: 700px) {
+    .users-page .users-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .users-page .users-header-actions {
+        width: 100%;
+    }
+        .users-page .users-header-actions .admin-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    .payment-form-grid,
+    .payment-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    .payment-account-modal {
+        padding: 8px;
+    }
+    .payment-account-modal-dialog {
+        width: 100%;
+        max-height: calc(100vh - 16px);
+        border-radius: 8px;
+    }
+    .payment-account-modal-header {
+        min-height: 46px;
+        padding: 10px 12px;
+    }
+        .payment-account-modal-header h2 {
+            font-size: 15px;
+        }
+    .payment-account-modal-body {
+        max-height: calc(100vh - 75px);
+    }
+    .payment-popup-content {
+        padding: 12px;
+    }
+    .payment-popup-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+        .payment-popup-actions .admin-btn {
+            width: 100%;
+            justify-content: center;
+        }
+}
+/* =========================================================
+   RESPONSIVE - SMALL MOBILE
+   ========================================================= */
+@media (max-width: 480px) {
+    .payment-account-modal {
+        padding: 5px;
+    }
+    .payment-account-modal-dialog {
+        width: 100%;
+        border-radius: 7px;
+    }
+    .payment-account-modal-header {
+        padding: 9px 10px;
+    }
+    .payment-account-modal-close {
+        width: 30px;
+        height: 30px;
+        font-size: 23px;
+    }
+    .payment-popup-content {
+        padding: 10px;
+    }
+    .payment-form-grid {
+        gap: 10px;
+    }
+    .admin-form-control {
+        min-height: 36px;
+        padding: 7px 9px;
+    }
+    .payment-active-box {
+        min-height: 36px;
+    }
+}
+/* =========================================================
+   USERS PAGE — REDESIGNED UI
+   Final override layer
+   ========================================================= */
+.users-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+    /* ---------- PAGE HEADER ---------- */
+    .users-page .users-header {
+        width: 100%;
+        margin-bottom: 12px;
+    }
+    .users-page .users-header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+        .users-page .users-header-actions .admin-btn {
+            min-height: 34px;
+            height: 34px;
+            padding: 0 11px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 650;
+            gap: 6px;
+            line-height: 1;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+        }
+/* ---------- MAIN CARD ---------- */
+.users-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.045);
+}
+/* ---------- CARD HEADER ---------- */
+.users-card-header {
+    min-height: 48px;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(180deg, #fffaf5 0%, #ffffff 100%);
+}
+    .users-card-header .settings-card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+    .users-card-header .settings-card-subtitle {
+        margin-top: 2px;
+        font-size: 10px;
+        color: #94a3b8;
+    }
+/* ---------- TABLE WRAPPER ---------- */
+.users-card .table-responsive,
+.users-card .admin-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+/* ---------- TABLE ---------- */
+.users-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+    .users-table thead th {
+        height: 38px;
+        padding: 7px 10px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: .025em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .users-table tbody td {
+        height: 49px;
+        padding: 7px 10px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 11px;
+        line-height: 1.3;
+        vertical-align: middle;
+        background: #ffffff;
+    }
+    .users-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+    .users-table tbody tr {
+        transition: background .14s ease;
+    }
+        .users-table tbody tr:hover td {
+            background: #fffaf5;
+        }
+/* ---------- USER CELL ---------- */
+.users-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 185px;
+}
+.users-user-avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #ea580c;
+    font-size: 11px;
+    font-weight: 750;
+    line-height: 1;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.6);
+}
+.users-user-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+    .users-user-info strong,
+    .users-username {
+        display: block;
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .users-user-info strong {
+        color: #1f2937;
+        font-size: 11px;
+        font-weight: 700;
+    }
+.users-username {
+    color: #94a3b8;
+    font-size: 10px;
+}
+/* ---------- STATUS / ROLE ---------- */
+.users-table .status-verified,
+.users-table .status-pending,
+.users-table .status-rejected {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+.users-table .status-verified {
+    background: #ecfdf5;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+.users-table .status-pending {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+.users-table .status-rejected {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+/* ---------- TABLE ACTIONS ---------- */
+.users-table .admin-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    white-space: nowrap;
+}
+    .users-table .admin-table-actions .admin-btn,
+    .users-table .admin-table-actions button,
+    .users-table .admin-table-actions a {
+        box-sizing: border-box;
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+        min-height: 30px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        border-radius: 7px;
+        line-height: 1;
+    }
+        .users-table .admin-table-actions svg,
+        .users-table .admin-table-actions .admin-btn svg {
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+            min-height: 14px;
+            display: block;
+            margin: 0;
+            pointer-events: none;
+        }
+        .users-table .admin-table-actions .admin-btn:hover,
+        .users-table .admin-table-actions button:hover,
+        .users-table .admin-table-actions a:hover {
+            transform: translateY(-1px);
+        }
+/* ---------- EMPTY STATE ---------- */
+.users-empty-state {
+    width: 100%;
+    padding: 30px 18px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 11px;
+}
+/* =========================================================
+   USER MODAL — REDESIGNED
+   ========================================================= */
+.payment-account-modal {
+    padding: 16px;
+    background: rgba(15, 23, 42, .18);
+}
+.payment-account-modal-overlay {
+    background: rgba(15, 23, 42, .58);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+.payment-account-modal-dialog {
+    width: 100%;
+    max-width: 720px;
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .22);
+}
+.payment-account-modal-header {
+    min-height: 50px;
+    padding: 9px 13px;
+    gap: 10px;
+    background: linear-gradient(180deg, #fff8ef 0%, #ffffff 100%);
+    border-bottom: 1px solid #e5e7eb;
+}
+    .payment-account-modal-header h2 {
+        color: #1f2937;
+        font-size: 15px;
+        font-weight: 750;
+        line-height: 1.25;
+    }
+.payment-account-modal-close {
+    width: 31px;
+    height: 31px;
+    flex: 0 0 31px;
+    border-radius: 7px;
+    color: #64748b;
+    font-size: 22px;
+}
+    .payment-account-modal-close:hover {
+        background: #fff1e6;
+        color: #ea580c;
+    }
+.payment-account-modal-body {
+    max-height: calc(100vh - 82px);
+    overflow-y: auto;
+}
+.payment-popup-content {
+    padding: 14px;
+}
+/* ---------- FORM ---------- */
+.payment-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+}
+.admin-form-group {
+    min-width: 0;
+}
+.admin-form-label {
+    margin-bottom: 4px;
+    color: #475569;
+    font-size: 10px;
+    font-weight: 700;
+}
+.admin-form-control {
+    min-height: 36px;
+    padding: 7px 9px;
+    border: 1px solid #dbe1e8;
+    border-radius: 7px;
+    color: #1f2937;
+    background: #ffffff;
+    font-size: 11px;
+    box-shadow: 0 1px 1px rgba(15,23,42,.02);
+}
+    .admin-form-control:hover {
+        border-color: #cbd5e1;
+    }
+    .admin-form-control:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 3px rgba(249,115,22,.09);
+    }
+    .admin-form-control[readonly] {
+        background: #f8fafc;
+        color: #475569;
+    }
+.field-validation {
+    margin-top: 3px;
+    font-size: 9px;
+}
+.admin-validation-summary {
+    margin-bottom: 10px;
+}
+/* ---------- ACTIVE BOX ---------- */
+.payment-active-box {
+    min-height: 36px;
+    padding: 7px 9px;
+    gap: 8px;
+    border-radius: 7px;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+.payment-active-label {
+    color: #475569;
+    font-size: 11px;
+    font-weight: 650;
+}
+/* ---------- SWITCH ---------- */
+.admin-switch {
+    width: 36px;
+    height: 20px;
+}
+    .admin-switch span::before {
+        width: 16px;
+        height: 16px;
+    }
+    .admin-switch input:checked + span::before {
+        transform: translateX(16px);
+    }
+/* ---------- DETAILS ---------- */
+.payment-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px 12px;
+    margin-top: 12px;
+}
+.payment-detail-item label {
+    margin-bottom: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+}
+.payment-detail-item strong {
+    color: #334155;
+    font-size: 11px;
+    font-weight: 650;
+}
+/* ---------- MODAL ACTIONS ---------- */
+.payment-popup-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+    .payment-popup-actions .admin-btn {
+        min-height: 33px;
+        height: 33px;
+        padding: 0 10px;
+        border-radius: 7px;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+        gap: 5px;
+    }
+        .payment-popup-actions .admin-btn svg {
+            width: 14px;
+            height: 14px;
+            flex: 0 0 14px;
+            display: block;
+            margin: 0;
+        }
+/* ---------- LOADING / ERROR ---------- */
+.payment-account-modal-loading {
+    min-height: 150px;
+    gap: 7px;
+    color: #64748b;
+    font-size: 11px;
+}
+.payment-account-spinner {
+    width: 23px;
+    height: 23px;
+    border-width: 3px;
+    border-top-color: #f97316;
+}
+.payment-account-modal-error {
+    padding: 22px 16px;
+}
+    .payment-account-modal-error strong {
+        margin-bottom: 4px;
+        font-size: 13px;
+    }
+    .payment-account-modal-error p {
+        margin-bottom: 12px;
+        font-size: 10px;
+    }
+/* ---------- SCROLLBAR ---------- */
+.payment-account-modal-body::-webkit-scrollbar {
+    width: 5px;
+}
+.payment-account-modal-body::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+.payment-account-modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+    .payment-account-modal-body::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+    .users-table {
+        min-width: 920px;
+    }
+    .payment-account-modal-dialog {
+        width: calc(100% - 20px);
+        max-height: calc(100vh - 24px);
+    }
+}
+@media (max-width: 700px) {
+    .users-page .users-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+        margin-bottom: 9px;
+    }
+    .users-page .users-header-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+        .users-page .users-header-actions .admin-btn {
+            flex: 1 1 auto;
+            width: 100%;
+            justify-content: center;
+        }
+    .users-card-header {
+        min-height: 44px;
+        padding: 7px 10px;
+    }
+    .payment-form-grid,
+    .payment-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+    .payment-account-modal {
+        padding: 7px;
+    }
+    .payment-account-modal-dialog {
+        width: 100%;
+        max-height: calc(100vh - 14px);
+        border-radius: 9px;
+    }
+    .payment-account-modal-header {
+        min-height: 45px;
+        padding: 8px 10px;
+    }
+        .payment-account-modal-header h2 {
+            font-size: 14px;
+        }
+    .payment-account-modal-body {
+        max-height: calc(100vh - 70px);
+    }
+    .payment-popup-content {
+        padding: 11px;
+    }
+    .payment-popup-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+        .payment-popup-actions .admin-btn {
+            width: 100%;
+            justify-content: center;
+        }
+}
+@media (max-width: 480px) {
+    .users-table {
+        min-width: 850px;
+    }
+        .users-table thead th {
+            height: 35px;
+            padding: 6px 8px;
+            font-size: 9px;
+        }
+        .users-table tbody td {
+            height: 46px;
+            padding: 6px 8px;
+            font-size: 10px;
+        }
+    .users-user-cell {
+        gap: 7px;
+    }
+    .users-user-avatar {
+        width: 29px;
+        height: 29px;
+        min-width: 29px;
+        border-radius: 7px;
+        font-size: 10px;
+    }
+    .users-user-info strong {
+        font-size: 10px;
+    }
+    .users-username {
+        font-size: 9px;
+    }
+    .users-table .admin-table-actions .admin-btn,
+    .users-table .admin-table-actions button,
+    .users-table .admin-table-actions a {
+        width: 28px;
+        min-width: 28px;
+        height: 28px;
+        min-height: 28px;
+    }
+    .payment-account-modal {
+        padding: 4px;
+    }
+    .payment-account-modal-dialog {
+        border-radius: 8px;
+    }
+    .payment-account-modal-header {
+        padding: 8px 9px;
+    }
+    .payment-account-modal-close {
+        width: 29px;
+        height: 29px;
+        flex-basis: 29px;
+        font-size: 21px;
+    }
+    .payment-popup-content {
+        padding: 9px;
+    }
+    .admin-form-control {
+        min-height: 35px;
+        padding: 7px 8px;
+    }
+    .payment-active-box {
+        min-height: 35px;
+    }
+}
+/* =========================================================
+   ACCESSIBILITY / POLISH
+   ========================================================= */
+.users-table .admin-table-actions .admin-btn:focus-visible,
+.users-table .admin-table-actions button:focus-visible,
+.users-table .admin-table-actions a:focus-visible,
+.payment-popup-actions .admin-btn:focus-visible {
+    outline: 2px solid #f97316;
+    outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+    .users-table tbody tr,
+    .users-table .admin-table-actions .admin-btn,
+    .users-table .admin-table-actions button,
+    .users-table .admin-table-actions a {
+        transition: none;
+    }
+}
+/* =========================================================
+   USERS INDEX — CARD LAYOUT
+   ========================================================= */
+.users-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.user-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 1px 5px rgba(15, 23, 42, .035);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+    .user-card:hover {
+        transform: translateY(-1px);
+        border-color: #fed7aa;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, .075);
+    }
+.user-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+}
+    .user-card-top .users-user-cell {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+.user-card-status {
+    flex: 0 0 auto;
+}
+.user-card-divider {
+    width: 100%;
+    height: 1px;
+    margin: 10px 0;
+    background: #f1f5f9;
+}
+.user-card-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+    flex: 1 1 auto;
+}
+.user-card-detail {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.user-card-label {
+    color: #94a3b8;
+    font-size: 8.5px;
+    font-weight: 750;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: .035em;
+}
+.user-card-detail strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #334155;
+    font-size: 10.5px;
+    font-weight: 650;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+.user-card-detail .user-card-value-wrap {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+.user-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-top: 11px;
+    padding-top: 9px;
+    border-top: 1px solid #f1f5f9;
+}
+    .user-card-actions .admin-btn {
+        min-width: 0;
+        min-height: 31px;
+        height: 31px;
+        padding: 0 9px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 9.5px;
+        font-weight: 700;
+        line-height: 1;
+    }
+        .user-card-actions .admin-btn svg {
+            width: 13px;
+            height: 13px;
+            min-width: 13px;
+            min-height: 13px;
+            display: block;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
+        .user-card-actions .admin-btn:hover {
+            transform: translateY(-1px);
+        }
+        .user-card-actions .admin-btn:focus-visible {
+            outline: 2px solid #f97316;
+            outline-offset: 2px;
+        }
+/* ---------- CARD BREAKPOINTS ---------- */
+@media (max-width: 1100px) {
+    .users-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+}
+@media (max-width: 700px) {
+    .users-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 8px;
+    }
+    .user-card {
+        padding: 11px;
+    }
+    .user-card-details {
+        gap: 8px 10px;
+    }
+}
+@media (max-width: 480px) {
+    .users-grid {
+        gap: 7px;
+        padding: 7px;
+    }
+    .user-card {
+        padding: 10px;
+        border-radius: 8px;
+    }
+    .user-card-divider {
+        margin: 8px 0;
+    }
+    .user-card-details {
+        grid-template-columns: 1fr 1fr;
+        gap: 7px 9px;
+    }
+    .user-card-detail strong {
+        font-size: 10px;
+    }
+    .user-card-actions {
+        margin-top: 9px;
+        padding-top: 8px;
+    }
+        .user-card-actions .admin-btn {
+            flex: 1 1 0;
+            min-height: 30px;
+            height: 30px;
+        }
+}
+@media (prefers-reduced-motion: reduce) {
+    .user-card {
+        transition: none;
+    }
+}

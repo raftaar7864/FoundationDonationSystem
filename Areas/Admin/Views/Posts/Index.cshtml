@@ -1,0 +1,1407 @@
+@model IEnumerable<FoundationDonationSystem.ViewModels.PostListViewModel>
+@{
+    ViewData["Title"] = "Posts";
+    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var totalPages = (int)(ViewBag.TotalPages ?? 1);
+    var pageSize = (int)(ViewBag.PageSize ?? 9);
+    var filteredPosts = (int)(ViewBag.FilteredPosts ?? 0);
+    var startItem = (int)(ViewBag.StartItem ?? 0);
+    var endItem = (int)(ViewBag.EndItem ?? 0);
+    var search = (string?)ViewBag.Search;
+    var status = (string?)ViewBag.Status;
+    var sort = (string?)ViewBag.Sort ?? "newest";
+    var categoryId = (int?)(ViewBag.CategoryId);
+    var subCategoryId = (int?)(ViewBag.SubCategoryId);
+    var categoryName = (string?)ViewBag.CategoryName;
+    var subCategoryName = (string?)ViewBag.SubCategoryName;
+}
+<div class="admin-page posts-page">
+    <form id="postsAntiForgeryForm" style="display:none;">
+        @Html.AntiForgeryToken()
+    </form>
+    <!-- =========================================================
+     PAGE HEADER
+     ========================================================= -->
+    <div class="admin-page-header posts-header">
+        <div class="posts-heading">
+            <div class="posts-heading-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+                    <path d="M7 9h10" />
+                    <path d="M7 13h7" />
+                    <path d="M7 17h5" />
+                </svg>
+            </div>
+            <div class="posts-heading-content">
+                <span class="posts-eyebrow">Content Management</span>
+                <h1>Posts</h1>
+                <p>Manage your foundation's latest works and updates.</p>
+            </div>
+        </div>
+        <div class="posts-header-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-primary posts-create-btn"
+                    onclick="openPostModal('@Url.Action("Create", "Posts", new { area = "Admin" })', 'Create Post')">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14" />
+                    <path d="M5 12h14" />
+                </svg>
+                <span>Create Post</span>
+            </button>
+        </div>
+    </div>
+    <!-- =========================================================
+     STATS
+     ========================================================= -->
+    <div class="posts-stats-grid">
+        <!-- Total Posts -->
+        <div class="posts-stat-card">
+            <div class="posts-stat-icon posts-stat-icon-total">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+                    <path d="M7 9h10M7 13h7" />
+                </svg>
+            </div>
+            <div class="posts-stat-info">
+                <span class="posts-stat-label">Total Posts</span>
+                <strong>@ViewBag.TotalPosts</strong>
+            </div>
+        </div>
+        <!-- Published -->
+        <div class="posts-stat-card">
+            <div class="posts-stat-icon posts-stat-icon-published">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="m8 12 2.5 2.5L16 9" />
+                </svg>
+            </div>
+            <div class="posts-stat-info">
+                <span class="posts-stat-label">Published</span>
+                <strong>@ViewBag.PublishedPosts</strong>
+            </div>
+        </div>
+        <!-- Drafts -->
+        <div class="posts-stat-card">
+            <div class="posts-stat-icon posts-stat-icon-draft">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 5h16v14H4z" />
+                    <path d="M8 9h8M8 13h5" />
+                </svg>
+            </div>
+            <div class="posts-stat-info">
+                <span class="posts-stat-label">Drafts</span>
+                <strong>@ViewBag.DraftPosts</strong>
+            </div>
+        </div>
+        <!-- With Image -->
+        <div class="posts-stat-card">
+            <div class="posts-stat-icon posts-stat-icon-image">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="4" y="5" width="16" height="14" rx="2" />
+                    <path d="m5 16 4-4 3 3 3-4 4 5" />
+                    <circle cx="9" cy="9" r="1.5" />
+                </svg>
+            </div>
+            <div class="posts-stat-info">
+                <span class="posts-stat-label">With Image</span>
+                <strong>@ViewBag.PostsWithImage</strong>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+     SUCCESS MESSAGE
+     ========================================================= -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="admin-alert admin-alert-success">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m8 12 2.5 2.5L16 9" />
+            </svg>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+    <!-- =========================================================
+     FILTER / SEARCH
+     ========================================================= -->
+    <form method="get"
+          asp-area="Admin"
+          asp-controller="Posts"
+          asp-action="Index"
+          class="posts-filter-bar">
+        <!-- SEARCH -->
+        <div class="posts-search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-4-4" />
+            </svg>
+            <input type="search"
+                   name="search"
+                   value="@search"
+                   placeholder="Search posts by title, description or creator..."
+                   autocomplete="off" />
+        </div>
+        <!-- FILTER DROPDOWN -->
+        <div class="posts-filter-dropdown">
+            <button type="button"
+                    class="posts-filter-toggle"
+                    id="postsFilterToggle"
+                    aria-expanded="false"
+                    aria-controls="postsFilterPanel">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16M7 12h10M10 18h4" />
+                </svg>
+                <span>Filter</span>
+                @if (categoryId.HasValue ||
+                     subCategoryId.HasValue ||
+                     !string.IsNullOrWhiteSpace(status) ||
+                     (!string.IsNullOrWhiteSpace(sort) && sort != "newest"))
+                {
+                    <span class="posts-filter-active-dot"></span>
+                }
+                <svg class="posts-filter-chevron"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </button>
+            <!-- FILTER PANEL -->
+            <div class="posts-filter-panel"
+                 id="postsFilterPanel"
+                 aria-hidden="true">
+                <div class="posts-filter-panel-header">
+                    <div>
+                        <span class="posts-filter-panel-eyebrow">
+                            Refine Results
+                        </span>
+                        <h3>Filter Posts</h3>
+                    </div>
+                    <button type="button"
+                            class="posts-filter-close"
+                            id="postsFilterClose"
+                            aria-label="Close filters">
+                        &times;
+                    </button>
+                </div>
+                <div class="posts-filter-panel-body">
+                    <!-- STATUS -->
+                    <div class="posts-filter-field">
+                        <label for="postStatusFilter">
+                            Status
+                        </label>
+                        <select id="postStatusFilter"
+                                name="status">
+                            <option value=""
+                                    selected="@(string.IsNullOrWhiteSpace(status))">
+                                All
+                            </option>
+                            <option value="published"
+                                    selected="@(status == "published")">
+                                Published
+                            </option>
+                            <option value="draft"
+                                    selected="@(status == "draft")">
+                                Draft
+                            </option>
+                        </select>
+                    </div>
+                    <!-- CATEGORY -->
+                    <div class="posts-filter-field">
+                        <label for="postCategoryFilter">
+                            Category
+                        </label>
+                        <select id="postCategoryFilter"
+                                name="categoryId">
+                            <option value="">
+                                All
+                            </option>
+                            @if (ViewBag.PostCategories != null)
+                            {
+                                foreach (
+                                    var category in
+                                    ViewBag.PostCategories
+                                    as IEnumerable<FoundationDonationSystem.Models.PostCategory>
+                                )
+                                {
+                                    <option value="@category.Id"
+                                            selected="@(categoryId == category.Id)">
+                                        @category.Name
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <!-- SUBCATEGORY -->
+                    <div class="posts-filter-field"
+                         id="postSubCategoryFilterGroup"
+                         style="display:none;">
+                        <label for="postSubCategoryFilter">
+                            Subcategory
+                        </label>
+                        <select id="postSubCategoryFilter"
+                                name="subCategoryId">
+                            <option value="">
+                                All
+                            </option>
+                            @if (ViewBag.PostSubCategories != null)
+                            {
+                                foreach (
+                                    var subCategory in
+                                    ViewBag.PostSubCategories
+                                    as IEnumerable<FoundationDonationSystem.Models.PostSubCategory>
+                                )
+                                {
+                                    <option value="@subCategory.Id"
+                                            data-category-id="@subCategory.PostCategoryId"
+                                            selected="@(subCategoryId == subCategory.Id)">
+                                        @subCategory.Name
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <!-- SORT -->
+                    <div class="posts-filter-field">
+                        <label for="postSortFilter">
+                            Sort
+                        </label>
+                        <select id="postSortFilter"
+                                name="sort">
+                            <option value="newest"
+                                    selected="@(sort == "newest")">
+                                Newest
+                            </option>
+                            <option value="oldest"
+                                    selected="@(sort == "oldest")">
+                                Oldest
+                            </option>
+                            <option value="date"
+                                    selected="@(sort == "date")">
+                                Post Date
+                            </option>
+                            <option value="order"
+                                    selected="@(sort == "order")">
+                                Display Order
+                            </option>
+                        </select>
+                    </div>
+                    <!-- PAGE SIZE -->
+                    <div class="posts-filter-field">
+                        <label for="postPageSize">
+                            Show
+                        </label>
+                        <select id="postPageSize"
+                                name="pageSize">
+                            <option value="9"
+                                    selected="@(pageSize == 9)">
+                                9
+                            </option>
+                            <option value="18"
+                                    selected="@(pageSize == 18)">
+                                18
+                            </option>
+                            <option value="45"
+                                    selected="@(pageSize == 45)">
+                                45
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <!-- FILTER ACTIONS -->
+                <div class="posts-filter-panel-actions">
+                    <button type="submit"
+                            class="admin-btn admin-btn-primary posts-filter-btn">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 6h16M7 12h10M10 18h4" />
+                        </svg>
+                        <span>Apply Filters</span>
+                    </button>
+                    <a class="admin-btn posts-clear-filter-btn"
+                       href="@Url.Action("Index", "Posts", new { area = "Admin" })">
+                        Clear All
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- RESET PAGINATION -->
+        <input type="hidden"
+               name="page"
+               value="1" />
+    </form>
+    <!-- =========================================================
+         POSTS LIST CARD
+         ========================================================= -->
+    <div class="admin-table-card posts-card">
+        <div class="admin-table-header posts-card-header">
+            <div class="posts-card-title">
+                <span class="posts-card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+                        <path d="M7 9h10" />
+                        <path d="M7 13h7" />
+                    </svg>
+                </span>
+                <div>
+                    <h2>Latest Works</h2>
+                    <span>
+                        @filteredPosts @(filteredPosts == 1 ? "post" : "posts")
+                    </span>
+                </div>
+            </div>
+            @if (Model.Any())
+            {
+                <div class="posts-card-header-count">
+                    @startItem–@endItem of @filteredPosts
+                </div>
+            }
+        </div>
+        @if (!Model.Any())
+        {
+            <!-- =====================================================
+                 EMPTY STATE
+                 ===================================================== -->
+            <div class="posts-empty-state">
+                <div class="posts-empty-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+                        <path d="M7 9h10" />
+                        <path d="M7 13h7" />
+                    </svg>
+                </div>
+                <h3>No posts found</h3>
+                <p>
+                    Create your first post to display a latest work
+                    or foundation update on the public website.
+                </p>
+                <button type="button"
+                        class="admin-btn admin-btn-primary"
+                        onclick="openPostModal('@Url.Action("Create", "Posts", new { area = "Admin" })', 'Create Post')">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                    </svg>
+                    <span>Create First Post</span>
+                </button>
+            </div>
+        }
+        else
+        {
+            <!-- =====================================================
+                 LIST TOOLBAR
+                 ===================================================== -->
+            <div class="posts-list-toolbar">
+                <label class="posts-checkbox posts-select-all">
+                    <input type="checkbox"
+                           id="postsSelectAll"
+                           aria-label="Select all posts" />
+                    <span></span>
+                </label>
+                <div class="posts-result-summary">
+                    Showing <strong>@startItem</strong>–<strong>@endItem</strong>
+                    of <strong>@filteredPosts</strong> posts
+                </div>
+                <div class="posts-bulk-actions" id="postsBulkActions">
+                    <span class="posts-selected-count">
+                        <strong id="postsSelectedCount">0</strong> selected
+                    </span>
+                    <button type="button"
+                            class="admin-btn posts-bulk-publish"
+                            onclick="bulkPostAction('publish')">
+                        Publish
+                    </button>
+                    <button type="button"
+                            class="admin-btn posts-bulk-unpublish"
+                            onclick="bulkPostAction('unpublish')">
+                        Unpublish
+                    </button>
+                    <button type="button"
+                            class="admin-btn posts-bulk-delete"
+                            onclick="bulkPostAction('delete')">
+                        Delete
+                    </button>
+                </div>
+            </div>
+            <!-- =====================================================
+                 CARD LIST
+                 ===================================================== -->
+            <div class="posts-list">
+                @foreach (var post in Model)
+                {
+                    <article class="posts-list-card"
+                             data-post-id="@post.Id">
+                        <div class="posts-card-select">
+                            <label class="posts-checkbox">
+                                <input type="checkbox"
+                                       class="post-select-checkbox"
+                                       value="@post.Id"
+                                       aria-label="Select @post.Title" />
+                                <span></span>
+                            </label>
+                        </div>
+                        <button type="button"
+                                class="posts-card-main"
+                                onclick="openPostModal('/admin/posts/details/@post.Id', 'Post Details')"
+                                aria-label="View @post.Title">
+                            <div class="posts-list-thumbnail">
+                                @if (!string.IsNullOrWhiteSpace(post.FeaturedImagePath))
+                                {
+                                    <img src="@post.FeaturedImagePath"
+                                         alt="@post.Title"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="posts-list-thumbnail-placeholder">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+                                            <path d="m5 17 4-4 3 3 3-4 4 5" />
+                                            <circle cx="9" cy="9" r="1.5" />
+                                        </svg>
+                                    </div>
+                                }
+                            </div>
+                            <div class="posts-list-content">
+                                <div class="posts-list-title-row">
+                                    <h3 class="posts-post-title">
+                                        @post.Title
+                                    </h3>
+                                    @if (post.IsPublished)
+                                    {
+                                        <span class="status-badge status-verified posts-status-badge">
+                                            Published
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-pending posts-status-badge">
+                                            Draft
+                                        </span>
+                                    }
+                                </div>
+                                <div class="posts-list-category-row">
+                                    @if (!string.IsNullOrWhiteSpace(post.CategoryName))
+                                    {
+                                        <span class="posts-category-badge">
+                                            <i class="bi bi-tag"></i>
+                                            @post.CategoryName
+                                        </span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(post.SubCategoryName))
+                                    {
+                                        <span class="posts-subcategory-badge">
+                                            <i class="bi bi-diagram-3"></i>
+                                            @post.SubCategoryName
+                                        </span>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(post.ShortDescription))
+                                {
+                                    <p class="posts-post-description">
+                                        @post.ShortDescription
+                                    </p>
+                                }
+                                <div class="posts-list-meta">
+                                    <span class="posts-meta-item">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <rect x="4" y="5" width="16" height="15" rx="2" />
+                                            <path d="M8 3v4M16 3v4M4 10h16" />
+                                        </svg>
+                                        @post.PostDate.ToString("dd MMM yyyy")
+                                    </span>
+                                    <span class="posts-meta-divider"></span>
+                                    <span class="posts-meta-item">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="8" r="3.2" />
+                                            <path d="M5 20c.8-3.7 3.2-5.5 7-5.5s6.2 1.8 7 5.5" />
+                                        </svg>
+                                        @(string.IsNullOrWhiteSpace(post.CreatedBy) ? "—" : post.CreatedBy)
+                                    </span>
+                                    <span class="posts-meta-divider"></span>
+                                    <span class="posts-meta-item">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M6 4h12v16H6z" />
+                                            <path d="M9 8h6M9 12h6M9 16h3" />
+                                        </svg>
+                                        Order @post.DisplayOrder
+                                    </span>
+                                    <span class="posts-meta-divider"></span>
+                                    <span class="posts-meta-item posts-created-meta">
+                                        Created @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                                    </span>
+                                </div>
+                            </div>
+                        </button>
+                        <div class="posts-card-actions">
+                            <button type="button"
+                                    class="admin-action-btn posts-view-btn"
+                                    title="View"
+                                    aria-label="View post"
+                                    onclick="openPostModal('/admin/posts/details/@post.Id', 'Post Details')">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z" />
+                                    <circle cx="12" cy="12" r="2.5" />
+                                </svg>
+                            </button>
+                            <button type="button"
+                                    class="admin-action-btn posts-edit-btn"
+                                    title="Edit"
+                                    aria-label="Edit post"
+                                    onclick="openPostModal('/admin/posts/edit/@post.Id', 'Edit Post')">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="m4 16-.8 4.8L8 20l11-11-3.8-3.8L4 16z" />
+                                    <path d="m14 6 3.8 3.8" />
+                                </svg>
+                            </button>
+                            <button type="button"
+                                    class="admin-action-btn posts-publish-btn"
+                                    title="@(post.IsPublished ? "Unpublish" : "Publish")"
+                                    aria-label="@(post.IsPublished ? "Unpublish" : "Publish") post"
+                                    onclick="togglePostPublish(@post.Id, this)">
+                                @if (post.IsPublished)
+                                {
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M4 4h16v16H4z" />
+                                        <path d="M8 12h8" />
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M5 4l14 8-14 8z" />
+                                    </svg>
+                                }
+                            </button>
+                            <button type="button"
+                                    class="admin-action-btn posts-delete-btn"
+                                    title="Delete"
+                                    aria-label="Delete post"
+                                    onclick="confirmDeletePost(@post.Id, '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(post.Title))')">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h16" />
+                                    <path d="M9 7V4h6v3" />
+                                    <path d="M7 7l1 13h8l1-13" />
+                                    <path d="M10 11v5" />
+                                    <path d="M14 11v5" />
+                                </svg>
+                            </button>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+    <!-- =========================================================
+         PAGINATION
+         ========================================================= -->
+    @if (totalPages > 1)
+    {
+        <nav class="posts-pagination" aria-label="Posts pagination">
+            <div class="posts-pagination-info">
+                Page <strong>@currentPage</strong> of <strong>@totalPages</strong>
+            </div>
+            <div class="posts-pagination-links">
+                @if (currentPage > 1)
+                {
+                    <a class="posts-page-link"
+                       href="@Url.Action("Index", "Posts", new { area = "Admin", search, status, categoryId, subCategoryId, sort, pageSize, page = currentPage - 1 })"
+                       aria-label="Previous page">
+                        ‹
+                    </a>
+                }
+                @for (var p = 1; p <= totalPages; p++)
+                {
+                    if (p == 1 ||
+                        p == totalPages ||
+                        Math.Abs(p - currentPage) <= 1)
+                    {
+                        <a class="posts-page-link @(p == currentPage ? "active" : "")"
+                           href="@Url.Action("Index", "Posts", new { area = "Admin", search, status, categoryId, subCategoryId, sort, pageSize, page = p })">
+                            @p
+                        </a>
+                    }
+                    else if (p == 2 && currentPage > 3 ||
+                             p == totalPages - 1 && currentPage < totalPages - 2)
+                    {
+                        <span class="posts-page-ellipsis">…</span>
+                    }
+                }
+                @if (currentPage < totalPages)
+                {
+                    <a class="posts-page-link"
+                       href="@Url.Action("Index", "Posts", new { area = "Admin", search, status, categoryId, subCategoryId, sort, pageSize, page = currentPage + 1 })"
+                       aria-label="Next page">
+                        ›
+                    </a>
+                }
+            </div>
+        </nav>
+    }
+</div>
+<!-- =========================================================
+     POST MODAL
+     ========================================================= -->
+<div id="postModal"
+     class="payment-account-modal"
+     aria-hidden="true">
+    <div class="payment-account-modal-overlay"
+         onclick="closePostModal()">
+    </div>
+    <div class="payment-account-modal-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="postModalTitle">
+        <div class="payment-account-modal-header">
+            <div>
+                <h2 id="postModalTitle">Post</h2>
+            </div>
+            <button type="button"
+                    class="payment-account-modal-close"
+                    onclick="closePostModal()"
+                    aria-label="Close">
+                &times;
+            </button>
+        </div>
+        <div id="postModalBody"
+             class="payment-account-modal-body">
+            <div class="payment-account-modal-loading">
+                <div class="payment-account-spinner"></div>
+                <span>Loading...</span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- =========================================================
+     DELETE CONFIRMATION MODAL
+     ========================================================= -->
+<div id="postDeleteModal"
+     class="posts-confirm-modal"
+     aria-hidden="true">
+    <div class="posts-confirm-overlay"
+         onclick="closeDeletePostModal()">
+    </div>
+    <div class="posts-confirm-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="postDeleteModalTitle">
+        <div class="posts-confirm-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 22 21H2L12 3z" />
+                <path d="M12 9v5" />
+                <circle cx="12" cy="17.5" r=".5" />
+            </svg>
+        </div>
+        <div class="posts-confirm-content">
+            <h2 id="postDeleteModalTitle">Delete Post?</h2>
+            <p>
+                Are you sure you want to delete
+                <strong id="postDeleteTitle"></strong>?
+            </p>
+            <span>This action cannot be undone.</span>
+        </div>
+        <div class="posts-confirm-actions">
+            <button type="button"
+                    class="admin-btn posts-confirm-cancel"
+                    onclick="closeDeletePostModal()">
+                Cancel
+            </button>
+            <button type="button"
+                    class="admin-btn posts-confirm-delete"
+                    id="postDeleteConfirmButton">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M9 7V4h6v3" />
+                    <path d="M7 7l1 13h8l1-13" />
+                </svg>
+                <span>Delete</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!-- =========================================================
+     SUCCESS MODAL
+     ========================================================= -->
+<div id="postSuccessModal"
+     class="posts-success-modal"
+     aria-hidden="true">
+    <div class="posts-success-overlay"
+         onclick="closePostSuccessModal()">
+    </div>
+    <div class="posts-success-dialog"
+         role="dialog"
+         aria-modal="true">
+        <div class="posts-success-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m8 12 2.5 2.5L16 9" />
+            </svg>
+        </div>
+        <h2>Success</h2>
+        <p id="postSuccessMessage">
+            Operation completed successfully.
+        </p>
+        <button type="button"
+                class="admin-btn admin-btn-primary"
+                onclick="closePostSuccessModal()">
+            OK
+        </button>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        let currentPostDeleteId = null;
+        const postsTogglePublishUrl =
+            '@Url.Action("TogglePublish", "Posts", new { area = "Admin" })';
+        const postsDeleteUrl =
+            '@Url.Action("Delete", "Posts", new { area = "Admin" })';
+        const postsBulkActionUrl =
+            '@Url.Action("BulkAction", "Posts", new { area = "Admin" })';
+        function getPostsAntiForgeryToken() {
+            const token = document.querySelector(
+                "#postsAntiForgeryForm input[name='__RequestVerificationToken']"
+            );
+            return token ? token.value : "";
+        }
+        async function openPostModal(url, title) {
+            const modal = document.getElementById("postModal");
+            const body = document.getElementById("postModalBody");
+            const titleElement = document.getElementById("postModalTitle");
+            if (!modal || !body) {
+                console.error("Post modal elements were not found.");
+                return;
+            }
+            if (!url) {
+                console.error("Post modal URL is empty.");
+                return;
+            }
+            if (titleElement) {
+                titleElement.textContent = title || "Post";
+            }
+            body.innerHTML = `
+                                <div class="payment-account-modal-loading">
+                                    <div class="payment-account-spinner"></div>
+                                    <span>Loading...</span>
+                                </div>
+                            `;
+            modal.classList.add("show");
+            modal.setAttribute("aria-hidden", "false");
+            document.body.classList.add("payment-account-modal-open");
+            try {
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "text/html"
+                    },
+                    credentials: "same-origin",
+                    cache: "no-store"
+                });
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error("Your session has expired. Please sign in again.");
+                    }
+                    if (response.status === 403) {
+                        throw new Error("You do not have permission to perform this action.");
+                    }
+                    if (response.status === 404) {
+                        throw new Error("The requested post could not be found.");
+                    }
+                    throw new Error(
+                        "Unable to load post. Server returned " + response.status + "."
+                    );
+                }
+                const html = await response.text();
+                if (!html.trim()) {
+                    throw new Error("The server returned an empty response.");
+                }
+                body.innerHTML = html;
+                executePostModalScripts(body);
+                requestAnimationFrame(function() {
+                    const firstInput = body.querySelector(
+                        "input:not([type='hidden']), textarea, select"
+                    );
+                    if (firstInput) {
+                        firstInput.focus();
+                    }
+                });
+            }
+            catch (error) {
+                console.error("Post modal error:", error);
+                body.innerHTML = `
+                                    <div class="payment-account-modal-error">
+                                        <strong>Unable to load post.</strong>
+                                        <span>${escapePostHtml(
+                    error.message || "Please try again."
+                )}</span>
+                                    </div>
+                                `;
+            }
+        }
+        function closePostModal() {
+            const modal = document.getElementById("postModal");
+            if (!modal) {
+                return;
+            }
+            modal.classList.remove("show");
+            modal.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("payment-account-modal-open");
+            const body = document.getElementById("postModalBody");
+            if (body) {
+                body.innerHTML = `
+                                    <div class="payment-account-modal-loading">
+                                        <div class="payment-account-spinner"></div>
+                                        <span>Loading...</span>
+                                    </div>
+                                `;
+            }
+        }
+        function executePostModalScripts(container) {
+            if (!container) {
+                return;
+            }
+            const scripts = container.querySelectorAll("script");
+            scripts.forEach(function(oldScript) {
+                const newScript = document.createElement("script");
+                Array.from(oldScript.attributes).forEach(function(attribute) {
+                    newScript.setAttribute(attribute.name, attribute.value);
+                });
+                newScript.textContent = oldScript.textContent;
+                oldScript.replaceWith(newScript);
+            });
+        }
+        async function togglePostPublish(postId, button) {
+            if (!postId || !button) {
+                return;
+            }
+            if (!window.confirm(
+                "Are you sure you want to change the publication status of this post?"
+            )) {
+                return;
+            }
+            const originalHtml = button.innerHTML;
+            const originalTitle = button.getAttribute("title");
+            button.disabled = true;
+            button.innerHTML = `
+                                <span class="posts-action-spinner"></span>
+                            `;
+            try {
+                const formData = new FormData();
+                formData.append("id", postId);
+                formData.append(
+                    "__RequestVerificationToken",
+                    getPostsAntiForgeryToken()
+                );
+                const response = await fetch(postsTogglePublishUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    credentials: "same-origin"
+                });
+                const contentType =
+                    response.headers.get("content-type") || "";
+                if (!contentType.includes("application/json")) {
+                    throw new Error(
+                        "The server returned an unexpected response."
+                    );
+                }
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message ||
+                        "Unable to update post status."
+                    );
+                }
+                showPostSuccess(
+                    result.message ||
+                    "Post status updated successfully."
+                );
+                setTimeout(function() {
+                    window.location.reload();
+                }, 800);
+            }
+            catch (error) {
+                console.error("Toggle publish error:", error);
+                alert(
+                    error.message ||
+                    "Unable to update post status."
+                );
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+                if (originalTitle) {
+                    button.setAttribute("title", originalTitle);
+                }
+            }
+        }
+        function confirmDeletePost(postId, title) {
+            currentPostDeleteId = postId;
+            const modal =
+                document.getElementById("postDeleteModal");
+            const titleElement =
+                document.getElementById("postDeleteTitle");
+            if (titleElement) {
+                titleElement.textContent = title || "this post";
+            }
+            if (!modal) {
+                return;
+            }
+            modal.classList.add("show");
+            modal.setAttribute("aria-hidden", "false");
+            document.body.classList.add("posts-confirm-modal-open");
+        }
+        function closeDeletePostModal() {
+            const modal =
+                document.getElementById("postDeleteModal");
+            if (!modal) {
+                return;
+            }
+            modal.classList.remove("show");
+            modal.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("posts-confirm-modal-open");
+            currentPostDeleteId = null;
+        }
+        async function deletePost() {
+            if (!currentPostDeleteId) {
+                return;
+            }
+            const button =
+                document.getElementById("postDeleteConfirmButton");
+            if (!button) {
+                return;
+            }
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `
+                                <span class="posts-action-spinner"></span>
+                                <span>Deleting...</span>
+                            `;
+            try {
+                const formData = new FormData();
+                formData.append("id", currentPostDeleteId);
+                formData.append(
+                    "__RequestVerificationToken",
+                    getPostsAntiForgeryToken()
+                );
+                const response = await fetch(postsDeleteUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    credentials: "same-origin"
+                });
+                const contentType =
+                    response.headers.get("content-type") || "";
+                if (!contentType.includes("application/json")) {
+                    throw new Error(
+                        "The server returned an unexpected response."
+                    );
+                }
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message ||
+                        "Unable to delete post."
+                    );
+                }
+                closeDeletePostModal();
+                showPostSuccess(
+                    result.message ||
+                    "Post deleted successfully."
+                );
+                setTimeout(function() {
+                    window.location.reload();
+                }, 800);
+            }
+            catch (error) {
+                console.error("Delete post error:", error);
+                alert(
+                    error.message ||
+                    "Unable to delete post."
+                );
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        }
+        function getSelectedPostIds() {
+            return Array.from(
+                document.querySelectorAll(".post-select-checkbox:checked")
+            )
+                .map(function(checkbox) {
+                    return parseInt(checkbox.value, 10);
+                })
+                .filter(function(id) {
+                    return !Number.isNaN(id);
+                });
+        }
+        function updatePostSelectionUi() {
+            const checkboxes = Array.from(
+                document.querySelectorAll(".post-select-checkbox")
+            );
+            const selected = checkboxes.filter(function(checkbox) {
+                return checkbox.checked;
+            });
+            const selectAll =
+                document.getElementById("postsSelectAll");
+            const count =
+                document.getElementById("postsSelectedCount");
+            const bulkActions =
+                document.getElementById("postsBulkActions");
+            if (count) {
+                count.textContent = selected.length;
+            }
+            if (bulkActions) {
+                bulkActions.classList.toggle(
+                    "is-visible",
+                    selected.length > 0
+                );
+            }
+            if (selectAll) {
+                selectAll.checked =
+                    checkboxes.length > 0 &&
+                    selected.length === checkboxes.length;
+                selectAll.indeterminate =
+                    selected.length > 0 &&
+                    selected.length < checkboxes.length;
+            }
+        }
+        async function bulkPostAction(action) {
+            const ids = getSelectedPostIds();
+            if (!ids.length) {
+                return;
+            }
+            const label =
+                action === "delete"
+                    ? "delete"
+                    : action === "publish"
+                        ? "publish"
+                        : "unpublish";
+            if (!window.confirm(
+                "Are you sure you want to " +
+                label +
+                " " +
+                ids.length +
+                " selected post(s)?"
+            )) {
+                return;
+            }
+            const formData = new FormData();
+            ids.forEach(function(id) {
+                formData.append("ids", id);
+            });
+            formData.append("action", action);
+            formData.append(
+                "__RequestVerificationToken",
+                getPostsAntiForgeryToken()
+            );
+            try {
+                const response = await fetch(
+                    postsBulkActionUrl,
+                    {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        credentials: "same-origin"
+                    }
+                );
+                const contentType =
+                    response.headers.get("content-type") || "";
+                if (!contentType.includes("application/json")) {
+                    throw new Error(
+                        "The server returned an unexpected response."
+                    );
+                }
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message ||
+                        "Unable to complete the bulk operation."
+                    );
+                }
+                showPostSuccess(
+                    result.message ||
+                    "Bulk operation completed successfully."
+                );
+                setTimeout(function() {
+                    window.location.reload();
+                }, 800);
+            }
+            catch (error) {
+                console.error("Bulk post action error:", error);
+                alert(
+                    error.message ||
+                    "Unable to complete the bulk operation."
+                );
+            }
+        }
+        function showPostSuccess(message) {
+            const modal =
+                document.getElementById("postSuccessModal");
+            const messageElement =
+                document.getElementById("postSuccessMessage");
+            if (messageElement) {
+                messageElement.textContent =
+                    message ||
+                    "Operation completed successfully.";
+            }
+            if (!modal) {
+                return;
+            }
+            modal.classList.add("show");
+            modal.setAttribute("aria-hidden", "false");
+        }
+        function closePostSuccessModal() {
+            const modal =
+                document.getElementById("postSuccessModal");
+            if (!modal) {
+                return;
+            }
+            modal.classList.remove("show");
+            modal.setAttribute("aria-hidden", "true");
+        }
+        function escapePostHtml(value) {
+            const div = document.createElement("div");
+            div.textContent = value || "";
+            return div.innerHTML;
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            const selectAll =
+                document.getElementById("postsSelectAll");
+            if (selectAll) {
+                selectAll.addEventListener("change", function() {
+                    document
+                        .querySelectorAll(".post-select-checkbox")
+                        .forEach(function(checkbox) {
+                            checkbox.checked = selectAll.checked;
+                        });
+                    updatePostSelectionUi();
+                });
+            }
+            document
+                .querySelectorAll(".post-select-checkbox")
+                .forEach(function(checkbox) {
+                    checkbox.addEventListener(
+                        "change",
+                        updatePostSelectionUi
+                    );
+                });
+            const deleteButton =
+                document.getElementById(
+                    "postDeleteConfirmButton"
+                );
+            if (deleteButton) {
+                deleteButton.addEventListener(
+                    "click",
+                    deletePost
+                );
+            }
+            updatePostSelectionUi();
+        });
+        document.addEventListener("keydown", function(event) {
+            if (event.key !== "Escape") {
+                return;
+            }
+            const postModal =
+                document.getElementById("postModal");
+            const deleteModal =
+                document.getElementById("postDeleteModal");
+            const successModal =
+                document.getElementById("postSuccessModal");
+            if (
+                postModal &&
+                postModal.classList.contains("show")
+            ) {
+                closePostModal();
+                return;
+            }
+            if (
+                deleteModal &&
+                deleteModal.classList.contains("show")
+            ) {
+                closeDeletePostModal();
+                return;
+            }
+            if (
+                successModal &&
+                successModal.classList.contains("show")
+            ) {
+                closePostSuccessModal();
+            }
+        });
+        // =========================================================
+        // FILTER DROPDOWN
+        // =========================================================
+        document.addEventListener("DOMContentLoaded", function() {
+            const filterToggle =
+                document.getElementById("postsFilterToggle");
+            const filterPanel =
+                document.getElementById("postsFilterPanel");
+            const filterClose =
+                document.getElementById("postsFilterClose");
+            if (!filterToggle || !filterPanel) {
+                return;
+            }
+            function openFilters() {
+                filterPanel.classList.add("is-open");
+                filterToggle.classList.add("is-open");
+                filterToggle.setAttribute(
+                    "aria-expanded",
+                    "true"
+                );
+                filterPanel.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+            }
+            function closeFilters() {
+                filterPanel.classList.remove("is-open");
+                filterToggle.classList.remove("is-open");
+                filterToggle.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+                filterPanel.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+            }
+            filterToggle.addEventListener("click", function(event) {
+                event.stopPropagation();
+                if (filterPanel.classList.contains("is-open")) {
+                    closeFilters();
+                }
+                else {
+                    openFilters();
+                }
+            });
+            if (filterClose) {
+                filterClose.addEventListener(
+                    "click",
+                    function() {
+                        closeFilters();
+                    }
+                );
+            }
+            document.addEventListener(
+                "click",
+                function(event) {
+                    if (!filterPanel.classList.contains("is-open")) {
+                        return;
+                    }
+                    if (
+                        !filterPanel.contains(event.target) &&
+                        !filterToggle.contains(event.target)
+                    ) {
+                        closeFilters();
+                    }
+                }
+            );
+            document.addEventListener(
+                "keydown",
+                function(event) {
+                    if (
+                        event.key === "Escape" &&
+                        filterPanel.classList.contains("is-open")
+                    ) {
+                        closeFilters();
+                    }
+                }
+            );
+        });
+        // =========================================================
+        // CATEGORY / SUBCATEGORY FILTER
+        // =========================================================
+        document.addEventListener("DOMContentLoaded", function() {
+            const categoryFilter =
+                document.getElementById("postCategoryFilter");
+            const subCategoryFilter =
+                document.getElementById("postSubCategoryFilter");
+            const subCategoryGroup =
+                document.getElementById("postSubCategoryFilterGroup");
+            if (!categoryFilter ||
+                !subCategoryFilter ||
+                !subCategoryGroup) {
+                return;
+            }
+            // Store ALL subcategories rendered by Razor
+            const allSubCategories =
+                Array.from(subCategoryFilter.options)
+                    .filter(function(option) {
+                        return option.value !== "";
+                    })
+                    .map(function(option) {
+                        return {
+                            value: option.value,
+                            text: option.textContent.trim(),
+                            categoryId:
+                                option.getAttribute("data-category-id")
+                        };
+                    });
+            function updateSubCategories() {
+                const selectedCategoryId =
+                    String(categoryFilter.value || "");
+                // Save currently selected subcategory
+                const selectedSubCategoryId =
+                    String(subCategoryFilter.value || "");
+                // Clear the dropdown
+                subCategoryFilter.innerHTML = "";
+                // Always show All
+                const allOption =
+                    document.createElement("option");
+                allOption.value = "";
+                allOption.textContent = "All";
+                subCategoryFilter.appendChild(allOption);
+                // No category selected
+                if (!selectedCategoryId) {
+                    subCategoryGroup.style.display = "none";
+                    return;
+                }
+                // Find matching subcategories
+                const matchingSubCategories =
+                    allSubCategories.filter(function(item) {
+                        return String(item.categoryId) ===
+                            selectedCategoryId;
+                    });
+                // No subcategories for selected category
+                if (matchingSubCategories.length === 0) {
+                    subCategoryGroup.style.display = "none";
+                    return;
+                }
+                // Show subcategory field
+                subCategoryGroup.style.display = "";
+                // Add matching subcategories
+                matchingSubCategories.forEach(function(item) {
+                    const option =
+                        document.createElement("option");
+                    option.value = item.value;
+                    option.textContent = item.text;
+                    option.setAttribute(
+                        "data-category-id",
+                        item.categoryId
+                    );
+                    if (
+                        selectedSubCategoryId &&
+                        String(item.value) ===
+                        selectedSubCategoryId
+                    ) {
+                        option.selected = true;
+                    }
+                    subCategoryFilter.appendChild(option);
+                });
+            }
+            // Category changed
+            categoryFilter.addEventListener(
+                "change",
+                function() {
+                    // Always reset subcategory when category changes
+                    subCategoryFilter.value = "";
+                    updateSubCategories();
+                }
+            );
+            // Initial load
+            updateSubCategories();
+        });
+    </script>
+}

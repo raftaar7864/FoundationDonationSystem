@@ -1,0 +1,476 @@
+﻿@model FoundationDonationSystem.Models.Donation
+@using FoundationDonationSystem.Models.Enums
+<div class="donation-popup-content">
+    <!-- =====================================================
+         DONATION HEADER
+         ===================================================== -->
+    <div class="donation-popup-header">
+        <div class="donation-popup-header-info">
+            <span class="donation-popup-eyebrow">
+                Donation Details
+            </span>
+            <h2>
+                @Model.DonationNumber
+            </h2>
+            <span class="donation-popup-date">
+                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+            </span>
+        </div>
+        <div class="donation-popup-status">
+            @if (Model.Status == DonationStatus.Verified)
+            {
+                <span class="status-badge status-verified">
+                    Verified
+                </span>
+            }
+            else if (Model.Status == DonationStatus.Rejected)
+            {
+                <span class="status-badge status-rejected">
+                    Rejected
+                </span>
+            }
+            else
+            {
+                <span class="status-badge status-pending">
+                    Pending
+                </span>
+            }
+        </div>
+    </div>
+    <!-- =====================================================
+         DONOR INFORMATION
+         ===================================================== -->
+    <div class="donation-popup-card">
+        <h3>
+            Donor Information
+        </h3>
+        <div class="donation-popup-grid">
+            <div class="donation-popup-row">
+                <span>Donor Name</span>
+                <strong>@Model.DonorName</strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Mobile</span>
+                <strong>@Model.Mobile</strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Email</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(Model.Email)
+                        ? "Not Provided"
+                        : Model.Email)
+                </strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Address</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(Model.Address)
+                        ? "Not Provided"
+                        : Model.Address)
+                </strong>
+            </div>
+        </div>
+    </div>
+    <!-- =====================================================
+         DONATION INFORMATION
+         ===================================================== -->
+    <div class="donation-popup-card">
+        <h3>
+            Donation Information
+        </h3>
+        <div class="donation-popup-grid">
+            <div class="donation-popup-row">
+                <span>Donation Number</span>
+                <strong>@Model.DonationNumber</strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Amount</span>
+                <strong>
+                    ₹@Model.Amount.ToString("N2")
+                </strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Payment Method</span>
+                <strong>
+                    @Model.PaymentMethod
+                </strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Transaction ID</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(Model.TransactionId)
+                        ? "Not Provided"
+                        : Model.TransactionId)
+                </strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Transaction Date</span>
+                <strong>
+                    @Model.TransactionDate.ToLocalTime().ToString("dd-MM-yyyy HH:mm")
+                </strong>
+            </div>
+            <div class="donation-popup-row">
+                <span>Donation Type</span>
+                <strong>
+                    @(Model.IsOfflineDonation
+                        ? "Offline Donation"
+                        : "Online Donation")
+                </strong>
+            </div>
+        </div>
+    </div>
+    <!-- =====================================================
+         PAYMENT PROOF
+         ===================================================== -->
+    @if (!Model.IsOfflineDonation)
+    {
+        <div class="donation-popup-card">
+            <h3>
+                Payment Proof
+            </h3>
+            @if (!string.IsNullOrWhiteSpace(Model.PaymentProofPath))
+            {
+                var proofFileName =
+                    System.IO.Path.GetFileName(Model.PaymentProofPath);
+                var proofExtension =
+                    System.IO.Path.GetExtension(proofFileName)
+                        .ToLowerInvariant();
+                var proofUrl =
+                    Url.Action(
+                        "PaymentProof",
+                        "Donations",
+                        new
+                        {
+                            area = "Admin",
+                            id = Model.Id
+                        });
+                <div class="donation-proof-info">
+                    <div class="donation-popup-row">
+                        <span>Uploaded File</span>
+                        <strong>
+                            @(string.IsNullOrWhiteSpace(Model.PaymentProofOriginalName)
+                                ? proofFileName
+                                : Model.PaymentProofOriginalName)
+                        </strong>
+                    </div>
+                    @if (proofExtension == ".jpg" ||
+                         proofExtension == ".jpeg" ||
+                         proofExtension == ".png" ||
+                         proofExtension == ".webp")
+                    {
+                        <div class="donation-proof-image-wrapper">
+                            <img src="@proofUrl"
+                                 alt="Payment Proof"
+                                 class="donation-proof-image"
+                                 loading="eager" />
+                        </div>
+                    }
+                    else if (proofExtension == ".pdf")
+                    {
+                        <div class="donation-proof-preview">
+                            <iframe src="@proofUrl"
+                                    title="Payment Proof"
+                                    loading="eager">
+                            </iframe>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="donation-no-proof">
+                            Preview is not available for this file type.
+                        </div>
+                    }
+                    <div class="donation-proof-actions">
+                        <a href="@proofUrl"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="admin-btn admin-btn-secondary">
+                            Open Full Proof
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="donation-no-proof">
+                    No payment proof has been uploaded.
+                </div>
+            }
+        </div>
+    }
+    <!-- =====================================================
+         OFFLINE VOUCHER
+         ===================================================== -->
+    @if (Model.IsOfflineDonation)
+    {
+        <div class="donation-popup-card">
+            <h3>
+                Offline Donation Voucher
+            </h3>
+            @if (!string.IsNullOrWhiteSpace(Model.OfflineVoucherPath))
+            {
+                var voucherFileName =
+                    System.IO.Path.GetFileName(Model.OfflineVoucherPath);
+                var voucherExtension =
+                    System.IO.Path.GetExtension(voucherFileName)
+                        .ToLowerInvariant();
+                var voucherUrl =
+                    Url.Action(
+                        "OfflineVoucher",
+                        "Donations",
+                        new
+                        {
+                            area = "Admin",
+                            id = Model.Id
+                        });
+                <div class="donation-proof-info">
+                    <div class="donation-popup-row">
+                        <span>Uploaded File</span>
+                        <strong>
+                            @(string.IsNullOrWhiteSpace(Model.OfflineVoucherOriginalName)
+                                ? voucherFileName
+                                : Model.OfflineVoucherOriginalName)
+                        </strong>
+                    </div>
+                    @if (voucherExtension == ".jpg" ||
+                         voucherExtension == ".jpeg" ||
+                         voucherExtension == ".png" ||
+                         voucherExtension == ".webp")
+                    {
+                        <div class="donation-proof-image-wrapper">
+                            <img src="@voucherUrl"
+                                 alt="Offline Donation Voucher"
+                                 class="donation-proof-image"
+                                 loading="eager" />
+                        </div>
+                    }
+                    else if (voucherExtension == ".pdf")
+                    {
+                        <div class="donation-proof-preview">
+                            <iframe src="@voucherUrl"
+                                    title="Offline Donation Voucher"
+                                    loading="eager">
+                            </iframe>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="donation-no-proof">
+                            Preview is not available for this file type.
+                        </div>
+                    }
+                    <div class="donation-proof-actions">
+                        <a href="@voucherUrl"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="admin-btn admin-btn-secondary">
+                            Open Voucher
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="donation-no-proof">
+                    No offline voucher has been uploaded.
+                </div>
+            }
+        </div>
+    }
+    <!-- =====================================================
+         VERIFICATION INFORMATION
+         ===================================================== -->
+    @if (Model.Status == DonationStatus.Verified ||
+             Model.Status == DonationStatus.Rejected)
+    {
+        <div class="donation-popup-card">
+            <h3>
+                Verification Information
+            </h3>
+            <div class="donation-popup-grid">
+                <div class="donation-popup-row">
+                    <span>
+                        Status
+                    </span>
+                    <strong>
+                        @Model.Status
+                    </strong>
+                </div>
+                @if (Model.VerifiedAt.HasValue)
+                {
+                    <div class="donation-popup-row">
+                        <span>
+                            Verified / Reviewed On
+                        </span>
+                        <strong>
+                            @Model.VerifiedAt.Value.ToLocalTime().ToString("dd-MM-yyyy HH:mm")
+                        </strong>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(
+                    Model.VerificationRemarks))
+                {
+                    <div class="donation-popup-row donation-popup-row-full">
+                        <span>
+                            Remarks
+                        </span>
+                        <strong>
+                            @Model.VerificationRemarks
+                        </strong>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    <!-- =====================================================
+         DONATION SLIP INFORMATION
+         ===================================================== -->
+    @if (Model.Status == DonationStatus.Verified)
+    {
+        <div class="donation-popup-card">
+            <h3>
+                Donation Slip
+            </h3>
+            @if (!string.IsNullOrWhiteSpace(
+                Model.DonationSlipNumber))
+            {
+                <!-- =========================================
+                     SLIP ALREADY GENERATED
+                     ========================================= -->
+                <div class="donation-popup-row">
+                    <span>
+                        Slip Number
+                    </span>
+                    <strong id="donation-slip-number-@Model.Id">
+                        @Model.DonationSlipNumber
+                    </strong>
+                </div>
+                @if (Model.SlipGeneratedAt.HasValue)
+                {
+                    <div class="donation-popup-row">
+                        <span>
+                            Generated On
+                        </span>
+                        <strong>
+                            @Model.SlipGeneratedAt.Value.ToLocalTime().ToString("dd-MM-yyyy HH:mm")
+                        </strong>
+                    </div>
+                }
+                <div class="donation-slip-status">
+                    <span class="status-badge status-verified">
+                        Slip Generated
+                    </span>
+                </div>
+            }
+            else
+            {
+                <!-- =========================================
+                     SLIP NOT GENERATED
+                     ========================================= -->
+                <div class="donation-popup-row">
+                    <span>
+                        Slip Number
+                    </span>
+                    <strong id="donation-slip-number-@Model.Id">
+                        Not Generated
+                    </strong>
+                </div>
+                <div class="donation-slip-status">
+                    <span class="status-badge status-pending">
+                        Slip Not Generated
+                    </span>
+                </div>
+            }
+        </div>
+    }
+    <!-- =====================================================
+         ACTIONS
+         ===================================================== -->
+    <div class="donation-popup-actions">
+        <!-- =================================================
+             PENDING
+             ================================================= -->
+        @if (Model.Status == DonationStatus.Pending)
+        {
+            <button type="button"
+                    class="admin-btn admin-btn-primary"
+                    onclick="openVerifyConfirmation(@Model.Id)">
+                ✓ Verify Donation
+            </button>
+            <button type="button"
+                    class="admin-btn admin-btn-danger"
+                    onclick="openRejectConfirmation(@Model.Id)">
+                ✕ Reject Donation
+            </button>
+        }
+        <!-- =================================================
+             VERIFIED
+             ================================================= -->
+        @if (Model.Status == DonationStatus.Verified)
+        {
+            @if (!string.IsNullOrWhiteSpace(
+                Model.DonationSlipNumber))
+            {
+                <!-- =========================================
+                     VIEW EXISTING SLIP
+                     ========================================= -->
+                <a href="@Url.Action(
+                                                          "ViewSlip",
+                                                          "Donations",
+                                                          new
+                                                          {
+                                                              area = "Admin",
+                                                              id = Model.Id
+                                                          })"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="admin-btn admin-btn-primary">
+                    🧾 View Donation Slip
+                </a>
+                <!-- =========================================
+                     DOWNLOAD EXISTING SLIP
+                     ========================================= -->
+                <a href="@Url.Action(
+                                                          "DownloadSlipPdf",
+                                                          "Donations",
+                                                          new
+                                                          {
+                                                              area = "Admin",
+                                                              id = Model.Id
+                                                          })"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="admin-btn admin-btn-secondary">
+                    📄 Download PDF
+                </a>
+            }
+            else
+            {
+                <!-- =========================================
+                     GENERATE NEW SLIP
+                     ========================================= -->
+                <button type="button"
+                        id="generate-slip-btn-@Model.Id"
+                        class="admin-btn admin-btn-primary"
+                        onclick="generateDonationSlip(@Model.Id, this)">
+                    🧾 Generate Slip
+                </button>
+            }
+        }
+        <!-- =================================================
+             CLOSE
+             ================================================= -->
+        <button type="button"
+                class="admin-btn admin-btn-secondary"
+                onclick="closeDonationDetailsModal()">
+            Close
+        </button>
+    </div>
+    <!-- =====================================================
+         ANTI-FORGERY TOKEN
+         ===================================================== -->
+    <div id="donation-details-antiforgery"
+         style="display:none;">
+        @Html.AntiForgeryToken()
+    </div>
+</div>

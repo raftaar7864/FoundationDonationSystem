@@ -1,0 +1,1053 @@
+﻿@model FoundationDonationSystem.ViewModels.PostCreateViewModel
+<div class="payment-popup-content post-form-popup-content">
+    <form asp-area="Admin"
+          asp-controller="Posts"
+          asp-action="Create"
+          method="post"
+          enctype="multipart/form-data"
+          id="createPostForm">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly"
+             class="admin-validation-summary">
+        </div>
+        <!-- =====================================================
+             POST INFORMATION
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-file-text"></i>
+                </div>
+                <div>
+                    <h3>Post Information</h3>
+                    <p>Enter the basic information for this update.</p>
+                </div>
+            </div>
+            <div class="payment-form-grid">
+                <!-- TITLE -->
+                <div class="admin-form-group payment-form-group-full">
+                    <label asp-for="Title"
+                           class="admin-form-label">
+                        Title
+                        <span class="required-mark">*</span>
+                    </label>
+                    <input asp-for="Title"
+                           class="admin-form-control"
+                           placeholder="Enter post title"
+                           autocomplete="off" />
+                    <span asp-validation-for="Title"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- SHORT DESCRIPTION -->
+                <div class="admin-form-group payment-form-group-full">
+                    <label asp-for="ShortDescription"
+                           class="admin-form-label">
+                        Short Description
+                    </label>
+                    <textarea asp-for="ShortDescription"
+                              class="admin-form-control post-textarea"
+                              rows="3"
+                              maxlength="500"
+                              placeholder="Write a short description of the update..."></textarea>
+                    <span asp-validation-for="ShortDescription"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- CONTENT -->
+                <div class="admin-form-group payment-form-group-full">
+                    <label asp-for="Content" class="admin-form-label">
+                        Content
+                    </label>
+                    <div class="post-editor" id="postEditor">
+                        <div class="post-editor-toolbar" role="toolbar" aria-label="Content formatting tools">
+                            <button type="button" class="post-editor-tool" data-command="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+                            <button type="button" class="post-editor-tool" data-command="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+                            <button type="button" class="post-editor-tool" data-command="underline" title="Underline"><i class="bi bi-type-underline"></i></button>
+                            <span class="post-editor-divider"></span>
+                            <button type="button" class="post-editor-tool" data-command="decreaseFontSize" title="Decrease font size"><i class="bi bi-dash-lg"></i><span>A</span></button>
+                            <button type="button" class="post-editor-tool" data-command="increaseFontSize" title="Increase font size"><i class="bi bi-plus-lg"></i><span>A</span></button>
+                            <span class="post-editor-divider"></span>
+                            <button type="button" class="post-editor-tool" data-command="insertUnorderedList" title="Bulleted list"><i class="bi bi-list-ul"></i></button>
+                            <button type="button" class="post-editor-tool" data-command="insertOrderedList" title="Numbered list"><i class="bi bi-list-ol"></i></button>
+                            <button type="button" class="post-editor-tool" data-command="justifyLeft" title="Align left"><i class="bi bi-text-left"></i></button>
+                            <button type="button" class="post-editor-tool" data-command="justifyCenter" title="Align center"><i class="bi bi-text-center"></i></button>
+                            <button type="button" class="post-editor-tool" data-command="justifyRight" title="Align right"><i class="bi bi-text-right"></i></button>
+                            <span class="post-editor-divider"></span>
+                            <button type="button" class="post-editor-tool" data-command="insertTable" title="Insert table"><i class="bi bi-table"></i><span>Table</span></button>
+                            <button type="button" class="post-editor-tool" data-command="removeFormat" title="Clear formatting"><i class="bi bi-eraser"></i></button>
+                        </div>
+                        <div id="postContentEditor" class="post-content-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Write the full post content...">@Html.Raw(Model.Content)</div>
+                        <textarea asp-for="Content" id="postContentValue" class="post-content-hidden" aria-hidden="true"></textarea>
+                    </div>
+                    <small class="post-editor-help">
+                        <i class="bi bi-info-circle"></i>
+                        Bold, italic, underline, font size, lists, alignment and tables are available.
+                    </small>
+                    <span asp-validation-for="Content" class="field-validation"></span>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             CATEGORY
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-tags"></i>
+                </div>
+                <div>
+                    <h3>Post Category</h3>
+                    <p>Select the category and subcategory for this update.</p>
+                </div>
+            </div>
+            <div class="payment-form-grid">
+                <!-- CATEGORY -->
+                <div class="admin-form-group">
+                    <label asp-for="CategoryId"
+                           class="admin-form-label">
+                        Category
+                        <span class="required-mark">*</span>
+                    </label>
+                    <select asp-for="CategoryId"
+                            class="admin-form-control"
+                            id="createPostCategory">
+                        <option value="">Select Category</option>
+                        @if (ViewBag.PostCategories != null)
+                        {
+                            foreach (var category in ViewBag.PostCategories as IEnumerable<FoundationDonationSystem.Models.PostCategory>)
+                            {
+                                <option value="@category.Id"
+                                        selected="@(Model.CategoryId == category.Id)">
+                                    @category.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- SUBCATEGORY -->
+                <div class="admin-form-group"
+                     id="createSubCategoryGroup">
+                    <label asp-for="SubCategoryId"
+                           class="admin-form-label">
+                        Subcategory
+                    </label>
+                    <select asp-for="SubCategoryId"
+                            class="admin-form-control"
+                            id="createPostSubCategory">
+                        <option value="">Select Subcategory</option>
+                        @if (ViewBag.PostSubCategories != null)
+                        {
+                            foreach (var subCategory in ViewBag.PostSubCategories as IEnumerable<FoundationDonationSystem.Models.PostSubCategory>)
+                            {
+                                <option value="@subCategory.Id"
+                                        selected="@(Model.SubCategoryId == subCategory.Id)">
+                                    @subCategory.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="SubCategoryId"
+                          class="field-validation">
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             FEATURED IMAGE
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-image"></i>
+                </div>
+                <div>
+                    <h3>Featured Image</h3>
+                    <p>This image will be used as the main cover image.</p>
+                </div>
+            </div>
+            <div class="post-image-upload-box">
+                <div class="post-image-preview-wrap"
+                     id="featuredImagePreviewWrap"
+                     style="display:none;">
+                    <img id="featuredImagePreview"
+                         class="post-image-preview"
+                         src=""
+                         alt="Featured image preview" />
+                    <button type="button"
+                            class="post-image-remove"
+                            onclick="removeFeaturedImagePreview()"
+                            aria-label="Remove featured image preview">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="post-image-upload-content"
+                     id="featuredImageUploadContent">
+                    <div class="post-image-upload-icon">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                    </div>
+                    <div class="post-image-upload-text">
+                        <strong>
+                            Choose Featured Image
+                        </strong>
+                        <span>
+                            JPG, JPEG, PNG or WEBP · Maximum 2 MB
+                        </span>
+                    </div>
+                    <label class="post-image-select-btn">
+                        <i class="bi bi-folder2-open"></i>
+                        Choose Image
+                        <input asp-for="FeaturedImage"
+                               type="file"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                               hidden
+                               id="featuredImageInput" />
+                    </label>
+                </div>
+            </div>
+            <span asp-validation-for="FeaturedImage"
+                  class="field-validation">
+            </span>
+        </div>
+        <!-- =====================================================
+             GALLERY IMAGES
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-images"></i>
+                </div>
+                <div>
+                    <h3>Gallery Photos</h3>
+                    <p>
+                        Add up to 3 additional photos to this post.
+                    </p>
+                </div>
+            </div>
+            <div class="post-gallery-upload-grid">
+                <!-- =================================================
+                     GALLERY PHOTO 1
+                ================================================== -->
+                <div class="post-gallery-upload-card"
+                     id="galleryCard1">
+                    <div class="post-gallery-number">
+                        01
+                    </div>
+                    <div class="post-gallery-preview"
+                         id="galleryPreviewWrap1">
+                        <div class="post-gallery-placeholder">
+                            <i class="bi bi-image"></i>
+                            <span>
+                                Photo 1
+                            </span>
+                        </div>
+                    </div>
+                    <div class="post-gallery-card-content">
+                        <strong>
+                            Gallery Photo 1
+                        </strong>
+                        <span>
+                            Optional
+                        </span>
+                        <label class="post-gallery-select-btn">
+                            <i class="bi bi-upload"></i>
+                            Choose Photo
+                            <input asp-for="GalleryImage1"
+                                   type="file"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   hidden
+                                   id="galleryImageInput1" />
+                        </label>
+                        <button type="button"
+                                class="post-gallery-remove-btn"
+                                id="galleryRemoveBtn1"
+                                onclick="removeGalleryImage(1)"
+                                style="display:none;">
+                            <i class="bi bi-trash3"></i>
+                            Remove
+                        </button>
+                    </div>
+                </div>
+                <!-- =================================================
+                     GALLERY PHOTO 2
+                ================================================== -->
+                <div class="post-gallery-upload-card"
+                     id="galleryCard2">
+                    <div class="post-gallery-number">
+                        02
+                    </div>
+                    <div class="post-gallery-preview"
+                         id="galleryPreviewWrap2">
+                        <div class="post-gallery-placeholder">
+                            <i class="bi bi-image"></i>
+                            <span>
+                                Photo 2
+                            </span>
+                        </div>
+                    </div>
+                    <div class="post-gallery-card-content">
+                        <strong>
+                            Gallery Photo 2
+                        </strong>
+                        <span>
+                            Optional
+                        </span>
+                        <label class="post-gallery-select-btn">
+                            <i class="bi bi-upload"></i>
+                            Choose Photo
+                            <input asp-for="GalleryImage2"
+                                   type="file"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   hidden
+                                   id="galleryImageInput2" />
+                        </label>
+                        <button type="button"
+                                class="post-gallery-remove-btn"
+                                id="galleryRemoveBtn2"
+                                onclick="removeGalleryImage(2)"
+                                style="display:none;">
+                            <i class="bi bi-trash3"></i>
+                            Remove
+                        </button>
+                    </div>
+                </div>
+                <!-- =================================================
+                     GALLERY PHOTO 3
+                ================================================== -->
+                <div class="post-gallery-upload-card"
+                     id="galleryCard3">
+                    <div class="post-gallery-number">
+                        03
+                    </div>
+                    <div class="post-gallery-preview"
+                         id="galleryPreviewWrap3">
+                        <div class="post-gallery-placeholder">
+                            <i class="bi bi-image"></i>
+                            <span>
+                                Photo 3
+                            </span>
+                        </div>
+                    </div>
+                    <div class="post-gallery-card-content">
+                        <strong>
+                            Gallery Photo 3
+                        </strong>
+                        <span>
+                            Optional
+                        </span>
+                        <label class="post-gallery-select-btn">
+                            <i class="bi bi-upload"></i>
+                            Choose Photo
+                            <input asp-for="GalleryImage3"
+                                   type="file"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   hidden
+                                   id="galleryImageInput3" />
+                        </label>
+                        <button type="button"
+                                class="post-gallery-remove-btn"
+                                id="galleryRemoveBtn3"
+                                onclick="removeGalleryImage(3)"
+                                style="display:none;">
+                            <i class="bi bi-trash3"></i>
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="post-gallery-help">
+                <i class="bi bi-info-circle"></i>
+                <span>
+                    You can upload up to 3 additional photos.
+                    Each photo must be JPG, JPEG, PNG or WEBP
+                    and cannot exceed 2 MB.
+                </span>
+            </div>
+        </div>
+        <!-- =====================================================
+             PUBLISHING SETTINGS
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-sliders"></i>
+                </div>
+                <div>
+                    <h3>Publishing Settings</h3>
+                    <p>
+                        Configure when and how the post appears.
+                    </p>
+                </div>
+            </div>
+            <div class="payment-form-grid">
+                <!-- POST DATE -->
+                <div class="admin-form-group">
+                    <label asp-for="PostDate"
+                           class="admin-form-label">
+                        Post Date
+                        <span class="required-mark">*</span>
+                    </label>
+                    <input asp-for="PostDate"
+                           type="date"
+                           class="admin-form-control" />
+                    <span asp-validation-for="PostDate"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- DISPLAY ORDER -->
+                <div class="admin-form-group">
+                    <label asp-for="DisplayOrder"
+                           class="admin-form-label">
+                        Display Order
+                    </label>
+                    <input asp-for="DisplayOrder"
+                           type="number"
+                           min="0"
+                           class="admin-form-control"
+                           placeholder="0" />
+                    <span asp-validation-for="DisplayOrder"
+                          class="field-validation">
+                    </span>
+                </div>
+            </div>
+            <!-- PUBLISHED -->
+            <div class="payment-active-box">
+                <label class="payment-active-label">
+                    <span class="payment-active-text">
+                        <strong>
+                            Publish this post
+                        </strong>
+                        <small>
+                            Published posts are visible on the public website.
+                        </small>
+                    </span>
+                    <span class="admin-switch">
+                        <input asp-for="IsPublished"
+                               type="checkbox"
+                               id="createPostPublished" />
+                        <span class="admin-switch-slider"></span>
+                    </span>
+                </label>
+            </div>
+        </div>
+        <!-- =====================================================
+             ACTIONS
+        ====================================================== -->
+        <div class="payment-popup-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-secondary"
+                    onclick="closePostModal()">
+                <i class="bi bi-x-lg"></i>
+                Cancel
+            </button>
+            <button type="submit"
+                    class="admin-btn admin-btn-primary"
+                    id="createPostSubmitBtn">
+                <i class="bi bi-check2-circle"></i>
+                <span>
+                    Create Post
+                </span>
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    (function() {
+        // =========================================================
+        // FEATURED IMAGE PREVIEW
+        // =========================================================
+        const featuredInput =
+            document.getElementById(
+                'featuredImageInput'
+            );
+        if (featuredInput) {
+            featuredInput.addEventListener(
+                'change',
+                function() {
+                    const file =
+                        this.files &&
+                        this.files[0];
+                    if (!file) {
+                        return;
+                    }
+                    if (!validatePostImage(
+                        file,
+                        'Featured image'
+                    )) {
+                        this.value = '';
+                        return;
+                    }
+                    const reader =
+                        new FileReader();
+                    reader.onload =
+                        function(event) {
+                            const preview =
+                                document.getElementById(
+                                    'featuredImagePreview'
+                                );
+                            const wrap =
+                                document.getElementById(
+                                    'featuredImagePreviewWrap'
+                                );
+                            const content =
+                                document.getElementById(
+                                    'featuredImageUploadContent'
+                                );
+                            if (preview) {
+                                preview.src =
+                                    event.target.result;
+                            }
+                            if (wrap) {
+                                wrap.style.display =
+                                    'block';
+                            }
+                            if (content) {
+                                content.style.display =
+                                    'none';
+                            }
+                        };
+                    reader.readAsDataURL(file);
+                }
+            );
+        }
+        // =========================================================
+        // GALLERY IMAGE INPUTS
+        // =========================================================
+        [1, 2, 3].forEach(function(number) {
+            const input =
+                document.getElementById(
+                    'galleryImageInput' +
+                    number
+                );
+            if (!input) {
+                return;
+            }
+            input.addEventListener(
+                'change',
+                function() {
+                    const file =
+                        this.files &&
+                        this.files[0];
+                    if (!file) {
+                        return;
+                    }
+                    if (!validatePostImage(
+                        file,
+                        'Gallery photo ' +
+                        number
+                    )) {
+                        this.value = '';
+                        return;
+                    }
+                    const reader =
+                        new FileReader();
+                    reader.onload =
+                        function(event) {
+                            showGalleryPreview(
+                                number,
+                                event.target.result
+                            );
+                        };
+                    reader.readAsDataURL(file);
+                }
+            );
+        });
+        // =========================================================
+        // RICH TEXT CONTENT EDITOR
+        // =========================================================
+        const postEditor = document.getElementById('postContentEditor');
+        const postContentValue = document.getElementById('postContentValue');
+        const editorToolbar = document.querySelectorAll('#postEditor .post-editor-tool');
+        let savedEditorRange = null;
+        function syncPostEditor() {
+            if (postEditor && postContentValue) {
+                postContentValue.value = postEditor.innerHTML.trim();
+            }
+        }
+        function saveEditorSelection() {
+            if (!postEditor) return;
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount && postEditor.contains(selection.anchorNode)) {
+                savedEditorRange = selection.getRangeAt(0).cloneRange();
+            }
+        }
+        function restoreEditorSelection() {
+            if (!savedEditorRange) return;
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(savedEditorRange);
+        }
+        function execEditorCommand(command) {
+            if (!postEditor) return;
+            postEditor.focus();
+            restoreEditorSelection();
+            document.execCommand(command, false, null);
+            saveEditorSelection();
+            syncPostEditor();
+        }
+        function changeEditorFontSize(amount) {
+            if (!postEditor) return;
+            postEditor.focus();
+            restoreEditorSelection();
+            const selection = window.getSelection();
+            if (!selection || !selection.rangeCount) return;
+            const range = selection.getRangeAt(0);
+            if (range.collapsed || !postEditor.contains(range.commonAncestorContainer)) return;
+            const fragment = range.extractContents();
+            const wrapper = document.createElement('span');
+            wrapper.className = 'post-editor-font-size';
+            wrapper.appendChild(fragment);
+            let currentSize = 16;
+            const parent = range.commonAncestorContainer.nodeType === 1
+                ? range.commonAncestorContainer
+                : range.commonAncestorContainer.parentElement;
+            const existing = parent ? parent.closest('.post-editor-font-size') : null;
+            if (existing) currentSize = parseInt(existing.dataset.editorSize || '16', 10);
+            const newSize = Math.max(10, Math.min(32, currentSize + amount));
+            wrapper.dataset.editorSize = newSize;
+            wrapper.style.fontSize = newSize + 'px';
+            range.insertNode(wrapper);
+            selection.removeAllRanges();
+            const newRange = document.createRange();
+            newRange.selectNodeContents(wrapper);
+            selection.addRange(newRange);
+            saveEditorSelection();
+            syncPostEditor();
+        }
+        function insertEditorTable() {
+            if (!postEditor) return;
+            postEditor.focus();
+            restoreEditorSelection();
+            const table = document.createElement('table');
+            table.className = 'post-editor-table';
+            const tbody = document.createElement('tbody');
+            for (let r = 0; r < 3; r++) {
+                const tr = document.createElement('tr');
+                for (let c = 0; c < 3; c++) {
+                    const cell = document.createElement(r === 0 ? 'th' : 'td');
+                    cell.textContent = r === 0 ? 'Heading ' + (c + 1) : 'Enter text';
+                    tr.appendChild(cell);
+                }
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount && postEditor.contains(selection.anchorNode)) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(table);
+                const paragraph = document.createElement('p');
+                paragraph.innerHTML = '<br>';
+                table.parentNode.insertBefore(paragraph, table.nextSibling);
+                const newRange = document.createRange();
+                newRange.setStart(paragraph, 0);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            } else {
+                postEditor.appendChild(table);
+                postEditor.appendChild(document.createElement('p'));
+            }
+            saveEditorSelection();
+            syncPostEditor();
+        }
+        if (postEditor) {
+            postEditor.addEventListener('input', syncPostEditor);
+            postEditor.addEventListener('keyup', saveEditorSelection);
+            postEditor.addEventListener('mouseup', saveEditorSelection);
+            postEditor.addEventListener('focus', saveEditorSelection);
+            postEditor.addEventListener('blur', syncPostEditor);
+            postEditor.addEventListener('paste', function(event) {
+                event.preventDefault();
+                const text = event.clipboardData ? event.clipboardData.getData('text/plain') : '';
+                document.execCommand('insertText', false, text);
+                syncPostEditor();
+            });
+            syncPostEditor();
+        }
+        editorToolbar.forEach(function(button) {
+            button.addEventListener('mousedown', function(event) {
+                event.preventDefault();
+                saveEditorSelection();
+            });
+            button.addEventListener('click', function() {
+                const command = this.dataset.command;
+                if (command === 'increaseFontSize') changeEditorFontSize(2);
+                else if (command === 'decreaseFontSize') changeEditorFontSize(-2);
+                else if (command === 'insertTable') insertEditorTable();
+                else execEditorCommand(command);
+            });
+        });
+        // =========================================================
+        // FORM SUBMIT
+        // =========================================================
+        const form =
+            document.getElementById(
+                'createPostForm'
+            );
+        if (form) {
+            form.addEventListener(
+                'submit',
+                async function(event) {
+                    event.preventDefault();
+                    const submitButton =
+                        document.getElementById(
+                            'createPostSubmitBtn'
+                        );
+                    if (submitButton) {
+                        submitButton.disabled =
+                            true;
+                        submitButton.innerHTML =
+                            '<i class="bi bi-hourglass-split"></i>' +
+                            '<span>Creating...</span>';
+                    }
+                    try {
+                        syncPostEditor();
+                        const formData =
+                            new FormData(form);
+                        const response =
+                            await fetch(
+                                form.action,
+                                {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With':
+                                            'XMLHttpRequest'
+                                    }
+                                }
+                            );
+                        const contentType =
+                            response.headers.get(
+                                'content-type'
+                            ) || '';
+                        if (contentType.includes(
+                            'application/json'
+                        )) {
+                            const result =
+                                await response.json();
+                            if (result.success) {
+                                closePostModal();
+                                if (typeof showPostSuccessModal ===
+                                    'function') {
+                                    showPostSuccessModal(
+                                        result.message ||
+                                        'Post created successfully.'
+                                    );
+                                } else {
+                                    window.location.reload();
+                                }
+                                return;
+                            }
+                            throw new Error(
+                                result.message ||
+                                'Unable to create post.'
+                            );
+                        }
+                        const html =
+                            await response.text();
+                        const modalBody =
+                            document.getElementById(
+                                'postModalBody'
+                            );
+                        if (modalBody) {
+                            modalBody.innerHTML =
+                                html;
+                            if (typeof executePostModalScripts ===
+                                'function') {
+                                executePostModalScripts(
+                                    modalBody
+                                );
+                            }
+                        }
+                    }
+                    catch (error) {
+                        const modalBody =
+                            document.getElementById(
+                                'postModalBody'
+                            );
+                        if (modalBody) {
+                            modalBody.innerHTML =
+                                '<div class="payment-account-modal-error">' +
+                                '<i class="bi bi-exclamation-triangle"></i>' +
+                                '<span>' +
+                                escapePostFormHtml(
+                                    error.message ||
+                                    'Something went wrong.'
+                                ) +
+                                '</span>' +
+                                '</div>';
+                        }
+                    }
+                    finally {
+                        if (submitButton) {
+                            submitButton.disabled =
+                                false;
+                            submitButton.innerHTML =
+                                '<i class="bi bi-check2-circle"></i>' +
+                                '<span>Create Post</span>';
+                        }
+                    }
+                }
+            );
+        }
+        // =========================================================
+        // VALIDATE IMAGE
+        // =========================================================
+        function validatePostImage(
+            file,
+            fieldName
+        ) {
+            const maxSize =
+                2 * 1024 * 1024;
+            const allowedTypes =
+                [
+                    'image/jpeg',
+                    'image/png',
+                    'image/webp'
+                ];
+            const fileName =
+                file.name.toLowerCase();
+            const allowedExtensions =
+                [
+                    '.jpg',
+                    '.jpeg',
+                    '.png',
+                    '.webp'
+                ];
+            const validExtension =
+                allowedExtensions.some(
+                    function(extension) {
+                        return fileName.endsWith(
+                            extension
+                        );
+                    }
+                );
+            if (!validExtension ||
+                !allowedTypes.includes(
+                    file.type
+                )) {
+                alert(
+                    fieldName +
+                    ' must be JPG, JPEG, PNG or WEBP.'
+                );
+                return false;
+            }
+            if (file.size > maxSize) {
+                alert(
+                    fieldName +
+                    ' cannot exceed 2 MB.'
+                );
+                return false;
+            }
+            return true;
+        }
+        // =========================================================
+        // SHOW GALLERY PREVIEW
+        // =========================================================
+        function showGalleryPreview(
+            number,
+            source
+        ) {
+            const wrap =
+                document.getElementById(
+                    'galleryPreviewWrap' +
+                    number
+                );
+            const removeButton =
+                document.getElementById(
+                    'galleryRemoveBtn' +
+                    number
+                );
+            if (!wrap) {
+                return;
+            }
+            wrap.innerHTML =
+                '<img src="' +
+                source +
+                '" ' +
+                'class="post-gallery-preview-image" ' +
+                'alt="Gallery photo ' +
+                number +
+                ' preview">';
+            if (removeButton) {
+                removeButton.style.display =
+                    'inline-flex';
+            }
+        }
+        // =========================================================
+        // REMOVE GALLERY IMAGE
+        // =========================================================
+        window.removeGalleryImage =
+            function(number) {
+                const input =
+                    document.getElementById(
+                        'galleryImageInput' +
+                        number
+                    );
+                const wrap =
+                    document.getElementById(
+                        'galleryPreviewWrap' +
+                        number
+                    );
+                const removeButton =
+                    document.getElementById(
+                        'galleryRemoveBtn' +
+                        number
+                    );
+                if (input) {
+                    input.value = '';
+                }
+                if (wrap) {
+                    wrap.innerHTML =
+                        '<div class="post-gallery-placeholder">' +
+                        '<i class="bi bi-image"></i>' +
+                        '<span>Photo ' +
+                        number +
+                        '</span>' +
+                        '</div>';
+                }
+                if (removeButton) {
+                    removeButton.style.display =
+                        'none';
+                }
+            };
+        // =========================================================
+        // REMOVE FEATURED IMAGE PREVIEW
+        // =========================================================
+        window.removeFeaturedImagePreview =
+            function() {
+                const input =
+                    document.getElementById(
+                        'featuredImageInput'
+                    );
+                const wrap =
+                    document.getElementById(
+                        'featuredImagePreviewWrap'
+                    );
+                const content =
+                    document.getElementById(
+                        'featuredImageUploadContent'
+                    );
+                if (input) {
+                    input.value = '';
+                }
+                if (wrap) {
+                    wrap.style.display =
+                        'none';
+                }
+                if (content) {
+                    content.style.display =
+                        'flex';
+                }
+            };
+        // =========================================================
+        // HTML ESCAPE
+        // =========================================================
+        function escapePostFormHtml(
+            value
+        ) {
+            return String(value)
+                .replace(
+                    /&/g,
+                    '&amp;'
+                )
+                .replace(
+                    /</g,
+                    '&lt;'
+                )
+                .replace(
+                    />/g,
+                    '&gt;'
+                )
+                .replace(
+                    /"/g,
+                    '&quot;'
+                )
+                .replace(
+                    /'/g,
+                    '&#039;'
+                );
+        }
+        // =========================================================
+        // CATEGORY / SUBCATEGORY
+        // =========================================================
+        const categorySelect =
+            document.getElementById('createPostCategory');
+        const subCategorySelect =
+            document.getElementById('createPostSubCategory');
+        const subCategoryGroup =
+            document.getElementById('createSubCategoryGroup');
+        const allSubCategories = [
+            @if (ViewBag.PostSubCategories != null)
+            {
+                            foreach (var subCategory in ViewBag.PostSubCategories as IEnumerable<FoundationDonationSystem.Models.PostSubCategory>)
+                {
+                    <text>
+                            {
+                                id: @subCategory.Id,
+                            categoryId: @subCategory.PostCategoryId,
+                            name: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(subCategory.Name))
+                                                },
+                    </text>
+                            }
+            }
+            ];
+        function updateCreateSubCategories() {
+            if (!categorySelect || !subCategorySelect) {
+                return;
+            }
+            const categoryId =
+                parseInt(categorySelect.value || '0', 10);
+            const selectedValue =
+                subCategorySelect.value;
+            const selectedCategoryText =
+                categorySelect.options[
+                    categorySelect.selectedIndex
+                ]?.text?.trim() || '';
+            const isActivities =
+                selectedCategoryText.toLowerCase() === 'activities';
+            subCategorySelect.innerHTML =
+                '<option value="">Select Subcategory</option>';
+            if (!isActivities || !categoryId) {
+                subCategorySelect.value = '';
+                if (subCategoryGroup) {
+                    subCategoryGroup.style.display = 'none';
+                }
+                return;
+            }
+            const filtered =
+                allSubCategories.filter(function(item) {
+                    return item.categoryId === categoryId;
+                });
+            filtered.forEach(function(item) {
+                const option =
+                    document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name;
+                if (String(item.id) === String(selectedValue)) {
+                    option.selected = true;
+                }
+                subCategorySelect.appendChild(option);
+            });
+            if (subCategoryGroup) {
+                subCategoryGroup.style.display = 'block';
+            }
+        }
+        if (categorySelect) {
+            categorySelect.addEventListener(
+                'change',
+                function() {
+                    if (subCategorySelect) {
+                        subCategorySelect.value = '';
+                    }
+                    updateCreateSubCategories();
+                }
+            );
+            updateCreateSubCategories();
+        }
+    })();
+</script>

@@ -1,0 +1,171 @@
+﻿@model FoundationDonationSystem.ViewModels.UserDetailsViewModel
+@{
+    var displayName =
+        string.IsNullOrWhiteSpace(Model.FullName)
+            ? "User"
+            : Model.FullName.Trim();
+    var initial =
+        displayName.Length > 0
+            ? displayName.Substring(0, 1).ToUpperInvariant()
+            : "U";
+}
+<div class="admin-profile-content">
+    <!-- =========================================================
+         PROFILE HEADER
+         ========================================================= -->
+    <div class="admin-profile-summary">
+        <div class="admin-profile-large-avatar">
+            @initial
+        </div>
+        <div class="admin-profile-summary-info">
+            <h3>
+                @displayName
+            </h3>
+            @if (!string.IsNullOrWhiteSpace(Model.Designation))
+            {
+                <p>
+                    @Model.Designation
+                </p>
+            }
+            <div class="admin-profile-summary-meta">
+                @if (string.Equals(
+                    Model.Role,
+                    FoundationDonationSystem.Models.Enums.UserRole.Administrator,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    <span class="admin-status-badge status-verified">
+                        Administrator
+                    </span>
+                }
+                else
+                {
+                    <span class="admin-status-badge status-pending">
+                        Donation Verifier
+                    </span>
+                }
+                @if (Model.IsActive)
+                {
+                    <span class="admin-status-badge status-verified">
+                        Active
+                    </span>
+                }
+                else
+                {
+                    <span class="admin-status-badge status-rejected">
+                        Inactive
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         PROFILE DETAILS
+         ========================================================= -->
+    <div class="admin-profile-details-grid">
+        <!-- FULL NAME -->
+        <div class="admin-profile-detail">
+            <span>
+                Full Name
+            </span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.FullName)
+                    ? "—"
+                    : Model.FullName)
+            </strong>
+        </div>
+        <!-- DESIGNATION -->
+        <div class="admin-profile-detail">
+            <span>
+                Designation
+            </span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Designation)
+                    ? "—"
+                    : Model.Designation)
+            </strong>
+        </div>
+        <!-- USERNAME -->
+        <div class="admin-profile-detail">
+            <span>
+                Username
+            </span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.UserName)
+                    ? "—"
+                    : Model.UserName)
+            </strong>
+        </div>
+        <!-- EMAIL -->
+        <div class="admin-profile-detail">
+            <span>
+                Email
+            </span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Email)
+                    ? "—"
+                    : Model.Email)
+            </strong>
+        </div>
+        <!-- PHONE -->
+        <div class="admin-profile-detail">
+            <span>
+                Phone Number
+            </span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.PhoneNumber)
+                    ? "—"
+                    : Model.PhoneNumber)
+            </strong>
+        </div>
+        <!-- ROLE -->
+        <div class="admin-profile-detail">
+            <span>
+                Role
+            </span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Role)
+                    ? "—"
+                    : Model.Role)
+            </strong>
+        </div>
+        <!-- CREATED -->
+        <div class="admin-profile-detail">
+            <span>
+                Account Created
+            </span>
+            <strong>
+                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+            </strong>
+        </div>
+        <!-- STATUS -->
+        <div class="admin-profile-detail">
+            <span>
+                Account Status
+            </span>
+            <strong>
+                @if (Model.IsActive)
+                {
+                    <span class="admin-status-badge status-verified">
+                        Active
+                    </span>
+                }
+                else
+                {
+                    <span class="admin-status-badge status-rejected">
+                        Inactive
+                    </span>
+                }
+            </strong>
+        </div>
+    </div>
+    <!-- =========================================================
+         ACTIONS
+         ========================================================= -->
+    <div class="admin-profile-actions">
+        <button type="button"
+                class="admin-btn admin-btn-secondary"
+                onclick="closeProfileModal()">
+            Close
+        </button>
+    </div>
+</div>

@@ -1,0 +1,472 @@
+@model FoundationDonationSystem.ViewModels.GrievanceViewModel
+@{
+    ViewData["Title"] = "Submit a Grievance";
+}
+<link rel="stylesheet" href="~/css/public-grievance.css" asp-append-version="true" />
+<div class="grievance-page">
+    <div class="grievance-wrap">
+        <!-- =====================================================
+             PAGE HEADER
+             ===================================================== -->
+        <div class="grievance-head">
+            <span class="grievance-kicker">
+                Your voice matters
+            </span>
+            <h1>
+                Submit a Grievance
+            </h1>
+            <p>
+                If you have a concern, complaint or service-related issue,
+                tell us about it. Your grievance will be reviewed by the
+                responsible team.
+            </p>
+        </div>
+        <!-- =====================================================
+             FORM / SUCCESS CONTAINER
+             The controller returns _Success.cshtml after a
+             successful submission. JavaScript replaces this
+             container with that partial.
+             ===================================================== -->
+        <div id="grievance-form-container">
+            <div class="grievance-card">
+                <div class="grievance-card-top">
+                    <div>
+                        <strong>
+                            Grievance Form
+                        </strong>
+                        <span>
+                            Describe the matter clearly so we can assist you.
+                        </span>
+                    </div>
+                </div>
+                <!-- =================================================
+                     GRIEVANCE FORM
+                     ================================================= -->
+                <form asp-controller="Grievance"
+                      asp-action="Index"
+                      method="post"
+                      class="grievance-form"
+                      id="grievanceForm">
+                    @Html.AntiForgeryToken()
+                    <!-- =============================================
+                         MODEL VALIDATION SUMMARY
+                         ============================================= -->
+                    <div asp-validation-summary="ModelOnly"
+                         class="field-validation-error"
+                         role="alert">
+                    </div>
+                    <!-- =============================================
+                         FORM GRID
+                         ============================================= -->
+                    <div class="form-grid">
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label asp-for="FullName"></label>
+                            <input asp-for="FullName"
+                                   autocomplete="name" />
+                            <span asp-validation-for="FullName"></span>
+                        </div>
+                        <!-- Mobile -->
+                        <div class="form-group">
+                            <label asp-for="Mobile"></label>
+                            <input asp-for="Mobile"
+                                   inputmode="tel"
+                                   autocomplete="tel" />
+                            <span asp-validation-for="Mobile"></span>
+                        </div>
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email"
+                                   type="email"
+                                   autocomplete="email" />
+                            <span asp-validation-for="Email"></span>
+                        </div>
+                        <!-- Category -->
+                        <div class="form-group">
+                            <label asp-for="Category"></label>
+                            <select asp-for="Category">
+                                <option value="">
+                                    Select grievance category
+                                </option>
+                                <option value="Service Related">
+                                    Service Related
+                                </option>
+                                <option value="Donation Related">
+                                    Donation Related
+                                </option>
+                                <option value="Support Related">
+                                    Support Related
+                                </option>
+                                <option value="Staff / Conduct">
+                                    Staff / Conduct
+                                </option>
+                                <option value="Website / Technical">
+                                    Website / Technical
+                                </option>
+                                <option value="Other">
+                                    Other
+                                </option>
+                            </select>
+                            <span asp-validation-for="Category"></span>
+                        </div>
+                        <!-- Reference Number -->
+                        <div class="form-group full">
+                            <label asp-for="ReferenceNumber"></label>
+                            <input asp-for="ReferenceNumber"
+                                   placeholder="Optional" />
+                        </div>
+                        <!-- Subject -->
+                        <div class="form-group full">
+                            <label asp-for="Subject"></label>
+                            <input asp-for="Subject" />
+                            <span asp-validation-for="Subject"></span>
+                        </div>
+                        <!-- Description -->
+                        <div class="form-group full">
+                            <label asp-for="Description">
+                                Detailed Grievance
+                            </label>
+                            <textarea asp-for="Description"></textarea>
+                            <span asp-validation-for="Description"></span>
+                        </div>
+                    </div>
+                    <!-- =============================================
+                         FORM ACTIONS
+                         ============================================= -->
+                    <div class="form-actions">
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="form-btn form-btn-secondary">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Cancel</span>
+                        </a>
+                        <button type="submit"
+                                class="form-btn form-btn-primary"
+                                id="grievanceSubmitBtn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Submit Grievance</span>
+                        </button>
+                    </div>
+                    <!-- =============================================
+                         SECURITY NOTE
+                         ============================================= -->
+                    <p class="form-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>
+                            Please do not include passwords, banking PINs,
+                            OTPs or other highly sensitive information
+                            in this form.
+                        </span>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        /*
+         * ----------------------------------------------------
+         * INITIAL FORM HANDLER
+         * ----------------------------------------------------
+         */
+        document.addEventListener("DOMContentLoaded", function() {
+            attachGrievanceFormHandler();
+        });
+        /*
+         * ----------------------------------------------------
+         * FORM HANDLER
+         * ----------------------------------------------------
+         *
+         * Handles AJAX submission and can be attached again
+         * after server-side validation replaces the form.
+         */
+        function attachGrievanceFormHandler() {
+            const form =
+                document.getElementById("grievanceForm");
+            if (!form) {
+                return;
+            }
+            /*
+             * Prevent duplicate event handlers.
+             */
+            if (form.dataset.ajaxAttached === "true") {
+                return;
+            }
+            form.dataset.ajaxAttached = "true";
+            form.addEventListener("submit", async function(event) {
+                event.preventDefault();
+                /*
+                 * Client-side validation.
+                 */
+                if (typeof $ !== "undefined" &&
+                    $.validator &&
+                    typeof $(form).valid === "function" &&
+                    !$(form).valid()) {
+                    return;
+                }
+                const submitButton =
+                    document.getElementById("grievanceSubmitBtn");
+                const container =
+                    document.getElementById(
+                        "grievance-form-container"
+                    );
+                if (!submitButton || !container) {
+                    return;
+                }
+                const originalButtonHtml =
+                    submitButton.innerHTML;
+                let errorBox =
+                    container.querySelector(
+                        ".grievance-submit-error"
+                    );
+                /*
+                 * Hide previous error.
+                 */
+                if (errorBox) {
+                    errorBox.style.display = "none";
+                }
+                /*
+                 * Loading state.
+                 */
+                submitButton.disabled = true;
+                submitButton.classList.add("is-loading");
+                submitButton.innerHTML =
+                    '<span class="grievance-submit-spinner"></span>' +
+                    '<span>Submitting...</span>';
+                try {
+                    const formData =
+                        new FormData(form);
+                    const response =
+                        await fetch(
+                            form.action,
+                            {
+                                method: "POST",
+                                body: formData,
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            }
+                        );
+                    const result =
+                        await response.text();
+                    if (!response.ok) {
+                        throw new Error(
+                            "Unable to submit grievance."
+                        );
+                    }
+                    /*
+                     * ------------------------------------------------
+                     * SUCCESS
+                     * ------------------------------------------------
+                     *
+                     * The controller returns:
+                     *
+                     * ~/Views/Grievance/_Success.cshtml
+                     *
+                     * Add the partial directly to BODY so the
+                     * success page appears as a popup overlay.
+                     */
+                    if (
+                        result.includes(
+                            "grievance-success-overlay"
+                        ) ||
+                        result.includes(
+                            "grievance-success"
+                        ) ||
+                        result.includes(
+                            "Grievance Submitted"
+                        )
+                    ) {
+                        document.body.insertAdjacentHTML(
+                            "beforeend",
+                            result
+                        );
+                        /*
+                         * Prevent background scrolling while
+                         * the success popup is open.
+                         */
+                        document.body.style.overflow =
+                            "hidden";
+                        return;
+                    }
+                    /*
+                     * ------------------------------------------------
+                     * VALIDATION ERROR
+                     * ------------------------------------------------
+                     *
+                     * The controller returns the full Index view
+                     * when ModelState is invalid.
+                     *
+                     * Extract only the form container and replace
+                     * the current one.
+                     */
+                    const parser =
+                        new DOMParser();
+                    const doc =
+                        parser.parseFromString(
+                            result,
+                            "text/html"
+                        );
+                    const returnedContainer =
+                        doc.querySelector(
+                            "#grievance-form-container"
+                        );
+                    const currentContainer =
+                        document.getElementById(
+                            "grievance-form-container"
+                        );
+                    if (
+                        returnedContainer &&
+                        currentContainer
+                    ) {
+                        currentContainer.innerHTML =
+                            returnedContainer.innerHTML;
+                    }
+                    else {
+                        const returnedPage =
+                            doc.querySelector(
+                                ".grievance-card"
+                            );
+                        if (returnedPage &&
+                            currentContainer) {
+                            currentContainer.innerHTML =
+                                returnedPage.outerHTML;
+                        }
+                        else {
+                            throw new Error(
+                                "Unable to process server response."
+                            );
+                        }
+                    }
+                    /*
+                     * Reinitialize unobtrusive validation
+                     * after replacing the form.
+                     */
+                    const newForm =
+                        document.getElementById(
+                            "grievanceForm"
+                        );
+                    if (
+                        newForm &&
+                        typeof $ !== "undefined" &&
+                        $.validator &&
+                        $.validator.unobtrusive
+                    ) {
+                        $(newForm).removeData(
+                            "validator"
+                        );
+                        $(newForm).removeData(
+                            "unobtrusiveValidation"
+                        );
+                        $.validator.unobtrusive.parse(
+                            newForm
+                        );
+                    }
+                    /*
+                     * Reattach AJAX submit handler.
+                     */
+                    attachGrievanceFormHandler();
+                }
+                catch (error) {
+                    console.error(
+                        "Grievance submission error:",
+                        error
+                    );
+                    /*
+                     * Show error message.
+                     */
+                    errorBox =
+                        container.querySelector(
+                            ".grievance-submit-error"
+                        );
+                    if (!errorBox) {
+                        errorBox =
+                            document.createElement(
+                                "div"
+                            );
+                        errorBox.className =
+                            "grievance-submit-error";
+                        container.prepend(
+                            errorBox
+                        );
+                    }
+                    errorBox.innerHTML = `
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                <span>
+                                    Unable to submit your grievance right now.
+                                    Please try again.
+                                </span>
+                            `;
+                    errorBox.style.display = "flex";
+                    /*
+                     * Restore button.
+                     */
+                    submitButton.disabled = false;
+                    submitButton.classList.remove(
+                        "is-loading"
+                    );
+                    submitButton.innerHTML =
+                        originalButtonHtml;
+                }
+            });
+        }
+        /*
+         * ----------------------------------------------------
+         * CLOSE SUCCESS POPUP
+         * ----------------------------------------------------
+         *
+         * After closing the popup, reload the Grievance page
+         * as a fresh page.
+         */
+        function closeGrievanceSuccess() {
+            const popup =
+                document.getElementById(
+                    "grievance-success"
+                );
+            if (!popup) {
+                document.body.style.overflow = "";
+                window.location.reload();
+                return;
+            }
+            /*
+             * Start closing animation.
+             */
+            popup.classList.add(
+                "grievance-success-closing"
+            );
+            /*
+             * Restore page scrolling.
+             */
+            document.body.style.overflow = "";
+            /*
+             * Reload after the closing animation.
+             */
+            setTimeout(function() {
+                window.location.reload();
+            }, 180);
+        }
+        /*
+         * ----------------------------------------------------
+         * ESC KEY
+         * ----------------------------------------------------
+         */
+        document.addEventListener(
+            "keydown",
+            function(event) {
+                if (event.key === "Escape") {
+                    const popup =
+                        document.getElementById(
+                            "grievance-success"
+                        );
+                    if (popup) {
+                        closeGrievanceSuccess();
+                    }
+                }
+            }
+        );
+    </script>
+}

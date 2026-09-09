@@ -1,0 +1,257 @@
+@model FoundationDonationSystem.Models.SupportRequest
+@{
+    var status = Model.Status ?? "Pending";
+    var statusClass = status
+        .ToLowerInvariant()
+        .Replace(" ", "-");
+    var applicantName =
+        string.IsNullOrWhiteSpace(Model.FullName)
+            ? "Unknown"
+            : Model.FullName.Trim();
+    var initial =
+        applicantName.Length > 0
+            ? applicantName[0].ToString().ToUpperInvariant()
+            : "?";
+}
+<div class="support-details">
+    <!-- =========================================================
+         DETAILS HERO
+         ========================================================= -->
+    <div class="support-details-hero">
+        <div class="support-details-person">
+            <div class="support-details-avatar">
+                @initial
+            </div>
+            <div>
+                <span class="support-details-eyebrow">
+                    SUPPORT REQUEST
+                </span>
+                <h3>@applicantName</h3>
+                <div class="support-details-number">
+                    <i class="bi bi-hash"></i>
+                    @Model.RequestNumber
+                </div>
+            </div>
+        </div>
+        <span class="support-status @statusClass">
+            <span class="support-status-dot"></span>
+            @status
+        </span>
+    </div>
+    <!-- =========================================================
+         INFORMATION
+         ========================================================= -->
+    <div class="support-info-grid">
+        <div class="support-info-item">
+            <span>Mobile</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Mobile)
+                    ? "—"
+                    : Model.Mobile)
+            </strong>
+        </div>
+        <div class="support-info-item">
+            <span>Email</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Email)
+                    ? "—"
+                    : Model.Email)
+            </strong>
+        </div>
+        <div class="support-info-item">
+            <span>Support Category</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.SupportCategory)
+                    ? "General"
+                    : Model.SupportCategory)
+            </strong>
+        </div>
+        <div class="support-info-item">
+            <span>Preferred Contact</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.PreferredContactMethod)
+                    ? "—"
+                    : Model.PreferredContactMethod)
+            </strong>
+        </div>
+        <div class="support-info-item">
+            <span>Submitted</span>
+            <strong>
+                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+            </strong>
+        </div>
+        <div class="support-info-item">
+            <span>Last Updated</span>
+            <strong>
+                @if (Model.UpdatedAt.HasValue)
+                {
+                @Model.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                }
+                else
+                {
+                    @:—
+                }
+            </strong>
+        </div>
+        <div class="support-info-item support-info-full">
+            <span>Address</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Address)
+                    ? "—"
+                    : Model.Address)
+            </strong>
+        </div>
+        <div class="support-info-item support-info-full">
+            <span>Subject</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Subject)
+                    ? "—"
+                    : Model.Subject)
+            </strong>
+        </div>
+    </div>
+    <!-- =========================================================
+         REQUEST DESCRIPTION
+         ========================================================= -->
+    <div class="support-details-message">
+        <div class="support-message-box">
+            <h3>
+                <i class="bi bi-chat-left-text"></i>
+                Request Details
+            </h3>
+            <p>
+                @(string.IsNullOrWhiteSpace(Model.Description)
+                    ? "No description provided."
+                    : Model.Description)
+            </p>
+        </div>
+    </div>
+    <!-- =========================================================
+         ADMIN REMARKS
+         ========================================================= -->
+    @if (!string.IsNullOrWhiteSpace(Model.AdminRemarks))
+    {
+        <div class="support-remarks-section">
+            <div class="support-remarks-box">
+                <div class="support-remarks-title">
+                    <i class="bi bi-sticky"></i>
+                    Previous Admin Remarks
+                </div>
+                <p>@Model.AdminRemarks</p>
+            </div>
+        </div>
+    }
+    <!-- =========================================================
+         UPDATE
+         ========================================================= -->
+    <form asp-area="Admin"
+          asp-controller="Support"
+          asp-action="UpdateStatus"
+          method="post"
+          class="support-update-form js-support-update-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden"
+               name="id"
+               value="@Model.Id" />
+        <div class="support-update-card">
+            <div class="support-update-heading">
+                <div>
+                    <span>MANAGE REQUEST</span>
+                    <h3>Update Support Request</h3>
+                </div>
+            </div>
+            <div class="support-update-grid">
+                <div class="support-update-field">
+                    <label for="supportUpdateStatus">
+                        Status
+                    </label>
+                    <select id="supportUpdateStatus"
+                            name="status"
+                            required>
+                        @if (status == "Pending")
+                        {
+                            <option value="Pending" selected>
+                                Pending
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Pending">
+                                Pending
+                            </option>
+                        }
+                        @if (status == "In Review")
+                        {
+                            <option value="In Review" selected>
+                                In Review
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="In Review">
+                                In Review
+                            </option>
+                        }
+                        @if (status == "Resolved")
+                        {
+                            <option value="Resolved" selected>
+                                Resolved
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Resolved">
+                                Resolved
+                            </option>
+                        }
+                        @if (status == "Rejected")
+                        {
+                            <option value="Rejected" selected>
+                                Rejected
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Rejected">
+                                Rejected
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="support-update-field support-update-field-full">
+                    <label for="supportAdminRemarks">
+                        Admin Remarks
+                    </label>
+                    <textarea id="supportAdminRemarks"
+                              name="adminRemarks"
+                              rows="4"
+                              placeholder="Add remarks or internal notes...">@Model.AdminRemarks</textarea>
+                </div>
+            </div>
+            <div class="support-update-actions">
+                <button type="button"
+                        class="support-btn support-btn-secondary js-support-close">
+                    <i class="bi bi-x-lg"></i>
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="support-btn support-btn-primary">
+                    <i class="bi bi-check2-circle"></i>
+                    Update Support Request
+                </button>
+            </div>
+        </div>
+    </form>
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <div class="support-details-footer">
+        <div class="support-details-reference">
+            <i class="bi bi-clock-history"></i>
+            <span>
+                Submitted
+                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+            </span>
+        </div>
+    </div>
+</div>

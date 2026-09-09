@@ -1,0 +1,1075 @@
+﻿@model IEnumerable<FoundationDonationSystem.Models.PaymentAccount>
+@{
+    ViewData["Title"] = "Payment Accounts";
+    var accounts = Model?.ToList()
+        ?? new List<FoundationDonationSystem.Models.PaymentAccount>();
+    var activeCount = accounts.Count(x => x.IsActive);
+    var inactiveCount = accounts.Count(x => !x.IsActive);
+}
+<div class="admin-page payment-accounts-page">
+    <!-- =========================================================
+         PAGE HEADER
+         ========================================================= -->
+    <div class="admin-page-header payment-accounts-header">
+        <div class="payment-accounts-heading">
+            <div class="payment-accounts-heading-icon" aria-hidden="true">
+                ₹
+            </div>
+            <div>
+                <div class="payment-accounts-eyebrow">
+                    PAYMENT CONFIGURATION
+                </div>
+                <h1>
+                    Payment Accounts
+                </h1>
+                <p>
+                    Manage bank accounts, UPI IDs and QR codes
+                    displayed on the public donation page.
+                </p>
+            </div>
+        </div>
+        <button type="button"
+                class="admin-btn admin-btn-primary payment-account-add-btn"
+                onclick="openPaymentAccountModal(
+            '/admin/paymentaccounts/create',
+            'Add Payment Account'
+            )">
+            <span class="payment-account-add-icon" aria-hidden="true">+</span>
+            <span>Add Payment Account</span>
+        </button>
+    </div>
+    <!-- =========================================================
+         ALERTS
+         ========================================================= -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="admin-alert admin-alert-success payment-account-alert"
+             role="alert">
+            <span class="payment-account-alert-icon" aria-hidden="true">✓</span>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="admin-alert admin-alert-danger payment-account-alert"
+             role="alert">
+            <span class="payment-account-alert-icon" aria-hidden="true">!</span>
+            <span>@TempData["ErrorMessage"]</span>
+        </div>
+    }
+    <!-- =========================================================
+         EMPTY STATE
+         ========================================================= -->
+    @if (!accounts.Any())
+    {
+        <div class="admin-empty-state payment-account-empty-state">
+            <div class="admin-empty-icon payment-account-empty-icon"
+                 aria-hidden="true">
+                ₹
+            </div>
+            <div class="payment-account-empty-content">
+                <span class="payment-account-empty-eyebrow">
+                    PAYMENT SETUP
+                </span>
+                <h3>
+                    No Payment Accounts
+                </h3>
+                <p>
+                    No payment account has been configured yet.
+                    Add a bank account or UPI account so donors
+                    can make payments.
+                </p>
+                <button type="button"
+                        class="admin-btn admin-btn-primary"
+                        onclick="openPaymentAccountModal(
+                    '/admin/paymentaccounts/create',
+                    'Add Payment Account'
+                    )">
+                    <span>+</span>
+                    <span>Add Payment Account</span>
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- =====================================================
+             PAYMENT ACCOUNTS CARD
+             ===================================================== -->
+        <div class="admin-table-card payment-accounts-table-card">
+            <div class="admin-table-header payment-accounts-table-header">
+                <div class="payment-accounts-table-title">
+                    <div class="payment-accounts-table-icon"
+                         aria-hidden="true">
+                        ₹
+                    </div>
+                    <div>
+                        <h3>
+                            Configured Accounts
+                        </h3>
+                        <span>
+                            @accounts.Count
+                            @(accounts.Count == 1
+                                ? "payment account"
+                                : "payment accounts")
+                        </span>
+                    </div>
+                </div>
+                <div class="payment-accounts-table-meta">
+                    <span class="payment-accounts-live-dot"></span>
+                    <span>Public payment configuration</span>
+                </div>
+            </div>
+            <div class="admin-table-wrapper">
+                <table class="admin-table payment-account-table">
+                    <thead>
+                        <tr>
+                            <th>Account</th>
+                            <th>Bank</th>
+                            <th>Account Number</th>
+                            <th>IFSC</th>
+                            <th>UPI ID</th>
+                            <th>QR Code</th>
+                            <th>Status</th>
+                            <th class="admin-actions-column">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var account in accounts)
+                        {
+                            <tr>
+                                <!-- ACCOUNT -->
+                                <td data-label="Account">
+                                    <div class="payment-account-name">
+                                        <div class="payment-account-avatar"
+                                             aria-hidden="true">
+                                            @(string.IsNullOrWhiteSpace(account.AccountName)
+                                                ? "?"
+                                                : account.AccountName.Trim().Substring(0, 1).ToUpper())
+                                        </div>
+                                        <div>
+                                            <strong>
+                                                @account.AccountName
+                                            </strong>
+                                            @if (!string.IsNullOrWhiteSpace(account.Branch))
+                                            {
+                                                <small>
+                                                    @account.Branch
+                                                </small>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- BANK -->
+                                <td data-label="Bank">
+                                    <span class="payment-bank-name">
+                                        @account.BankName
+                                    </span>
+                                </td>
+                                <!-- ACCOUNT NUMBER -->
+                                <td data-label="Account Number">
+                                    <span class="account-number payment-account-number">
+                                        @account.AccountNumber
+                                    </span>
+                                </td>
+                                <!-- IFSC -->
+                                <td data-label="IFSC">
+                                    <strong class="ifsc-value payment-ifsc">
+                                        @account.IFSC
+                                    </strong>
+                                </td>
+                                <!-- UPI -->
+                                <td data-label="UPI ID">
+                                    @if (!string.IsNullOrWhiteSpace(account.UpiId))
+                                    {
+                                        <span class="upi-value payment-upi-value">
+                                            @account.UpiId
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="muted-text">
+                                            —
+                                        </span>
+                                    }
+                                </td>
+                                <!-- QR -->
+                                <td data-label="QR Code">
+                                    @if (!string.IsNullOrWhiteSpace(account.QrCodePath))
+                                    {
+                                        <div class="payment-qr-wrapper">
+                                            <img src="@account.QrCodePath"
+                                                 alt="Payment QR Code"
+                                                 class="payment-account-qr" />
+                                            <span class="payment-qr-label">
+                                                Available
+                                            </span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="no-qr-badge">
+                                            No QR
+                                        </span>
+                                    }
+                                </td>
+                                <!-- STATUS -->
+                                <td data-label="Status">
+                                    @if (account.IsActive)
+                                    {
+                                        <span class="admin-status-badge status-verified">
+                                            <span class="payment-status-dot"></span>
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="admin-status-badge status-rejected">
+                                            <span class="payment-status-dot"></span>
+                                            Inactive
+                                        </span>
+                                    }
+                                </td>
+                                <!-- ACTIONS -->
+                                <td data-label="Actions">
+                                    <div class="admin-table-actions payment-account-actions">
+                                        <button type="button"
+                                                class="admin-action-btn"
+                                                onclick="openPaymentAccountModal(
+                                            '/admin/paymentaccounts/details/@account.Id',
+                                            'View Payment Account'
+                                            )">
+                                            View
+                                        </button>
+                                        <button type="button"
+                                                class="admin-action-btn"
+                                                onclick="openPaymentAccountModal(
+                                            '/admin/paymentaccounts/edit/@account.Id',
+                                            'Edit Payment Account'
+                                            )">
+                                            Edit
+                                        </button>
+                                        <form method="post"
+                                              action="/admin/paymentaccounts/toggleactive/@account.Id"
+                                              class="inline-form">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="admin-action-btn @(account.IsActive
+                                                                                                                                                        ? "action-warning"
+                                                                                                                                                        : "action-success")">
+                                                @(account.IsActive
+                                                    ? "Disable"
+                                                    : "Activate")
+                                            </button>
+                                        </form>
+                                        <button type="button"
+                                                class="admin-action-btn action-danger"
+                                                onclick="openPaymentAccountModal(
+                                            '/admin/paymentaccounts/delete/@account.Id',
+                                            'Delete Payment Account'
+                                            )">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+<!-- =============================================================
+     PAYMENT ACCOUNT MODAL
+     ============================================================= -->
+<div id="paymentAccountModal"
+     class="payment-account-modal"
+     aria-hidden="true">
+    <div class="payment-account-modal-overlay"
+         onclick="closePaymentAccountModal()">
+    </div>
+    <div class="payment-account-modal-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="paymentAccountModalTitle">
+        <div class="payment-account-modal-header">
+            <div class="payment-account-modal-title-wrap">
+                <div class="payment-account-modal-icon"
+                     aria-hidden="true">
+                    ₹
+                </div>
+                <h3 id="paymentAccountModalTitle">
+                    Payment Account
+                </h3>
+            </div>
+            <button type="button"
+                    class="payment-account-modal-close"
+                    onclick="closePaymentAccountModal()"
+                    aria-label="Close">
+                &times;
+            </button>
+        </div>
+        <div id="paymentAccountModalBody"
+             class="payment-account-modal-body">
+            <div class="payment-account-modal-loading">
+                <div class="payment-account-spinner"></div>
+                <span>Loading...</span>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        /* =============================================================
+           GLOBAL MODAL ELEMENTS
+           ============================================================= */
+        function getPaymentAccountModal() {
+            return document.getElementById(
+                "paymentAccountModal"
+            );
+        }
+        function getPaymentAccountModalBody() {
+            return document.getElementById(
+                "paymentAccountModalBody"
+            );
+        }
+        /* =============================================================
+           OPEN MODAL
+           ============================================================= */
+        async function openPaymentAccountModal(
+            url,
+            title
+        ) {
+            const modal =
+                getPaymentAccountModal();
+            const modalTitle =
+                document.getElementById(
+                    "paymentAccountModalTitle"
+                );
+            const modalBody =
+                getPaymentAccountModalBody();
+            if (!modal ||
+                !modalTitle ||
+                !modalBody) {
+                return;
+            }
+            /* ---------------------------------------------------------
+               SET TITLE
+               --------------------------------------------------------- */
+            modalTitle.textContent =
+                title || "Payment Account";
+            /* ---------------------------------------------------------
+               SHOW LOADING
+               --------------------------------------------------------- */
+            modalBody.innerHTML = `
+                                    <div class="payment-account-modal-loading">
+                                        <div class="payment-account-spinner">
+                                        </div>
+                                        <span>
+                                            Loading...
+                                        </span>
+                                    </div>
+                                `;
+            /* ---------------------------------------------------------
+               SHOW MODAL
+               --------------------------------------------------------- */
+            modal.classList.add("show");
+            modal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+            document.body.classList.add(
+                "payment-account-modal-open"
+            );
+            try {
+                const response =
+                    await fetch(
+                        url,
+                        {
+                            method: "GET",
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+                if (!response.ok) {
+                    let message =
+                        "Unable to load payment account.";
+                    try {
+                        const errorData =
+                            await response.json();
+                        if (errorData.message) {
+                            message =
+                                errorData.message;
+                        }
+                    }
+                    catch {
+                        // Ignore JSON parsing error.
+                    }
+                    throw new Error(message);
+                }
+                const html =
+                    await response.text();
+                modalBody.innerHTML =
+                    html;
+                /* -----------------------------------------------------
+                   INITIALIZE MODAL CONTENT
+                   ----------------------------------------------------- */
+                initializePaymentAccountModalContent(
+                    modalBody
+                );
+            }
+            catch (error) {
+                console.error(
+                    "Payment account modal error:",
+                    error
+                );
+                modalBody.innerHTML = `
+                                        <div class="payment-account-modal-error">
+                                            <strong>
+                                                Unable to load
+                                            </strong>
+                                            <p>
+                                                ${escapeHtml(
+                    error.message ||
+                    "Something went wrong."
+                )}
+                                            </p>
+                                            <button type="button"
+                                                    class="admin-btn admin-btn-secondary"
+                                                    onclick="closePaymentAccountModal()">
+                                                Close
+                                            </button>
+                                        </div>
+                                    `;
+            }
+        }
+        /* =============================================================
+           CLOSE MODAL
+           ============================================================= */
+        function closePaymentAccountModal() {
+            const modal =
+                getPaymentAccountModal();
+            const modalBody =
+                getPaymentAccountModalBody();
+            if (!modal) {
+                return;
+            }
+            modal.classList.remove(
+                "show"
+            );
+            modal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+            document.body.classList.remove(
+                "payment-account-modal-open"
+            );
+            setTimeout(
+                function() {
+                    if (modalBody) {
+                        modalBody.innerHTML =
+                            "";
+                    }
+                },
+                200
+            );
+        }
+        /* =============================================================
+           INITIALIZE MODAL CONTENT
+           ============================================================= */
+        function initializePaymentAccountModalContent(
+            container
+        ) {
+            if (!container) {
+                return;
+            }
+            /* ---------------------------------------------------------
+               CREATE FORM
+               --------------------------------------------------------- */
+            const createForm =
+                container.querySelector(
+                    "#paymentAccountCreateForm"
+                );
+            if (createForm) {
+                createForm.addEventListener(
+                    "submit",
+                    submitPaymentAccountCreate
+                );
+                initializeCreateForm(
+                    createForm
+                );
+            }
+            /* ---------------------------------------------------------
+               EDIT FORM
+               --------------------------------------------------------- */
+            const editForm =
+                container.querySelector(
+                    "#paymentAccountEditForm"
+                );
+            if (editForm) {
+                editForm.addEventListener(
+                    "submit",
+                    submitPaymentAccountEdit
+                );
+                initializeEditForm(
+                    editForm
+                );
+            }
+            /* ---------------------------------------------------------
+               DELETE FORM
+               --------------------------------------------------------- */
+            const deleteForm =
+                container.querySelector(
+                    "#deletePaymentAccountForm"
+                );
+            if (deleteForm) {
+                deleteForm.addEventListener(
+                    "submit",
+                    submitPaymentAccountDelete
+                );
+            }
+        }
+        /* =============================================================
+           CREATE FORM INITIALIZATION
+           ============================================================= */
+        function initializeCreateForm(
+            form
+        ) {
+            /* ---------------------------------------------------------
+               IFSC
+               --------------------------------------------------------- */
+            const ifsc =
+                form.querySelector(
+                    "#createIFSC"
+                );
+            if (ifsc) {
+                ifsc.addEventListener(
+                    "input",
+                    function() {
+                        this.value =
+                            this.value.toUpperCase();
+                    }
+                );
+            }
+            /* ---------------------------------------------------------
+               ACTIVE / INACTIVE
+               --------------------------------------------------------- */
+            const activeCheckbox =
+                form.querySelector(
+                    "#createIsActive"
+                );
+            const statusLabel =
+                form.querySelector(
+                    "#createStatusLabel"
+                );
+            if (
+                activeCheckbox &&
+                statusLabel
+            ) {
+                activeCheckbox.addEventListener(
+                    "change",
+                    function() {
+                        statusLabel.textContent =
+                            this.checked
+                                ? "Active"
+                                : "Inactive";
+                    }
+                );
+            }
+            /* ---------------------------------------------------------
+               QR PREVIEW
+               --------------------------------------------------------- */
+            const qrInput =
+                form.querySelector(
+                    "#createQrCode"
+                );
+            const qrPreview =
+                form.querySelector(
+                    "#createQrPreview"
+                );
+            const qrPreviewImage =
+                form.querySelector(
+                    "#createQrPreviewImage"
+                );
+            if (
+                qrInput &&
+                qrPreview &&
+                qrPreviewImage
+            ) {
+                qrInput.addEventListener(
+                    "change",
+                    function() {
+                        const file =
+                            this.files &&
+                                this.files.length
+                                ? this.files[0]
+                                : null;
+                        if (!file) {
+                            qrPreview.style.display =
+                                "none";
+                            qrPreviewImage.src =
+                                "";
+                            return;
+                        }
+                        const allowedTypes = [
+                            "image/jpeg",
+                            "image/png",
+                            "image/webp"
+                        ];
+                        if (
+                            !allowedTypes.includes(
+                                file.type
+                            )
+                        ) {
+                            qrPreview.style.display =
+                                "none";
+                            qrPreviewImage.src =
+                                "";
+                            return;
+                        }
+                        if (
+                            file.size >
+                            1 * 1024 * 1024
+                        ) {
+                            qrPreview.style.display =
+                                "none";
+                            qrPreviewImage.src =
+                                "";
+                            return;
+                        }
+                        const reader =
+                            new FileReader();
+                        reader.onload =
+                            function(event) {
+                                qrPreviewImage.src =
+                                    event.target.result;
+                                qrPreview.style.display =
+                                    "block";
+                            };
+                        reader.readAsDataURL(
+                            file
+                        );
+                    }
+                );
+            }
+        }
+        /* =============================================================
+           EDIT FORM INITIALIZATION
+           ============================================================= */
+        function initializeEditForm(
+            form
+        ) {
+            const ifsc =
+                form.querySelector(
+                    'input[name="IFSC"]'
+                );
+            if (ifsc) {
+                ifsc.addEventListener(
+                    "input",
+                    function() {
+                        this.value =
+                            this.value.toUpperCase();
+                    }
+                );
+            }
+        }
+        /* =============================================================
+           CREATE SUBMIT
+           ============================================================= */
+        async function submitPaymentAccountCreate(
+            event
+        ) {
+            event.preventDefault();
+            const form =
+                event.currentTarget;
+            const submitButton =
+                form.querySelector(
+                    'button[type="submit"]'
+                );
+            if (submitButton) {
+                submitButton.disabled =
+                    true;
+                submitButton.dataset.originalText =
+                    submitButton.innerText;
+                submitButton.innerText =
+                    "Creating...";
+            }
+            try {
+                const formData =
+                    new FormData(form);
+                const response =
+                    await fetch(
+                        form.action,
+                        {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+                const contentType =
+                    response.headers.get(
+                        "content-type"
+                    ) || "";
+                /* -----------------------------------------------------
+                   JSON RESPONSE
+                   ----------------------------------------------------- */
+                if (
+                    contentType.includes(
+                        "application/json"
+                    )
+                ) {
+                    const result =
+                        await response.json();
+                    if (!response.ok ||
+                        !result.success) {
+                        throw new Error(
+                            result.message ||
+                            "Unable to create payment account."
+                        );
+                    }
+                    closePaymentAccountModal();
+                    setTimeout(
+                        function() {
+                            window.location.reload();
+                        },
+                        250
+                    );
+                    return;
+                }
+                /* -----------------------------------------------------
+                   VALIDATION HTML
+                   ----------------------------------------------------- */
+                const html =
+                    await response.text();
+                const modalBody =
+                    getPaymentAccountModalBody();
+                if (modalBody) {
+                    modalBody.innerHTML =
+                        html;
+                    initializePaymentAccountModalContent(
+                        modalBody
+                    );
+                }
+            }
+            catch (error) {
+                console.error(
+                    "Create payment account error:",
+                    error
+                );
+                showPaymentAccountModalError(
+                    error.message ||
+                    "Unable to create payment account."
+                );
+            }
+            finally {
+                if (submitButton &&
+                    document.body.classList.contains(
+                        "payment-account-modal-open"
+                    )) {
+                    submitButton.disabled =
+                        false;
+                    submitButton.innerText =
+                        submitButton.dataset.originalText ||
+                        "Create Payment Account";
+                }
+            }
+        }
+        /* =============================================================
+           EDIT SUBMIT
+           ============================================================= */
+        async function submitPaymentAccountEdit(
+            event
+        ) {
+            event.preventDefault();
+            const form =
+                event.currentTarget;
+            const submitButton =
+                form.querySelector(
+                    'button[type="submit"]'
+                );
+            if (submitButton) {
+                submitButton.disabled =
+                    true;
+                submitButton.dataset.originalText =
+                    submitButton.innerText;
+                submitButton.innerText =
+                    "Updating...";
+            }
+            try {
+                const formData =
+                    new FormData(form);
+                const response =
+                    await fetch(
+                        form.action,
+                        {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+                const contentType =
+                    response.headers.get(
+                        "content-type"
+                    ) || "";
+                /* -----------------------------------------------------
+                   VALIDATION / HTML RESPONSE
+                   ----------------------------------------------------- */
+                if (
+                    contentType.includes(
+                        "text/html"
+                    )
+                ) {
+                    const html =
+                        await response.text();
+                    const modalBody =
+                        getPaymentAccountModalBody();
+                    if (modalBody) {
+                        modalBody.innerHTML =
+                            html;
+                        initializePaymentAccountModalContent(
+                            modalBody
+                        );
+                    }
+                    return;
+                }
+                /* -----------------------------------------------------
+                   JSON RESPONSE
+                   ----------------------------------------------------- */
+                const result =
+                    await response.json();
+                if (!response.ok ||
+                    !result.success) {
+                    throw new Error(
+                        result.message ||
+                        "Unable to update payment account."
+                    );
+                }
+                closePaymentAccountModal();
+                setTimeout(
+                    function() {
+                        window.location.reload();
+                    },
+                    250
+                );
+            }
+            catch (error) {
+                console.error(
+                    "Edit payment account error:",
+                    error
+                );
+                showPaymentAccountModalError(
+                    error.message ||
+                    "Unable to update payment account."
+                );
+                if (submitButton) {
+                    submitButton.disabled =
+                        false;
+                    submitButton.innerText =
+                        submitButton.dataset.originalText ||
+                        "Update Payment Account";
+                }
+            }
+        }
+        /* =============================================================
+           DELETE SUBMIT
+           ============================================================= */
+        async function submitPaymentAccountDelete(
+            event
+        ) {
+            event.preventDefault();
+            const form =
+                event.currentTarget;
+            const submitButton =
+                form.querySelector(
+                    'button[type="submit"]'
+                );
+            /* ---------------------------------------------------------
+               CONFIRMATION
+               --------------------------------------------------------- */
+            if (
+                !confirm(
+                    "Are you absolutely sure you want to delete this payment account?"
+                )
+            ) {
+                return;
+            }
+            if (submitButton) {
+                submitButton.disabled =
+                    true;
+                submitButton.dataset.originalText =
+                    submitButton.innerText;
+                submitButton.innerText =
+                    "Deleting...";
+            }
+            try {
+                const formData =
+                    new FormData(form);
+                const response =
+                    await fetch(
+                        form.action,
+                        {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+                const contentType =
+                    response.headers.get(
+                        "content-type"
+                    ) || "";
+                if (
+                    contentType.includes(
+                        "application/json"
+                    )
+                ) {
+                    const result =
+                        await response.json();
+                    if (!response.ok ||
+                        !result.success) {
+                        throw new Error(
+                            result.message ||
+                            "Unable to delete payment account."
+                        );
+                    }
+                    closePaymentAccountModal();
+                    setTimeout(
+                        function() {
+                            window.location.reload();
+                        },
+                        250
+                    );
+                    return;
+                }
+                if (!response.ok) {
+                    const text =
+                        await response.text();
+                    throw new Error(
+                        text ||
+                        "Unable to delete payment account."
+                    );
+                }
+                closePaymentAccountModal();
+                setTimeout(
+                    function() {
+                        window.location.reload();
+                    },
+                    250
+                );
+            }
+            catch (error) {
+                console.error(
+                    "Delete payment account error:",
+                    error
+                );
+                showPaymentAccountModalError(
+                    error.message ||
+                    "Unable to delete payment account."
+                );
+                if (submitButton) {
+                    submitButton.disabled =
+                        false;
+                    submitButton.innerText =
+                        submitButton.dataset.originalText ||
+                        "Delete Payment Account";
+                }
+            }
+        }
+        /* =============================================================
+           SHOW MODAL ERROR
+           ============================================================= */
+        function showPaymentAccountModalError(
+            message
+        ) {
+            const modalBody =
+                getPaymentAccountModalBody();
+            if (!modalBody) {
+                return;
+            }
+            modalBody.innerHTML = `
+                                    <div class="payment-account-modal-error">
+                                        <strong>
+                                            Something went wrong
+                                        </strong>
+                                        <p>
+                                            ${escapeHtml(message)}
+                                        </p>
+                                        <div style="margin-top:15px;">
+                                            <button type="button"
+                                                    class="admin-btn admin-btn-secondary"
+                                                    onclick="closePaymentAccountModal()">
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+        }
+        /* =============================================================
+           ESCAPE HTML
+           ============================================================= */
+        function escapeHtml(
+            value
+        ) {
+            const div =
+                document.createElement(
+                    "div"
+                );
+            div.textContent =
+                value == null
+                    ? ""
+                    : String(value);
+            return div.innerHTML;
+        }
+        /* =============================================================
+           ESC KEY
+           ============================================================= */
+        document.addEventListener(
+            "keydown",
+            function(event) {
+                if (
+                    event.key === "Escape"
+                ) {
+                    const modal =
+                        getPaymentAccountModal();
+                    if (
+                        modal &&
+                        modal.classList.contains(
+                            "show"
+                        )
+                    ) {
+                        closePaymentAccountModal();
+                    }
+                }
+            }
+        );
+        /* =============================================================
+           PREVENT BODY SCROLL WITH MODAL
+           ============================================================= */
+        document.addEventListener(
+            "click",
+            function(event) {
+                const modal =
+                    getPaymentAccountModal();
+                if (!modal) {
+                    return;
+                }
+                if (
+                    event.target === modal
+                ) {
+                    closePaymentAccountModal();
+                }
+            }
+        );
+    </script>
+}

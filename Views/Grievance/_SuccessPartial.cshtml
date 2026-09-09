@@ -1,0 +1,155 @@
+@{
+    var grievanceNumber = ViewBag.GrievanceNumber as string;
+}
+<div class="grievance-success-overlay" id="grievance-success">
+    <div class="grievance-success-popup">
+        <!-- Close -->
+        <button type="button"
+                class="grievance-success-close"
+                onclick="closeGrievanceSuccess()"
+                aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <!-- Success Icon -->
+        <div class="grievance-success-icon">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <!-- Kicker -->
+        <div class="grievance-success-kicker">
+            <i class="bi bi-chat-left-text-fill"></i>
+            Thank you for reaching out
+        </div>
+        <!-- Heading -->
+        <h2>Submission Successful</h2>
+        <h3>Grievance Submitted Successfully</h3>
+        <!-- Message -->
+        <p class="grievance-success-message">
+            Your grievance has been received successfully.
+            Our responsible team will review your concern and
+            take the necessary action. We may contact you using
+            the details provided in the form.
+        </p>
+        <!-- Grievance Number -->
+        @if (!string.IsNullOrWhiteSpace(grievanceNumber))
+        {
+            <div class="grievance-reference">
+                <span class="grievance-reference-label">
+                    <i class="bi bi-hash"></i>
+                    Your Grievance Number
+                </span>
+                <strong>@grievanceNumber</strong>
+            </div>
+        }
+        <!-- Information -->
+        <div class="grievance-success-info">
+            <!-- Under Review -->
+            <div class="grievance-info-card">
+                <div class="grievance-info-icon">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div class="grievance-info-content">
+                    <strong>Under Review</strong>
+                    <span>
+                        Your grievance will be reviewed by the
+                        responsible team and appropriate action
+                        will be taken.
+                    </span>
+                </div>
+            </div>
+            <!-- Keep Number -->
+            <div class="grievance-info-card">
+                <div class="grievance-info-icon">
+                    <i class="bi bi-bookmark-fill"></i>
+                </div>
+                <div class="grievance-info-content">
+                    <strong>Keep Your Grievance Number</strong>
+                    <span>
+                        Please keep this number safely for
+                        future communication or reference.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- Actions -->
+        <div class="grievance-success-actions">
+            <!-- Home -->
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="grievance-btn grievance-btn-secondary">
+                <i class="bi bi-house-fill"></i>
+                <span>Home</span>
+            </a>
+            <!-- Print -->
+            <button type="button"
+                    class="grievance-btn grievance-btn-primary"
+                    onclick="window.print()">
+                <i class="bi bi-printer-fill"></i>
+                <span>Print</span>
+            </button>
+        </div>
+        <!-- Note -->
+        <div class="grievance-success-note">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>
+                Please keep your grievance number for future reference.
+            </span>
+        </div>
+    </div>
+</div>
+<script>
+    /*
+     * ----------------------------------------------------
+     * CLOSE GRIEVANCE SUCCESS POPUP
+     * ----------------------------------------------------
+     */
+    function closeGrievanceSuccess() {
+        const popup =
+            document.getElementById("grievance-success");
+        if (popup) {
+            /*
+             * Start closing animation
+             */
+            popup.classList.add(
+                "grievance-success-closing"
+            );
+            /*
+             * Restore page scrolling
+             */
+            document.body.style.overflow = "";
+            /*
+             * Reload the Grievance page after the
+             * closing animation.
+             */
+            setTimeout(function() {
+                window.location.reload();
+            }, 180);
+        }
+        else {
+            /*
+             * If popup is not found,
+             * still reload the page.
+             */
+            document.body.style.overflow = "";
+            window.location.reload();
+        }
+    }
+    /*
+     * ----------------------------------------------------
+     * ESC KEY
+     * ----------------------------------------------------
+     */
+    document.addEventListener(
+        "keydown",
+        function(event) {
+            if (event.key === "Escape") {
+                const popup =
+                    document.getElementById(
+                        "grievance-success"
+                    );
+                if (popup) {
+                    closeGrievanceSuccess();
+                }
+            }
+        }
+    );
+</script>

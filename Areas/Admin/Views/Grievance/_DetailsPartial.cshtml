@@ -1,0 +1,255 @@
+@model FoundationDonationSystem.Models.Grievance
+@{
+    var status = string.IsNullOrWhiteSpace(Model.Status)
+        ? "Pending"
+        : Model.Status.Trim();
+    var statusClass = status
+        .ToLowerInvariant()
+        .Replace(" ", "-");
+    var applicantName = string.IsNullOrWhiteSpace(Model.FullName)
+        ? "Unknown"
+        : Model.FullName.Trim();
+    var createdLocal = Model.CreatedAt.ToLocalTime();
+    var updatedLocal = Model.UpdatedAt.HasValue
+        ? Model.UpdatedAt.Value.ToLocalTime()
+        : (DateTime?)null;
+}
+<div class="grievance-details">
+    <!-- =========================================================
+         HERO
+         ========================================================= -->
+    <div class="grievance-details-hero">
+        <div class="grievance-details-number">
+            <span class="grievance-details-number-icon">
+                <i class="bi bi-chat-left-text"></i>
+            </span>
+            <div>
+                <span>GRIEVANCE NUMBER</span>
+                <strong>@Model.GrievanceNumber</strong>
+            </div>
+        </div>
+        <span class="grievance-status @statusClass">
+            <span class="grievance-status-dot"></span>
+            @status
+        </span>
+    </div>
+    <!-- =========================================================
+         APPLICANT + GRIEVANCE INFORMATION
+         ========================================================= -->
+    <div class="grievance-details-grid">
+        <section class="grievance-details-section">
+            <div class="grievance-details-section-heading">
+                <span class="grievance-details-section-icon">
+                    <i class="bi bi-person"></i>
+                </span>
+                <div>
+                    <span>APPLICANT</span>
+                    <strong>Personal Information</strong>
+                </div>
+            </div>
+            <div class="grievance-info-grid">
+                <div class="grievance-info-item">
+                    <span>Full Name</span>
+                    <strong>@applicantName</strong>
+                </div>
+                <div class="grievance-info-item">
+                    <span>Mobile</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Mobile)
+                            ? "—"
+                            : Model.Mobile)
+                    </strong>
+                </div>
+                <div class="grievance-info-item">
+                    <span>Email</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Email)
+                            ? "—"
+                            : Model.Email)
+                    </strong>
+                </div>
+            </div>
+        </section>
+        <section class="grievance-details-section">
+            <div class="grievance-details-section-heading">
+                <span class="grievance-details-section-icon">
+                    <i class="bi bi-folder2-open"></i>
+                </span>
+                <div>
+                    <span>GRIEVANCE</span>
+                    <strong>Issue Information</strong>
+                </div>
+            </div>
+            <div class="grievance-info-grid">
+                <div class="grievance-info-item">
+                    <span>Category</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Category)
+                            ? "General"
+                            : Model.Category)
+                    </strong>
+                </div>
+                <div class="grievance-info-item">
+                    <span>Reference Number</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.ReferenceNumber)
+                            ? "—"
+                            : Model.ReferenceNumber)
+                    </strong>
+                </div>
+                <div class="grievance-info-item">
+                    <span>Submitted</span>
+                    <strong>@createdLocal.ToString("dd MMM yyyy, hh:mm tt")</strong>
+                </div>
+                <div class="grievance-info-item">
+                    <span>Last Updated</span>
+                    <strong>
+                        @(updatedLocal.HasValue
+                            ? updatedLocal.Value.ToString("dd MMM yyyy, hh:mm tt")
+                            : "Not updated")
+                    </strong>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- =========================================================
+         SUBJECT
+         ========================================================= -->
+    <section class="grievance-details-message">
+        <div class="grievance-message-box">
+            <h3>
+                <i class="bi bi-chat-square-text"></i>
+                Subject
+            </h3>
+            <p>
+                @(string.IsNullOrWhiteSpace(Model.Subject)
+                    ? "No subject provided."
+                    : Model.Subject)
+            </p>
+        </div>
+    </section>
+    <!-- =========================================================
+         DESCRIPTION
+         ========================================================= -->
+    <section class="grievance-details-message">
+        <div class="grievance-message-box">
+            <h3>
+                <i class="bi bi-file-text"></i>
+                Grievance Description
+            </h3>
+            <p>
+                @(string.IsNullOrWhiteSpace(Model.Description)
+                    ? "No description provided."
+                    : Model.Description)
+            </p>
+        </div>
+    </section>
+    <!-- =========================================================
+         ADMIN REMARKS
+         ========================================================= -->
+    @if (!string.IsNullOrWhiteSpace(Model.AdminRemarks))
+    {
+        <section class="grievance-remarks-section">
+            <div class="grievance-remarks-box">
+                <strong>
+                    <i class="bi bi-pencil-square"></i>
+                    Current Admin Remarks
+                </strong>
+                <p>
+                    @Model.AdminRemarks
+                </p>
+            </div>
+        </section>
+    }
+    <!-- =========================================================
+         UPDATE STATUS
+         ========================================================= -->
+    <section class="grievance-update-section">
+        <div class="grievance-update-heading">
+            <div>
+                <span>ADMIN ACTION</span>
+                <strong>Update Grievance</strong>
+            </div>
+        </div>
+        <form asp-area="Admin"
+              asp-controller="Grievance"
+              asp-action="UpdateStatus"
+              method="post"
+              class="grievance-update-form js-grievance-update-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden"
+                   name="id"
+                   value="@Model.Id" />
+            <div class="grievance-update-grid">
+                <div class="grievance-update-field">
+                    <label for="grievanceUpdateStatus">Status</label>
+                    <select id="grievanceUpdateStatus"
+                            name="status"
+                            required>
+                        @if (status == "Pending")
+                        {
+                            <option value="Pending" selected>Pending</option>
+                        }
+                        else
+                        {
+                            <option value="Pending">Pending</option>
+                        }
+                        @if (status == "In Review")
+                        {
+                            <option value="In Review" selected>In Review</option>
+                        }
+                        else
+                        {
+                            <option value="In Review">In Review</option>
+                        }
+                        @if (status == "Resolved")
+                        {
+                            <option value="Resolved" selected>Resolved</option>
+                        }
+                        else
+                        {
+                            <option value="Resolved">Resolved</option>
+                        }
+                        @if (status == "Rejected")
+                        {
+                            <option value="Rejected" selected>Rejected</option>
+                        }
+                        else
+                        {
+                            <option value="Rejected">Rejected</option>
+                        }
+                    </select>
+                </div>
+                <div class="grievance-update-field">
+                    <label for="grievanceAdminRemarks">Admin Remarks</label>
+                    <textarea id="grievanceAdminRemarks"
+                              name="adminRemarks"
+                              rows="3"
+                              maxlength="2000"
+                              placeholder="Add remarks or action taken...">@Model.AdminRemarks</textarea>
+                </div>
+            </div>
+            <div class="grievance-update-actions">
+                <button type="button"
+                        class="grievance-btn grievance-btn-secondary js-grievance-close">
+                    <i class="bi bi-x-lg"></i>
+                    Close
+                </button>
+                <button type="submit"
+                        class="grievance-btn grievance-btn-primary">
+                    <i class="bi bi-check2-circle"></i>
+                    Update Grievance
+                </button>
+            </div>
+        </form>
+    </section>
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <div class="grievance-details-footer">
+        <span class="grievance-details-reference">
+            <i class="bi bi-shield-check"></i>
+            Admin-only grievance information
+        </span>
+    </div>
+</div>

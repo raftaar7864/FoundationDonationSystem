@@ -1,0 +1,159 @@
+﻿@model FoundationDonationSystem.ViewModels.PaymentAccountViewModel
+<div class="payment-popup-content">
+    @if (ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="payment-create-error">
+            <strong>
+                Unable to update payment account.
+            </strong>
+            <ul>
+                @foreach (var state in ViewData.ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        if (!string.IsNullOrWhiteSpace(
+                            error.ErrorMessage))
+                        {
+                            <li>
+                                @error.ErrorMessage
+                            </li>
+                        }
+                    }
+                }
+            </ul>
+        </div>
+    }
+    <form id="paymentAccountEditForm"
+          method="post"
+          action="/admin/paymentaccounts/edit/@Model.Id"
+          enctype="multipart/form-data"
+          novalidate>
+        @Html.AntiForgeryToken()
+        <input type="hidden"
+               name="Id"
+               value="@Model.Id" />
+        <!-- BANK -->
+        <div class="payment-form-grid">
+            <div class="admin-form-group">
+                <label for="AccountName">
+                    Account Name
+                </label>
+                <input type="text"
+                       id="AccountName"
+                       name="AccountName"
+                       class="admin-form-control"
+                       value="@Model.AccountName" />
+            </div>
+            <div class="admin-form-group">
+                <label for="BankName">
+                    Bank Name
+                </label>
+                <input type="text"
+                       id="BankName"
+                       name="BankName"
+                       class="admin-form-control"
+                       value="@Model.BankName" />
+            </div>
+            <div class="admin-form-group">
+                <label for="AccountNumber">
+                    Account Number
+                </label>
+                <input type="text"
+                       id="AccountNumber"
+                       name="AccountNumber"
+                       class="admin-form-control"
+                       value="@Model.AccountNumber" />
+            </div>
+            <div class="admin-form-group">
+                <label for="IFSC">
+                    IFSC Code
+                </label>
+                <input type="text"
+                       id="IFSC"
+                       name="IFSC"
+                       class="admin-form-control"
+                       value="@Model.IFSC"
+                       style="text-transform:uppercase;" />
+            </div>
+            <div class="admin-form-group">
+                <label for="Branch">
+                    Branch
+                </label>
+                <input type="text"
+                       id="Branch"
+                       name="Branch"
+                       class="admin-form-control"
+                       value="@Model.Branch" />
+            </div>
+            <div class="admin-form-group">
+                <label for="UpiId">
+                    UPI ID
+                </label>
+                <input type="text"
+                       id="UpiId"
+                       name="UpiId"
+                       class="admin-form-control"
+                       value="@Model.UpiId" />
+            </div>
+            <div class="admin-form-group">
+                <label for="QrCode">
+                    Replace QR Code
+                </label>
+                <input type="file"
+                       id="QrCode"
+                       name="QrCode"
+                       class="admin-form-control"
+                       accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                <small class="admin-form-help">
+                    Leave empty to keep the existing QR code.
+                    Maximum 1 MB.
+                </small>
+            </div>
+        </div>
+        <!-- EXISTING QR -->
+        @if (!string.IsNullOrWhiteSpace(
+                    Model.ExistingQrCodePath))
+        {
+            <div class="payment-popup-existing-qr">
+                <span>
+                    Current QR Code
+                </span>
+                <img src="@Model.ExistingQrCodePath"
+                     alt="Current QR Code" />
+            </div>
+        }
+        <!-- ACTIVE -->
+        <div class="payment-active-box">
+            <div class="payment-active-content">
+                <strong>
+                    Show on Donation Page
+                </strong>
+                <p>
+                    Active payment accounts are displayed
+                    to public donors.
+                </p>
+            </div>
+            <label class="admin-switch">
+                <input type="checkbox"
+                       name="IsActive"
+                       value="true"
+                @(Model.IsActive
+                    ? "checked"
+                    : "") />
+                <span class="admin-switch-slider"></span>
+            </label>
+        </div>
+        <!-- ACTIONS -->
+        <div class="payment-popup-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-secondary"
+                    onclick="closePaymentAccountModal()">
+                Cancel
+            </button>
+            <button type="submit"
+                    class="admin-btn admin-btn-primary">
+                Update Payment Account
+            </button>
+        </div>
+    </form>
+</div>

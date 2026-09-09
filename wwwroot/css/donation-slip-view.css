@@ -1,0 +1,1260 @@
+﻿/* =========================================================
+   DONATION SLIP PAGE
+   ========================================================= */
+.donation-slip-page {
+    width: 100%;
+    min-width: 0;
+    padding: 16px;
+    box-sizing: border-box;
+}
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+.donation-slip-toolbar {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.donation-slip-toolbar-left,
+.donation-slip-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.slip-btn {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+    .slip-btn:hover {
+        transform: translateY(-1px);
+    }
+    .slip-btn:active {
+        transform: translateY(0);
+    }
+.slip-btn-icon {
+    font-size: 15px;
+    line-height: 1;
+}
+/* Primary orange button */
+.slip-btn-primary {
+    color: #ffffff;
+    background: #EA580C;
+    border-color: #EA580C;
+}
+    .slip-btn-primary:hover {
+        color: #ffffff;
+        background: #C2410C;
+        border-color: #C2410C;
+        box-shadow: 0 3px 8px rgba(234, 88, 12, 0.20);
+    }
+/* Secondary button */
+.slip-btn-secondary {
+    color: #374151;
+    background: #ffffff;
+    border-color: #d1d5db;
+}
+    .slip-btn-secondary:hover {
+        color: #C2410C;
+        background: #FFF7ED;
+        border-color: #FDBA74;
+    }
+/* =========================================================
+   RECEIPT WRAPPER
+   ========================================================= */
+.donation-slip-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+}
+/* =========================================================
+   RECEIPT
+   ========================================================= */
+.donation-slip-receipt {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    color: #1f2937;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    overflow: hidden;
+}
+    /* =========================================================
+   FOUNDATION LOGO WATERMARK
+   ========================================================= */
+    .donation-slip-receipt::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 430px;
+        height: 430px;
+        background-image: url('/images/foundation/foundation-logo.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        opacity: 0.055;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+    /* Keep all receipt content above watermark */
+    .donation-slip-receipt > * {
+        position: relative;
+        z-index: 1;
+    }
+/* =========================================================
+   FOUNDATION HEADER
+   ========================================================= */
+.slip-foundation-header {
+    min-height: 0;
+    padding: 18px 22px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "branding status"
+        "system system";
+    align-items: center;
+    column-gap: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 68%);
+    border-bottom: 1px solid #FED7AA;
+}
+/* Branding */
+.slip-branding {
+    grid-area: branding;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+/* Logo */
+.slip-logo-wrapper {
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #FDBA74;
+    border-radius: 10px;
+    background: #ffffff;
+    overflow: hidden;
+}
+.slip-foundation-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 7px;
+    box-sizing: border-box;
+}
+/* Logo fallback */
+.slip-logo-fallback {
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #EA580C;
+    color: #ffffff;
+    font-size: 35px;
+    font-weight: 800;
+}
+/* Foundation information */
+.slip-foundation-details {
+    min-width: 0;
+}
+.slip-foundation-name {
+    margin-bottom: 2px;
+    color: #C2410C;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+.slip-foundation-tagline {
+    margin-bottom: 8px;
+    color: #4b5563;
+    font-size: 12px;
+    font-weight: 500;
+}
+.slip-foundation-contact {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 7px;
+    color: #4b5563;
+    font-size: 10px;
+    line-height: 1.5;
+}
+.slip-contact-separator {
+    color: #D97706;
+}
+/* =========================================================
+   VERIFIED HEADER STATUS
+   ========================================================= */
+.slip-header-status {
+    grid-area: status;
+    flex: 0 0 auto;
+    min-width: 105px;
+    text-align: center;
+}
+.slip-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 7px 11px;
+    border: 1px solid #FDBA74;
+    border-radius: 999px;
+    background: #FFF7ED;
+    color: #C2410C;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+.slip-verified-check {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #EA580C;
+    color: #ffffff;
+    font-size: 11px;
+}
+.slip-status-text {
+    margin-top: 5px;
+    color: #6b7280;
+    font-size: 10px;
+}
+/* =========================================================
+   SYSTEM INFORMATION
+   ========================================================= */
+.slip-system-information {
+    grid-area: system;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 14px 0 0;
+    padding: 7px 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px 7px;
+    background: #ffffff;
+    border-bottom: 1px solid #FED7AA;
+    color: #6b7280;
+    font-size: 9px;
+    line-height: 1.5;
+    text-align: center;
+}
+.slip-system-information-label {
+    color: #C2410C;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+}
+.slip-system-information-item {
+    overflow-wrap: anywhere;
+}
+.slip-system-information-separator {
+    color: #D97706;
+    font-weight: 700;
+}
+/* =========================================================
+   FOUNDATION SYSTEM DETAILS
+   ========================================================= */
+.slip-system-details-section {
+    margin: 12px 22px 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #ffffff;
+}
+.slip-system-details-heading {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 11px;
+    box-sizing: border-box;
+    background: #FFF7ED;
+    border-bottom: 1px solid #FED7AA;
+}
+.slip-system-details-icon {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #EA580C;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+}
+.slip-system-details-title {
+    color: #C2410C;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+.slip-system-details-subtitle {
+    margin-top: 1px;
+    color: #6b7280;
+    font-size: 9px;
+    line-height: 1.4;
+}
+.slip-system-details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.slip-system-detail-full {
+    grid-column: 1 / -1;
+}
+.slip-system-detail-item:nth-child(odd) {
+    border-right: 0;
+}
+.slip-system-detail-item:not(.slip-system-detail-full):not(:nth-child(3n)) {
+    border-right: 1px solid #e5e7eb;
+}
+.slip-system-detail-item {
+    min-width: 0;
+    padding: 9px 11px;
+    border-bottom: 1px solid #e5e7eb;
+}
+    .slip-system-detail-item:nth-last-child(-n + 3) {
+        border-bottom: 0;
+    }
+.slip-system-detail-full {
+    grid-column: 1 / -1;
+    border-right: 0 !important;
+}
+/* =========================================================
+   RECEIPT TITLE
+   ========================================================= */
+.slip-receipt-title-area {
+    padding: 14px 22px 12px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+.slip-receipt-title {
+    color: #111827;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+.slip-receipt-subtitle {
+    margin-top: 2px;
+    color: #6b7280;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+/* =========================================================
+   REFERENCE INFORMATION
+   ========================================================= */
+.slip-reference-section {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 14px 22px 0;
+    border: 1px solid #FED7AA;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.slip-reference-item {
+    min-width: 0;
+    padding: 9px 11px;
+    border-right: 1px solid #FED7AA;
+    background: #FFF7ED;
+}
+    .slip-reference-item:last-child {
+        border-right: 0;
+    }
+.slip-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #6b7280;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+.slip-reference-value {
+    display: block;
+    color: #111827;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+/* =========================================================
+   COMMON SECTIONS
+   ========================================================= */
+.slip-section {
+    margin: 14px 22px 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.slip-section-heading {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 11px;
+    box-sizing: border-box;
+    color: #C2410C;
+    background: #FFF7ED;
+    border-bottom: 1px solid #FED7AA;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+.slip-section-number {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    border-radius: 50%;
+    background: #EA580C;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+}
+.slip-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.slip-detail-item {
+    min-width: 0;
+    padding: 9px 11px;
+    border-bottom: 1px solid #e5e7eb;
+}
+    .slip-detail-item:nth-child(odd) {
+        border-right: 1px solid #e5e7eb;
+    }
+    .slip-detail-item:nth-last-child(-n + 2) {
+        border-bottom: 0;
+    }
+.slip-detail-full {
+    grid-column: 1 / -1;
+    border-right: 0 !important;
+}
+.slip-value {
+    display: block;
+    color: #374151;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+.slip-value-strong {
+    color: #111827;
+    font-size: 12px;
+    font-weight: 700;
+}
+.slip-monospace {
+    font-family: Consolas, "Courier New", monospace;
+    letter-spacing: 0.15px;
+}
+/* =========================================================
+   DONATION TYPE BADGE
+   ========================================================= */
+.slip-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #FFF7ED;
+    color: #C2410C;
+    font-size: 9px;
+    font-weight: 800;
+    border: 1px solid #FED7AA;
+}
+/* =========================================================
+   DONATION AMOUNT
+   ========================================================= */
+.slip-amount-section {
+    margin: 16px 22px 0;
+    min-height: 104px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px 18px;
+    box-sizing: border-box;
+    border: 1px solid #FDBA74;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #FFF7ED, #FFFFFF);
+}
+.slip-amount-left {
+    min-width: 0;
+}
+.slip-amount-label {
+    margin-bottom: 1px;
+    color: #C2410C;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+.slip-amount {
+    color: #9A3412;
+    font-size: 29px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+.slip-amount-words {
+    margin-top: 4px;
+    color: #4b5563;
+    font-size: 10px;
+    font-style: italic;
+    text-transform: capitalize;
+}
+.slip-amount-right {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    max-width: 230px;
+    color: #4b5563;
+}
+.slip-amount-icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #EA580C;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+}
+.slip-amount-note-title {
+    color: #C2410C;
+    font-size: 11px;
+    font-weight: 800;
+}
+.slip-amount-note {
+    margin-top: 2px;
+    font-size: 9px;
+    line-height: 1.4;
+}
+/* =========================================================
+   VERIFICATION BOX
+   ========================================================= */
+.slip-verification-box {
+    margin: 14px 22px 0;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 13px;
+    border: 1px solid #FED7AA;
+    border-radius: 6px;
+    background: #FFF7ED;
+}
+.slip-verification-icon {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #EA580C;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+}
+.slip-verification-content {
+    min-width: 0;
+}
+.slip-verification-title {
+    color: #C2410C;
+    font-size: 11px;
+    font-weight: 800;
+}
+.slip-verification-text {
+    margin-top: 2px;
+    color: #4b5563;
+    font-size: 9px;
+    line-height: 1.4;
+}
+/* =========================================================
+   ACKNOWLEDGEMENT
+   ========================================================= */
+.slip-acknowledgement {
+    margin: 16px 22px 0;
+    padding: 12px 15px;
+    text-align: center;
+    border-top: 1px dashed #FDBA74;
+    border-bottom: 1px dashed #FDBA74;
+}
+.slip-acknowledgement-title {
+    color: #C2410C;
+    font-size: 13px;
+    font-weight: 800;
+}
+.slip-acknowledgement-text {
+    max-width: 620px;
+    margin: 4px auto 0;
+    color: #6b7280;
+    font-size: 10px;
+    line-height: 1.5;
+}
+/* =========================================================
+   SIGNATURE
+   ========================================================= */
+.slip-signature-section {
+    margin: 18px 22px 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+}
+.slip-signature-box {
+    width: 220px;
+    text-align: center;
+}
+.slip-signature-space {
+    height: 30px;
+}
+.slip-signature-line {
+    border-top: 1px solid #374151;
+}
+.slip-signature-label {
+    margin-top: 5px;
+    color: #111827;
+    font-size: 10px;
+    font-weight: 800;
+}
+.slip-signature-subtitle {
+    margin-top: 2px;
+    color: #6b7280;
+    font-size: 8px;
+}
+/* =========================================================
+   OFFICIAL SEAL
+   ========================================================= */
+.slip-seal-box {
+    width: 120px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.slip-seal-circle {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px dashed #D97706;
+    border-radius: 50%;
+    color: #C2410C;
+    font-size: 7px;
+    text-align: center;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+    .slip-seal-circle strong {
+        margin: 2px 0;
+        color: #9A3412;
+        font-size: 10px;
+    }
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.slip-footer {
+    margin-top: 18px;
+    padding: 10px 22px;
+    border-top: 1px solid #FED7AA;
+    background: #FFF7ED;
+    color: #6b7280;
+    text-align: center;
+    font-size: 8px;
+    line-height: 1.6;
+}
+.slip-footer-main {
+    font-weight: 600;
+}
+.slip-footer-reference {
+    margin-top: 2px;
+}
+    .slip-footer-reference span {
+        margin: 0 4px;
+        color: #D97706;
+    }
+.slip-footer-note {
+    margin-top: 2px;
+    font-style: italic;
+}
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 850px) {
+    .donation-slip-page {
+        padding: 10px;
+    }
+    .donation-slip-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .donation-slip-toolbar-left,
+    .donation-slip-toolbar-right {
+        width: 100%;
+    }
+    .donation-slip-toolbar-right {
+        justify-content: flex-end;
+    }
+    .slip-foundation-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .slip-header-status {
+        align-self: flex-start;
+    }
+    .slip-reference-section {
+        grid-template-columns: 1fr;
+    }
+    .slip-reference-item {
+        border-right: 0;
+        border-bottom: 1px solid #FED7AA;
+    }
+        .slip-reference-item:last-child {
+            border-bottom: 0;
+        }
+    .slip-amount-section {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .slip-amount-right {
+        max-width: none;
+    }
+}
+@media (max-width: 600px) {
+    .donation-slip-page {
+        padding: 6px;
+    }
+    .donation-slip-receipt {
+        border-radius: 4px;
+    }
+    .slip-foundation-header,
+    .slip-receipt-title-area {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+    .slip-branding {
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .slip-logo-wrapper {
+        width: 58px;
+        height: 58px;
+        flex-basis: 58px;
+    }
+    .slip-foundation-name {
+        font-size: 19px;
+    }
+    .slip-foundation-contact {
+        font-size: 9px;
+    }
+    .slip-reference-section,
+    .slip-section,
+    .slip-system-details-section,
+    .slip-amount-section,
+    .slip-verification-box,
+    .slip-acknowledgement,
+    .slip-signature-section {
+        margin-left: 14px;
+        margin-right: 14px;
+    }
+    .slip-system-information {
+        margin-left: 14px;
+        margin-right: 14px;
+    }
+    .slip-system-details-grid {
+        grid-template-columns: 1fr;
+    }
+    .slip-system-detail-item,
+    .slip-system-detail-item:nth-child(odd) {
+        border-right: 0;
+    }
+        .slip-system-detail-item:nth-last-child(-n + 2) {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .slip-system-detail-item:last-child {
+            border-bottom: 0;
+        }
+    .slip-system-detail-full {
+        grid-column: auto;
+    }
+    .slip-details-grid {
+        grid-template-columns: 1fr;
+    }
+    .slip-detail-item,
+    .slip-detail-item:nth-child(odd) {
+        border-right: 0;
+    }
+        .slip-detail-item:nth-last-child(-n + 2) {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .slip-detail-item:last-child {
+            border-bottom: 0;
+        }
+    .slip-detail-full {
+        grid-column: auto;
+    }
+    .slip-amount {
+        font-size: 25px;
+    }
+    .slip-signature-section {
+        align-items: center;
+        flex-direction: column;
+    }
+    .slip-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+}
+/* =========================================================
+   RESPONSIVE FOUNDATION HEADER
+   ========================================================= */
+@media (max-width: 760px) {
+    .slip-foundation-header {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "branding"
+            "status"
+            "system";
+        row-gap: 10px;
+        padding: 14px;
+    }
+    .slip-header-status {
+        justify-self: start;
+        text-align: left;
+    }
+    .slip-system-information {
+        margin-top: 0;
+    }
+    .slip-system-details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .slip-system-detail-full {
+        grid-column: 1 / -1;
+    }
+    .slip-system-detail-item:not(.slip-system-detail-full):not(:nth-child(3n)) {
+        border-right: 0;
+    }
+    .slip-system-detail-item:not(.slip-system-detail-full):nth-child(odd) {
+        border-right: 1px solid #e5e7eb;
+    }
+}
+/* =========================================================
+   PRINT
+   ========================================================= */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+    html,
+    body {
+        width: 100% !important;
+        height: 100% !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #ffffff !important;
+    }
+    /* Hide all application chrome */
+    .admin-sidebar,
+    .admin-topbar,
+    .admin-footer,
+    .admin-header,
+    .admin-brand,
+    .admin-layout > aside,
+    .admin-layout > header,
+    .admin-layout > footer,
+    .sidebar,
+    .top-header,
+    .sidebar-footer,
+    .sidebar-nav,
+    nav,
+    aside,
+    .donation-slip-toolbar {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    /* Remove dashboard/container spacing */
+    .admin-layout,
+    .admin-main,
+    .admin-content,
+    .main-content,
+    .admin-page,
+    .donation-slip-page {
+        width: 100% !important;
+        height: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        position: static !important;
+        transform: none !important;
+        overflow: visible !important;
+    }
+    .donation-slip-wrapper {
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    /* =====================================================
+       ONE-PAGE RECEIPT
+       ===================================================== */
+    .donation-slip-receipt {
+        position: relative !important;
+        isolation: isolate;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 1px solid #9ca3af !important;
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+        font-size: 11px !important;
+        line-height: 1.25 !important;
+    }
+        /* =====================================================
+       PRINT WATERMARK
+       ===================================================== */
+        .donation-slip-receipt::before {
+            content: "";
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            width: 430px !important;
+            height: 430px !important;
+            background-image: url('/images/foundation/foundation-logo.png') !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: contain !important;
+            opacity: 0.055 !important;
+            transform: translate(-50%, -50%) !important;
+            pointer-events: none !important;
+            z-index: 0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .donation-slip-receipt > * {
+            position: relative !important;
+            z-index: 1 !important;
+        }
+    .slip-foundation-header {
+        min-height: 0 !important;
+        padding: 10px 18px 0 !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        grid-template-areas:
+            "branding status"
+            "system system" !important;
+        column-gap: 10px !important;
+    }
+    .slip-branding {
+        gap: 9px !important;
+    }
+    .slip-logo-wrapper {
+        width: 52px !important;
+        height: 52px !important;
+        flex-basis: 52px !important;
+    }
+    .slip-foundation-logo {
+        padding: 4px !important;
+    }
+    .slip-foundation-name {
+        margin-bottom: 1px !important;
+        font-size: 19px !important;
+        line-height: 1.05 !important;
+    }
+    .slip-foundation-tagline {
+        margin-bottom: 3px !important;
+        font-size: 9px !important;
+    }
+    .slip-foundation-contact {
+        gap: 2px 5px !important;
+        font-size: 8px !important;
+        line-height: 1.25 !important;
+    }
+    .slip-verified-badge {
+        padding: 5px 8px !important;
+        font-size: 9px !important;
+    }
+    .slip-verified-check {
+        width: 12px !important;
+        height: 12px !important;
+        font-size: 9px !important;
+    }
+    .slip-status-text {
+        margin-top: 2px !important;
+        font-size: 8px !important;
+    }
+    .slip-system-information {
+        width: 100% !important;
+        margin: 7px 0 0 !important;
+        padding: 4px 7px !important;
+        gap: 2px 5px !important;
+        font-size: 7.5px !important;
+    }
+    .slip-receipt-title-area {
+        padding: 9px 18px 7px !important;
+    }
+    .slip-receipt-title {
+        font-size: 15px !important;
+        letter-spacing: .8px !important;
+    }
+    .slip-receipt-subtitle {
+        margin-top: 1px !important;
+        font-size: 8px !important;
+        letter-spacing: .5px !important;
+    }
+    .slip-reference-section {
+        margin: 9px 18px 0 !important;
+    }
+    .slip-reference-item {
+        padding: 5px 7px !important;
+    }
+    .slip-label {
+        margin-bottom: 1px !important;
+        font-size: 7.5px !important;
+    }
+    .slip-reference-value {
+        font-size: 9px !important;
+    }
+    .slip-section {
+        margin: 9px 18px 0 !important;
+    }
+    .slip-section-heading {
+        min-height: 25px !important;
+        gap: 5px !important;
+        padding: 4px 7px !important;
+        font-size: 8.5px !important;
+    }
+    .slip-section-number {
+        width: 16px !important;
+        height: 16px !important;
+        flex-basis: 16px !important;
+        font-size: 7px !important;
+    }
+    .slip-details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .slip-system-details-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+    .slip-system-detail-full {
+        grid-column: 1 / -1 !important;
+    }
+    .slip-detail-item {
+        padding: 5px 7px !important;
+    }
+    .slip-value {
+        font-size: 9px !important;
+    }
+    .slip-value-strong {
+        font-size: 10px !important;
+    }
+    .slip-type-badge {
+        padding: 2px 5px !important;
+        font-size: 7.5px !important;
+    }
+    .slip-system-details-section {
+        margin: 8px 18px 0 !important;
+    }
+    .slip-system-details-heading {
+        min-height: 29px !important;
+        padding: 5px 7px !important;
+        gap: 5px !important;
+    }
+    .slip-system-details-icon {
+        width: 16px !important;
+        height: 16px !important;
+        flex-basis: 16px !important;
+        font-size: 8px !important;
+    }
+    .slip-system-details-title {
+        font-size: 8.5px !important;
+    }
+    .slip-system-details-subtitle {
+        font-size: 7.5px !important;
+    }
+    .slip-system-detail-item {
+        padding: 5px 7px !important;
+    }
+    .slip-amount-section {
+        min-height: 0 !important;
+        margin: 10px 18px 0 !important;
+        padding: 8px 10px !important;
+        gap: 10px !important;
+    }
+    .slip-amount-label {
+        font-size: 8px !important;
+    }
+    .slip-amount {
+        font-size: 21px !important;
+    }
+    .slip-amount-words {
+        margin-top: 2px !important;
+        font-size: 8px !important;
+    }
+    .slip-amount-right {
+        gap: 5px !important;
+        max-width: 180px !important;
+    }
+    .slip-amount-icon {
+        width: 28px !important;
+        height: 28px !important;
+        flex-basis: 28px !important;
+        font-size: 15px !important;
+    }
+    .slip-amount-note-title {
+        font-size: 8px !important;
+    }
+    .slip-amount-note {
+        font-size: 7.5px !important;
+    }
+    .slip-verification-box {
+        margin: 9px 18px 0 !important;
+        gap: 6px !important;
+        padding: 6px 8px !important;
+    }
+    .slip-verification-icon {
+        width: 22px !important;
+        height: 22px !important;
+        flex-basis: 22px !important;
+        font-size: 13px !important;
+    }
+    .slip-verification-title {
+        font-size: 8px !important;
+    }
+    .slip-verification-text {
+        font-size: 7.5px !important;
+    }
+    .slip-acknowledgement {
+        margin: 10px 18px 0 !important;
+        padding: 7px 9px !important;
+    }
+    .slip-acknowledgement-title {
+        font-size: 9px !important;
+    }
+    .slip-acknowledgement-text {
+        margin-top: 2px !important;
+        font-size: 7.5px !important;
+    }
+    .slip-signature-section {
+        margin: 11px 18px 0 !important;
+        gap: 15px !important;
+    }
+    .slip-signature-box {
+        width: 170px !important;
+    }
+    .slip-signature-space {
+        height: 17px !important;
+    }
+    .slip-signature-label {
+        margin-top: 3px !important;
+        font-size: 8px !important;
+    }
+    .slip-signature-subtitle {
+        margin-top: 1px !important;
+        font-size: 7px !important;
+    }
+    .slip-seal-box {
+        width: 75px !important;
+        height: 52px !important;
+    }
+    .slip-seal-circle {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 5.5px !important;
+    }
+        .slip-seal-circle strong {
+            margin: 1px 0 !important;
+            font-size: 7px !important;
+        }
+    .slip-footer {
+        margin-top: 8px !important;
+        padding: 7px 18px !important;
+        font-size: 7px !important;
+        line-height: 1.35 !important;
+    }
+    /* Keep all receipt blocks together on one printed sheet */
+    .donation-slip-receipt,
+    .slip-foundation-header,
+    .slip-system-information,
+    .slip-reference-section,
+    .slip-section,
+    .slip-system-details-section,
+    .slip-amount-section,
+    .slip-verification-box,
+    .slip-acknowledgement,
+    .slip-signature-section,
+    .slip-footer {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+    .slip-foundation-header,
+    .slip-reference-item,
+    .slip-section-heading,
+    .slip-system-details-heading,
+    .slip-amount-section,
+    .slip-verification-box,
+    .slip-type-badge,
+    .slip-verified-badge,
+    .slip-footer {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    a {
+        color: inherit !important;
+        text-decoration: none !important;
+    }
+}

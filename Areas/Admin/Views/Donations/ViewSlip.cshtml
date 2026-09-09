@@ -1,0 +1,576 @@
+﻿@model FoundationDonationSystem.ViewModels.DonationSlipViewModel
+@using FoundationDonationSystem.Models
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "Donation Receipt";
+    var foundationSettings =
+        await FoundationSettingsService.GetAsync();
+    var foundationName =
+        string.IsNullOrWhiteSpace(foundationSettings.FoundationName)
+            ? "Foundation"
+            : foundationSettings.FoundationName;
+    var foundationTagline =
+        string.IsNullOrWhiteSpace(foundationSettings.Tagline)
+            ? "Serving with compassion • Supporting with purpose"
+            : foundationSettings.Tagline;
+    var foundationAddress =
+        string.IsNullOrWhiteSpace(foundationSettings.Address)
+            ? "-"
+            : foundationSettings.Address;
+    var foundationPhone =
+        string.IsNullOrWhiteSpace(foundationSettings.Phone)
+            ? "-"
+            : foundationSettings.Phone;
+    var foundationEmail =
+        string.IsNullOrWhiteSpace(foundationSettings.Email)
+            ? "-"
+            : foundationSettings.Email;
+    var foundationWebsite =
+        string.IsNullOrWhiteSpace(foundationSettings.Website)
+            ? "-"
+            : foundationSettings.Website;
+    var foundationRegistration =
+        string.IsNullOrWhiteSpace(foundationSettings.RegistrationNumber)
+            ? "-"
+            : $"Registration No.: {foundationSettings.RegistrationNumber}";
+    var foundationPan =
+        string.IsNullOrWhiteSpace(foundationSettings.PAN)
+            ? "-"
+            : $"PAN: {foundationSettings.PAN}";
+    var foundationLogo =
+        string.IsNullOrWhiteSpace(foundationSettings.LogoPath)
+            ? Url.Content("~/images/foundation-logo.png")
+            : foundationSettings.LogoPath;
+    var receiptFooter =
+        string.IsNullOrWhiteSpace(foundationSettings.ReceiptFooter)
+            ? "This is a computer-generated donation receipt. No physical signature is required."
+            : foundationSettings.ReceiptFooter;
+    var thankYouMessage =
+        string.IsNullOrWhiteSpace(foundationSettings.ThankYouMessage)
+            ? "Your contribution helps us continue our work and support the people and communities we serve."
+            : foundationSettings.ThankYouMessage;
+    var donationDate = Model.TransactionDate.ToString("dd MMM yyyy");
+    var generatedDate = Model.GeneratedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt");
+    var paymentMethod = Model.PaymentMethod?.ToString() ?? "-";
+    var donationType = Model.IsOfflineDonation
+        ? "Offline Donation"
+        : "Online Donation";
+    string AmountInWords(decimal amount)
+    {
+        if (amount == 0)
+            return "Zero Rupees Only";
+        long rupees = (long)Math.Floor(amount);
+        int paise = (int)Math.Round((amount - rupees) * 100);
+        string NumberToWords(long number)
+        {
+            if (number == 0)
+                return "Zero";
+            if (number < 0)
+                return "Minus " + NumberToWords(Math.Abs(number));
+            string[] ones =
+            {
+                "", "One", "Two", "Three", "Four", "Five",
+                "Six", "Seven", "Eight", "Nine", "Ten",
+                "Eleven", "Twelve", "Thirteen", "Fourteen",
+                "Fifteen", "Sixteen", "Seventeen", "Eighteen",
+                "Nineteen"
+            };
+            string[] tens =
+            {
+                "", "", "Twenty", "Thirty", "Forty",
+                "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+            };
+            if (number < 20)
+                return ones[number];
+            if (number < 100)
+            {
+                return tens[number / 10] +
+                       (number % 10 > 0
+                           ? " " + ones[number % 10]
+                           : "");
+            }
+            if (number < 1000)
+            {
+                return ones[number / 100] +
+                       " Hundred" +
+                       (number % 100 > 0
+                           ? " " + NumberToWords(number % 100)
+                           : "");
+            }
+            if (number < 100000)
+            {
+                return NumberToWords(number / 1000) +
+                       " Thousand" +
+                       (number % 1000 > 0
+                           ? " " + NumberToWords(number % 1000)
+                           : "");
+            }
+            if (number < 10000000)
+            {
+                return NumberToWords(number / 100000) +
+                       " Lakh" +
+                       (number % 100000 > 0
+                           ? " " + NumberToWords(number % 100000)
+                           : "");
+            }
+            return NumberToWords(number / 10000000) +
+                   " Crore" +
+                   (number % 10000000 > 0
+                       ? " " + NumberToWords(number % 10000000)
+                       : "");
+        }
+        var result = NumberToWords(rupees) + " Rupees";
+        if (paise > 0)
+        {
+            result += " and " +
+                      NumberToWords(paise) +
+                      " Paise";
+        }
+        return result + " Only";
+    }
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/donation-slip-view.css"
+          asp-append-version="true" />
+}
+<div class="donation-slip-page">
+    <!-- =========================================================
+         PAGE TOOLBAR
+         ========================================================= -->
+    <div class="donation-slip-toolbar">
+        <div class="donation-slip-toolbar-left">
+            <a href="@Url.Action(
+                                                      "Index",
+                                                      "Donations",
+                                                      new { area = "Admin" })"
+               class="slip-btn slip-btn-secondary">
+                <span class="slip-btn-icon">←</span>
+                Back
+            </a>
+        </div>
+        <div class="donation-slip-toolbar-right">
+            <a href="@Url.Action(
+                                                      "DownloadSlipPdf",
+                                                      "Donations",
+                                                      new
+                                                      {
+                                                          area = "Admin",
+                                                          id = Model.DonationId
+                                                      })"
+               class="slip-btn slip-btn-primary"
+               target="_blank"
+               rel="noopener">
+                <span class="slip-btn-icon">↓</span>
+                Download PDF
+            </a>
+            <button type="button"
+                    class="slip-btn slip-btn-secondary"
+                    onclick="window.print()">
+                <span class="slip-btn-icon">🖨</span>
+                Print
+            </button>
+        </div>
+    </div>
+    <!-- =========================================================
+         RECEIPT
+         ========================================================= -->
+    <div class="donation-slip-wrapper">
+        <div class="donation-slip-receipt"
+             id="donationSlipReceipt">
+            <!-- =================================================
+                 FOUNDATION HEADER
+                 ================================================= -->
+            <header class="slip-foundation-header">
+                <div class="slip-branding">
+                    <div class="slip-logo-wrapper">
+                        <img src="@foundationLogo"
+                             alt="@foundationName"
+                             class="slip-foundation-logo"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        <div class="slip-logo-fallback">
+                            <span>F</span>
+                        </div>
+                    </div>
+                    <div class="slip-foundation-details">
+                        <div class="slip-foundation-name">
+                            @foundationName
+                        </div>
+                        <div class="slip-foundation-tagline">
+                            @foundationTagline
+                        </div>
+                        <div class="slip-foundation-contact">
+                            <span>
+                                @foundationAddress
+                            </span>
+                            <span class="slip-contact-separator">•</span>
+                            <span>
+                                @foundationPhone
+                            </span>
+                            <span class="slip-contact-separator">•</span>
+                            <span>
+                                @foundationEmail
+                            </span>
+                        </div>
+                        <div class="slip-foundation-contact">
+                            <span>
+                                @foundationWebsite
+                            </span>
+                            <span class="slip-contact-separator">•</span>
+                            <span>
+                                @foundationRegistration
+                            </span>
+                            <span class="slip-contact-separator">•</span>
+                            <span>
+                                @foundationPan
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="slip-system-information">
+                    <span class="slip-system-information-label">
+                        System Information
+                    </span>
+                    <span class="slip-system-information-item">
+                        Verified donation record
+                    </span>
+                    <span class="slip-system-information-separator">•</span>
+                    <span class="slip-system-information-item">
+                        Generated @generatedDate
+                    </span>
+                    <span class="slip-system-information-separator">•</span>
+                    <span class="slip-system-information-item">
+                        Donation ID: @Model.DonationId
+                    </span>
+                </div>
+                <div class="slip-header-status">
+                    <div class="slip-verified-badge">
+                        <span class="slip-verified-check">✓</span>
+                        VERIFIED
+                    </div>
+                    <div class="slip-status-text">
+                        Donation Verified
+                    </div>
+                </div>
+            </header>
+            <!-- =================================================
+                 SYSTEM / FOUNDATION INFORMATION
+                 ================================================= -->
+            <section class="slip-system-details-section">
+                <div class="slip-system-details-heading">
+                    <span class="slip-system-details-icon">
+                        ✓
+                    </span>
+                    <div>
+                        <div class="slip-system-details-title">
+                            Foundation Information
+                        </div>
+                        <div class="slip-system-details-subtitle">
+                            Official system information associated with this receipt
+                        </div>
+                    </div>
+                </div>
+                <div class="slip-system-details-grid">
+                    <div class="slip-system-detail-item slip-system-detail-full">
+                        <span class="slip-label">
+                            Registered Address
+                        </span>
+                        <span class="slip-value">
+                            @foundationAddress
+                        </span>
+                    </div>
+                    <div class="slip-system-detail-item">
+                        <span class="slip-label">
+                            Phone
+                        </span>
+                        <span class="slip-value">
+                            @foundationPhone
+                        </span>
+                    </div>
+                    <div class="slip-system-detail-item">
+                        <span class="slip-label">
+                            Email
+                        </span>
+                        <span class="slip-value">
+                            @foundationEmail
+                        </span>
+                    </div>
+                    <div class="slip-system-detail-item">
+                        <span class="slip-label">
+                            Website
+                        </span>
+                        <span class="slip-value">
+                            @foundationWebsite
+                        </span>
+                    </div>
+                    <div class="slip-system-detail-item">
+                        <span class="slip-label">
+                            Registration Number
+                        </span>
+                        <span class="slip-value">
+                            @(
+                                string.IsNullOrWhiteSpace(foundationSettings.RegistrationNumber)
+                                    ? "-"
+                                    : foundationSettings.RegistrationNumber
+                            )
+                        </span>
+                    </div>
+                    <div class="slip-system-detail-item">
+                        <span class="slip-label">
+                            PAN
+                        </span>
+                        <span class="slip-value slip-monospace">
+                            @(
+                                string.IsNullOrWhiteSpace(foundationSettings.PAN)
+                                    ? "-"
+                                    : foundationSettings.PAN
+                            )
+                        </span>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 RECEIPT TITLE
+                 ================================================= -->
+            <div class="slip-receipt-title-area">
+                <div class="slip-receipt-title">
+                    DONATION RECEIPT
+                </div>
+                <div class="slip-receipt-subtitle">
+                    Official acknowledgement of donation
+                </div>
+            </div>
+            <!-- =================================================
+                 REFERENCE INFORMATION
+                 ================================================= -->
+            <section class="slip-reference-section">
+                <div class="slip-reference-item">
+                    <span class="slip-label">
+                        Donation No.
+                    </span>
+                    <strong class="slip-reference-value">
+                        @Model.DonationNumber
+                    </strong>
+                </div>
+                <div class="slip-reference-item">
+                    <span class="slip-label">
+                        Receipt / Slip No.
+                    </span>
+                    <strong class="slip-reference-value">
+                        @Model.SlipNumber
+                    </strong>
+                </div>
+                <div class="slip-reference-item">
+                    <span class="slip-label">
+                        Receipt Generated
+                    </span>
+                    <strong class="slip-reference-value">
+                        @generatedDate
+                    </strong>
+                </div>
+            </section>
+            <!-- =================================================
+                 DONOR DETAILS
+                 ================================================= -->
+            <section class="slip-section">
+                <div class="slip-section-heading">
+                    <span class="slip-section-number">
+                        01
+                    </span>
+                    <span>
+                        Donor Details
+                    </span>
+                </div>
+                <div class="slip-details-grid">
+                    <div class="slip-detail-item">
+                        <span class="slip-label">
+                            Full Name
+                        </span>
+                        <span class="slip-value slip-value-strong">
+                            @Model.DonorName
+                        </span>
+                    </div>
+                    <div class="slip-detail-item">
+                        <span class="slip-label">
+                            Mobile Number
+                        </span>
+                        <span class="slip-value">
+                            @Model.Mobile
+                        </span>
+                    </div>
+                    <div class="slip-detail-item">
+                        <span class="slip-label">
+                            Email Address
+                        </span>
+                        <span class="slip-value">
+                            @(string.IsNullOrWhiteSpace(Model.Email)
+                                ? "-"
+                                : Model.Email)
+                        </span>
+                    </div>
+                    <div class="slip-detail-item slip-detail-full">
+                        <span class="slip-label">
+                            Address
+                        </span>
+                        <span class="slip-value">
+                            @(string.IsNullOrWhiteSpace(Model.Address)
+                                ? "-"
+                                : Model.Address)
+                        </span>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 DONATION DETAILS
+                 ================================================= -->
+            <section class="slip-section">
+                <div class="slip-section-heading">
+                    <span class="slip-section-number">
+                        02
+                    </span>
+                    <span>
+                        Donation Details
+                    </span>
+                </div>
+                <div class="slip-details-grid">
+                    <div class="slip-detail-item">
+                        <span class="slip-label">
+                            Donation Type
+                        </span>
+                        <span class="slip-value">
+                            <span class="slip-type-badge">
+                                @donationType
+                            </span>
+                        </span>
+                    </div>
+                    <div class="slip-detail-item">
+                        <span class="slip-label">
+                            Donation Date
+                        </span>
+                        <span class="slip-value">
+                            @donationDate
+                        </span>
+                    </div>
+                    <div class="slip-detail-item">
+                        <span class="slip-label">
+                            Payment Method
+                        </span>
+                        <span class="slip-value">
+                            @paymentMethod
+                        </span>
+                    </div>
+                    <div class="slip-detail-item">
+                        <span class="slip-label">
+                            Transaction / UTR
+                        </span>
+                        <span class="slip-value slip-monospace">
+                            @(
+                                string.IsNullOrWhiteSpace(Model.TransactionId)
+                                    ? "-"
+                                    : Model.TransactionId
+                            )
+                        </span>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 DONATION AMOUNT
+                 ================================================= -->
+            <section class="slip-amount-section">
+                <div class="slip-amount-left">
+                    <div class="slip-amount-label">
+                        Total Donation
+                    </div>
+                    <div class="slip-amount">
+                        ₹@Model.Amount.ToString("N2")
+                    </div>
+                    <div class="slip-amount-words">
+                        @AmountInWords(Model.Amount)
+                    </div>
+                </div>
+                <div class="slip-amount-right">
+                    <div class="slip-amount-icon">
+                        ₹
+                    </div>
+                    <div>
+                        <div class="slip-amount-note-title">
+                            Donation Received
+                        </div>
+                        <div class="slip-amount-note">
+                            Amount acknowledged by the foundation
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 VERIFICATION
+                 ================================================= -->
+            <section class="slip-verification-box">
+                <div class="slip-verification-icon">
+                    ✓
+                </div>
+                <div class="slip-verification-content">
+                    <div class="slip-verification-title">
+                        Donation Verified
+                    </div>
+                    <div class="slip-verification-text">
+                        This donation has been reviewed and verified
+                        by the foundation. This receipt is generated
+                        against the verified donation record.
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 ACKNOWLEDGEMENT
+                 ================================================= -->
+            <section class="slip-acknowledgement">
+                <div class="slip-acknowledgement-title">
+                    Thank You for Your Generous Support
+                </div>
+                <div class="slip-acknowledgement-text">
+                    @thankYouMessage
+                </div>
+            </section>
+            <!-- =================================================
+                 SIGNATURE AREA
+                 ================================================= -->
+            <section class="slip-signature-section">
+                <div class="slip-signature-box">
+                    <div class="slip-signature-space"></div>
+                    <div class="slip-signature-line"></div>
+                    <div class="slip-signature-label">
+                        Authorized Signatory
+                    </div>
+                    <div class="slip-signature-subtitle">
+                        For and on behalf of @foundationName
+                    </div>
+                </div>
+                <div class="slip-seal-box">
+                    <div class="slip-seal-circle">
+                        <span>OFFICIAL</span>
+                        <strong>SEAL</strong>
+                        <span>@foundationName</span>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 FOOTER
+                 ================================================= -->
+            <footer class="slip-footer">
+                <div class="slip-footer-main">
+                    @receiptFooter
+                </div>
+                <div class="slip-footer-reference">
+                    Donation No:
+                    <strong>@Model.DonationNumber</strong>
+                    <span>•</span>
+                    Receipt No:
+                    <strong>@Model.SlipNumber</strong>
+                </div>
+                <div class="slip-footer-note">
+                    Please retain this receipt for your records.
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>

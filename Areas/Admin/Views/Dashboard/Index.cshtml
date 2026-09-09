@@ -1,0 +1,890 @@
+﻿@model FoundationDonationSystem.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var totalTracked =
+        Model.VerifiedDonationCount +
+        Model.PendingDonationCount;
+    var verifiedPercentage =
+        totalTracked > 0
+            ? (Model.VerifiedDonationCount * 100.0 / totalTracked)
+            : 0;
+    var pendingPercentage =
+        totalTracked > 0
+            ? (Model.PendingDonationCount * 100.0 / totalTracked)
+            : 0;
+}
+<div class="admin-dashboard">
+    <!-- =========================================================
+         PAGE HEADER
+         ========================================================= -->
+    <div class="admin-page-header dashboard-page-header">
+        <div class="dashboard-header-content">
+            <div class="dashboard-header-icon">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <rect x="3"
+                          y="3"
+                          width="7"
+                          height="7"
+                          rx="1" />
+                    <rect x="14"
+                          y="3"
+                          width="7"
+                          height="7"
+                          rx="1" />
+                    <rect x="3"
+                          y="14"
+                          width="7"
+                          height="7"
+                          rx="1" />
+                    <rect x="14"
+                          y="14"
+                          width="7"
+                          height="7"
+                          rx="1" />
+                </svg>
+            </div>
+            <div>
+                <span class="dashboard-header-eyebrow">
+                    Administration
+                </span>
+                <h1>
+                    Dashboard
+                </h1>
+                <p>
+                    Foundation Donation Management
+                </p>
+            </div>
+        </div>
+        <!-- CURRENT DATE / TIME -->
+        <div class="dashboard-header-time">
+            <span class="dashboard-time-label">
+                Today
+            </span>
+            <strong id="dashboardCurrentDate">
+                @DateTime.Now.ToString("dd MMM yyyy")
+            </strong>
+            <span id="dashboardCurrentTime">
+                @DateTime.Now.ToString("hh:mm:ss tt")
+            </span>
+        </div>
+    </div>
+    <!-- =========================================================
+         NEW DONATION NOTIFICATION
+         ========================================================= -->
+    <div id="newDonationNotification"
+         class="dashboard-notification"
+         style="display:none;">
+        <div class="dashboard-notification-icon">
+            <svg viewBox="0 0 24 24"
+                 aria-hidden="true">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                <path d="M10 21h4" />
+            </svg>
+        </div>
+        <div class="dashboard-notification-content">
+            <strong>
+                New Donation Received
+            </strong>
+            <span id="newDonationMessage">
+                A new donation has been submitted.
+            </span>
+        </div>
+        <a asp-area="Admin"
+           asp-controller="Donations"
+           asp-action="Index"
+           class="dashboard-notification-view">
+            View
+        </a>
+        <button type="button"
+                class="dashboard-notification-close"
+                onclick="closeDonationNotification()"
+                aria-label="Close notification">
+            &times;
+        </button>
+    </div>
+    <!-- =========================================================
+         STATISTICS
+         ========================================================= -->
+    <div class="dashboard-cards">
+        <!-- =====================================================
+             TODAY
+             ===================================================== -->
+        <div class="dashboard-card dashboard-card-primary">
+            <div class="dashboard-card-top">
+                <div class="dashboard-card-icon">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M12 2v20" />
+                        <path d="M17 5.5c-1-1-2.5-1.5-4.5-1.5-3 0-5 1.5-5 3.5s2 3 5 3 5 1 5 3.5-2 3.5-5 3.5c-2 0-3.5-.5-4.5-1.5" />
+                    </svg>
+                </div>
+                <span class="dashboard-card-badge">
+                    Today
+                </span>
+            </div>
+            <div class="dashboard-card-label">
+                Today's Donations
+            </div>
+            <div class="dashboard-card-value">
+                ₹@Model.TodayDonationAmount.ToString("N2")
+            </div>
+            <div class="dashboard-card-footer">
+                <span>
+                    Donation amount received today
+                </span>
+            </div>
+        </div>
+        <!-- =====================================================
+             MONTH
+             ===================================================== -->
+        <div class="dashboard-card dashboard-card-orange">
+            <div class="dashboard-card-top">
+                <div class="dashboard-card-icon">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <rect x="3"
+                              y="4"
+                              width="18"
+                              height="17"
+                              rx="2" />
+                        <path d="M16 2v4" />
+                        <path d="M8 2v4" />
+                        <path d="M3 10h18" />
+                        <path d="M8 14h.01" />
+                        <path d="M12 14h.01" />
+                        <path d="M16 14h.01" />
+                        <path d="M8 18h.01" />
+                        <path d="M12 18h.01" />
+                    </svg>
+                </div>
+                <span class="dashboard-card-badge">
+                    This Month
+                </span>
+            </div>
+            <div class="dashboard-card-label">
+                Monthly Donations
+            </div>
+            <div class="dashboard-card-value">
+                ₹@Model.MonthDonationAmount.ToString("N2")
+            </div>
+            <div class="dashboard-card-footer">
+                <span>
+                    Total donation amount this month
+                </span>
+            </div>
+        </div>
+        <!-- =====================================================
+             VERIFIED
+             ===================================================== -->
+        <div class="dashboard-card dashboard-card-success">
+            <div class="dashboard-card-top">
+                <div class="dashboard-card-icon">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <circle cx="12"
+                                cy="12"
+                                r="9" />
+                        <path d="m8 12 2.5 2.5L16 9" />
+                    </svg>
+                </div>
+                <span class="dashboard-card-badge">
+                    Verified
+                </span>
+            </div>
+            <div class="dashboard-card-label">
+                Verified Donations
+            </div>
+            <div class="dashboard-card-value"
+                 data-count="@Model.VerifiedDonationCount">
+                @Model.VerifiedDonationCount
+            </div>
+            <div class="dashboard-card-footer">
+                <div class="dashboard-progress">
+                    <div class="dashboard-progress-track">
+                        <div class="dashboard-progress-bar dashboard-progress-success"
+                             style="width:@verifiedPercentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%;">
+                        </div>
+                    </div>
+                    <span>
+                        @verifiedPercentage.ToString("0.#")%
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             PENDING
+             ===================================================== -->
+        <div class="dashboard-card dashboard-card-warning">
+            <div class="dashboard-card-top">
+                <div class="dashboard-card-icon">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <circle cx="12"
+                                cy="12"
+                                r="9" />
+                        <path d="M12 7v5l3 2" />
+                    </svg>
+                </div>
+                <span class="dashboard-card-badge">
+                    Attention
+                </span>
+            </div>
+            <div class="dashboard-card-label">
+                Pending Verification
+            </div>
+            <div class="dashboard-card-value"
+                 data-count="@Model.PendingDonationCount">
+                @Model.PendingDonationCount
+            </div>
+            <div class="dashboard-card-footer">
+                <div class="dashboard-progress">
+                    <div class="dashboard-progress-track">
+                        <div class="dashboard-progress-bar dashboard-progress-warning"
+                             style="width:@pendingPercentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%;">
+                        </div>
+                    </div>
+                    <span>
+                        @pendingPercentage.ToString("0.#")%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         DONATION OVERVIEW
+         ========================================================= -->
+    <div class="dashboard-overview-grid">
+        <!-- =====================================================
+             VERIFICATION OVERVIEW
+             ===================================================== -->
+        <div class="admin-dashboard-section dashboard-overview-card">
+            <div class="section-header">
+                <div>
+                    <span class="dashboard-section-eyebrow">
+                        Donation Overview
+                    </span>
+                    <h2>
+                        Verification Status
+                    </h2>
+                </div>
+                <a asp-area="Admin"
+                   asp-controller="Donations"
+                   asp-action="Index"
+                   class="dashboard-section-link">
+                    View Donations
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+                    </svg>
+                </a>
+            </div>
+            <div class="dashboard-status-overview">
+                <div class="dashboard-status-item">
+                    <div class="dashboard-status-icon dashboard-status-icon-success">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="m5 12 4 4L19 6" />
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>
+                            @Model.VerifiedDonationCount
+                        </strong>
+                        <span>
+                            Verified donations
+                        </span>
+                    </div>
+                </div>
+                <div class="dashboard-status-item">
+                    <div class="dashboard-status-icon dashboard-status-icon-warning">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 7v5l3 2" />
+                            <circle cx="12"
+                                    cy="12"
+                                    r="9" />
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>
+                            @Model.PendingDonationCount
+                        </strong>
+                        <span>
+                            Awaiting verification
+                        </span>
+                    </div>
+                </div>
+            </div>
+            @if (Model.PendingDonationCount > 0)
+            {
+                <div class="dashboard-attention-box">
+                    <div class="dashboard-attention-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 3 2.5 20h19L12 3Z" />
+                            <path d="M12 9v5" />
+                            <path d="M12 17h.01" />
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>
+                            Verification required
+                        </strong>
+                        <span>
+                            There are
+                            @Model.PendingDonationCount
+                            donation(s) waiting for review.
+                        </span>
+                    </div>
+                    <a asp-area="Admin"
+                       asp-controller="Donations"
+                       asp-action="Index">
+                        Review
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-clear-box">
+                    <div class="dashboard-clear-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="m5 12 4 4L19 6" />
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>
+                            All caught up
+                        </strong>
+                        <span>
+                            There are no donations waiting for verification.
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- =====================================================
+             LATEST DONATION
+             ===================================================== -->
+        <div class="admin-dashboard-section dashboard-overview-card">
+            <div class="section-header">
+                <div>
+                    <span class="dashboard-section-eyebrow">
+                        Recent Activity
+                    </span>
+                    <h2>
+                        Latest Donation
+                    </h2>
+                </div>
+            </div>
+            @if (Model.LatestDonationId > 0)
+            {
+                <div class="dashboard-latest-donation">
+                    <div class="dashboard-latest-main">
+                        <div class="dashboard-latest-avatar">
+                            @{
+                                var latestInitial =
+                                    string.IsNullOrWhiteSpace(Model.LatestDonorName)
+                                        ? "D"
+                                        : Model.LatestDonorName
+                                            .Trim()
+                                            .Substring(0, 1)
+                                            .ToUpper();
+                            }
+                            @latestInitial
+                        </div>
+                        <div>
+                            <span class="dashboard-latest-label">
+                                Donor
+                            </span>
+                            <strong>
+                                @Model.LatestDonorName
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="dashboard-latest-amount">
+                        <span>
+                            Amount
+                        </span>
+                        <strong>
+                            ₹@Model.LatestDonationAmount.ToString("N2")
+                        </strong>
+                    </div>
+                    <div class="dashboard-latest-details">
+                        <div>
+                            <span class="dashboard-latest-label">
+                                Reference
+                            </span>
+                            <strong>
+                                @Model.LatestDonationNumber
+                            </strong>
+                        </div>
+                        <div>
+                            <span class="dashboard-latest-label">
+                                Date
+                            </span>
+                            <strong>
+                                @Model.LatestDonationDate?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                            </strong>
+                        </div>
+                    </div>
+                    <a asp-area="Admin"
+                       asp-controller="Donations"
+                       asp-action="Index"
+                       asp-route-openDetails="@Model.LatestDonationId"
+                       class="dashboard-latest-view">
+                        View Donation
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M5 12h14" />
+                            <path d="m13 6 6 6-6 6" />
+                        </svg>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty-state">
+                    <div class="dashboard-empty-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
+                            <path d="M8 8h8" />
+                            <path d="M8 12h8" />
+                            <path d="M8 16h5" />
+                        </svg>
+                    </div>
+                    <strong>
+                        No donations yet
+                    </strong>
+                    <span>
+                        New donation activity will appear here.
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- =========================================================
+         QUICK ACTIONS
+         ========================================================= -->
+    <div class="admin-dashboard-section dashboard-quick-section">
+        <div class="section-header">
+            <div>
+                <span class="dashboard-section-eyebrow">
+                    Shortcuts
+                </span>
+                <h2>
+                    Quick Actions
+                </h2>
+            </div>
+        </div>
+        <div class="quick-actions">
+            <!-- DONATIONS -->
+            <a asp-area="Admin"
+               asp-controller="Donations"
+               asp-action="Index"
+               class="quick-action dashboard-quick-action">
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M12 21s-7-4.35-9.33-8.2C.54 9.82 2.15 6 5.67 6c1.88 0 3.07 1.05 4.33 2.4C11.26 7.05 12.45 6 14.33 6 17.85 6 19.46 9.82 17.33 12.8 15 16.65 12 21 12 21Z" />
+                    </svg>
+                </span>
+                <span class="quick-action-content">
+                    <strong>
+                        Donations
+                    </strong>
+                    <span>
+                        Review and manage donations
+                    </span>
+                </span>
+                <span class="quick-action-arrow">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+                    </svg>
+                </span>
+            </a>
+            <!-- PAYMENT ACCOUNTS -->
+            <a asp-area="Admin"
+               asp-controller="PaymentAccounts"
+               asp-action="Index"
+               class="quick-action dashboard-quick-action">
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <rect x="3"
+                              y="5"
+                              width="18"
+                              height="14"
+                              rx="2" />
+                        <path d="M3 10h18" />
+                        <path d="M7 15h3" />
+                    </svg>
+                </span>
+                <span class="quick-action-content">
+                    <strong>
+                        Payment Accounts
+                    </strong>
+                    <span>
+                        Manage bank and UPI accounts
+                    </span>
+                </span>
+                <span class="quick-action-arrow">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+                    </svg>
+                </span>
+            </a>
+            <!-- PUBLIC WEBSITE -->
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Index"
+               class="quick-action dashboard-quick-action">
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <circle cx="12"
+                                cy="12"
+                                r="9" />
+                        <path d="M3 12h18" />
+                        <path d="M12 3c3 3 4 6 4 9s-1 6-4 9" />
+                        <path d="M12 3c-3 3-4 6-4 9s1 6 4 9" />
+                    </svg>
+                </span>
+                <span class="quick-action-content">
+                    <strong>
+                        View Website
+                    </strong>
+                    <span>
+                        Open the public foundation website
+                    </span>
+                </span>
+                <span class="quick-action-arrow">
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+                    </svg>
+                </span>
+            </a>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // =========================================================
+        // CURRENT LATEST DONATION
+        // =========================================================
+        let latestDonationId =
+                @Model.LatestDonationId;
+        // =========================================================
+        // NOTIFICATION TIMER
+        // =========================================================
+        let donationNotificationTimer = null;
+        // =========================================================
+        // UPDATE CURRENT DATE / TIME
+        // =========================================================
+        function updateDashboardClock() {
+            const dateElement =
+                document.getElementById(
+                    "dashboardCurrentDate"
+                );
+            const timeElement =
+                document.getElementById(
+                    "dashboardCurrentTime"
+                );
+            if (!dateElement || !timeElement) {
+                return;
+            }
+            const now = new Date();
+            dateElement.textContent =
+                now.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    }
+                );
+            timeElement.textContent =
+                now.toLocaleTimeString(
+                    "en-IN",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true
+                    }
+                );
+        }
+        // =========================================================
+        // CHECK FOR NEW DONATION
+        // =========================================================
+        async function checkForNewDonation() {
+            try {
+                const response =
+                    await fetch(
+                        '@Url.Action(
+                                                    "CheckNewDonations",
+                                                    "Dashboard",
+                                                            new { area = "Admin" }
+                                            )'
+                        + '?latestDonationId='
+                        + latestDonationId,
+                        {
+                            method: "GET",
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            },
+                            cache: "no-store"
+                        }
+                    );
+                if (!response.ok) {
+                    return;
+                }
+                const data =
+                    await response.json();
+                if (!data.hasNewDonation) {
+                    return;
+                }
+                latestDonationId =
+                    data.donationId;
+                showDonationNotification(
+                    data.donationNumber,
+                    data.donorName,
+                    data.amount
+                );
+            }
+            catch (error) {
+                console.error(
+                    "Unable to check for new donations.",
+                    error
+                );
+            }
+        }
+        // =========================================================
+        // SHOW NEW DONATION NOTIFICATION
+        // =========================================================
+        function showDonationNotification(
+            donationNumber,
+            donorName,
+            amount) {
+            const notification =
+                document.getElementById(
+                    "newDonationNotification"
+                );
+            const message =
+                document.getElementById(
+                    "newDonationMessage"
+                );
+            if (!notification || !message) {
+                return;
+            }
+            const formattedAmount =
+                Number(amount).toLocaleString(
+                    "en-IN",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+            message.textContent =
+                donationNumber
+                + " • "
+                + donorName
+                + " • ₹"
+                + formattedAmount;
+            notification.style.display =
+                "flex";
+            notification.classList.remove(
+                "is-visible"
+            );
+            requestAnimationFrame(
+                function() {
+                    notification.classList.add(
+                        "is-visible"
+                    );
+                }
+            );
+            clearTimeout(
+                donationNotificationTimer
+            );
+            donationNotificationTimer =
+                setTimeout(
+                    closeDonationNotification,
+                    8000
+                );
+            playDonationNotificationSound();
+        }
+        // =========================================================
+        // CLOSE NOTIFICATION
+        // =========================================================
+        function closeDonationNotification() {
+            const notification =
+                document.getElementById(
+                    "newDonationNotification"
+                );
+            if (!notification) {
+                return;
+            }
+            notification.classList.remove(
+                "is-visible"
+            );
+            setTimeout(
+                function() {
+                    notification.style.display =
+                        "none";
+                },
+                2000
+            );
+        }
+        // =========================================================
+        // NOTIFICATION SOUND
+        // =========================================================
+        function playDonationNotificationSound() {
+            try {
+                const AudioContext =
+                    window.AudioContext ||
+                    window.webkitAudioContext;
+                if (!AudioContext) {
+                    return;
+                }
+                const context =
+                    new AudioContext();
+                const oscillator =
+                    context.createOscillator();
+                const gain =
+                    context.createGain();
+                oscillator.type =
+                    "sine";
+                oscillator.frequency.setValueAtTime(
+                    880,
+                    context.currentTime
+                );
+                oscillator.frequency.setValueAtTime(
+                    1046,
+                    context.currentTime + 0.12
+                );
+                gain.gain.setValueAtTime(
+                    0.0001,
+                    context.currentTime
+                );
+                gain.gain.exponentialRampToValueAtTime(
+                    0.08,
+                    context.currentTime + 0.02
+                );
+                gain.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    context.currentTime + 0.3
+                );
+                oscillator.connect(gain);
+                gain.connect(context.destination);
+                oscillator.start();
+                oscillator.stop(
+                    context.currentTime + 0.3
+                );
+            }
+            catch (error) {
+                console.warn(
+                    "Notification sound unavailable."
+                );
+            }
+        }
+        // =========================================================
+        // CARD NUMBER ANIMATION
+        // =========================================================
+        function animateDashboardNumbers() {
+            const counters =
+                document.querySelectorAll(
+                    "[data-count]"
+                );
+            counters.forEach(
+                function(counter) {
+                    const target =
+                        Number(
+                            counter.dataset.count
+                        );
+                    if (
+                        !Number.isFinite(target) ||
+                        target <= 0
+                    ) {
+                        return;
+                    }
+                    let current = 0;
+                    const duration = 700;
+                    const startTime =
+                        performance.now();
+                    function updateCounter(
+                        currentTime) {
+                        const elapsed =
+                            currentTime -
+                            startTime;
+                        const progress =
+                            Math.min(
+                                elapsed / duration,
+                                1
+                            );
+                        const eased =
+                            1 -
+                            Math.pow(
+                                1 - progress,
+                                3
+                            );
+                        current =
+                            Math.round(
+                                target * eased
+                            );
+                        counter.textContent =
+                            current.toLocaleString(
+                                "en-IN"
+                            );
+                        if (progress < 1) {
+                            requestAnimationFrame(
+                                updateCounter
+                            );
+                        }
+                    }
+                    requestAnimationFrame(
+                        updateCounter
+                    );
+                }
+            );
+        }
+        // =========================================================
+        // INITIALIZE DASHBOARD
+        // =========================================================
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+                updateDashboardClock();
+                setInterval(
+                    updateDashboardClock,
+                    1000
+                );
+                animateDashboardNumbers();
+                /*
+                 * First notification check happens
+                 * after the dashboard has loaded.
+                 */
+                setTimeout(
+                    checkForNewDonation,
+                    1500
+                );
+                /*
+                 * Continue checking for new donations.
+                 */
+                setInterval(
+                    checkForNewDonation,
+                    10000
+                );
+            }
+        );
+    </script>
+}

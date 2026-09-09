@@ -1,0 +1,1821 @@
+﻿@using FoundationDonationSystem.Models
+@using FoundationDonationSystem.Models.Enums
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    var controllerName =
+        ViewContext.RouteData.Values["controller"]?.ToString()
+        ?? string.Empty;
+    var actionName =
+        ViewContext.RouteData.Values["action"]?.ToString()
+        ?? string.Empty;
+    var pageCss = controllerName switch
+    {
+        "Dashboard" => "dashboard.css",
+        "Donations" => "donations.css",
+        "PaymentAccounts" => "payment-accounts.css",
+        "Users" => "users.css",
+        "Settings" => "settings.css",
+        "Posts" => "posts.css",
+        "Support" => "support.css",
+        "Grievance" => "grievance.css",
+        _ => null
+    };
+    var pageTitle =
+        ViewData["Title"]?.ToString()
+        ?? "Dashboard";
+    var foundationSettings =
+        await FoundationSettingsService.GetAsync();
+    var foundationName =
+        string.IsNullOrWhiteSpace(
+            foundationSettings.FoundationName)
+            ? "Foundation"
+            : foundationSettings.FoundationName;
+    var foundationTagline =
+        string.IsNullOrWhiteSpace(
+            foundationSettings.Tagline)
+            ? "Serving with compassion • Supporting with purpose"
+            : foundationSettings.Tagline;
+    var foundationLogo =
+        string.IsNullOrWhiteSpace(
+            foundationSettings.LogoPath)
+            ? null
+            : foundationSettings.LogoPath;
+    var currentUserName =
+        User.Identity?.Name ?? "Administrator";
+    var currentUserInitial =
+        currentUserName.Length > 0
+            ? currentUserName.Substring(0, 1).ToUpper()
+            : "A";
+    var currentUserRole =
+        User.IsInRole(
+            FoundationDonationSystem.Models.Enums.UserRole.Administrator)
+            ? "Administrator"
+            : User.IsInRole(
+                FoundationDonationSystem.Models.Enums.UserRole.PostManager)
+                ? "Post Manager"
+                : "Donation Verifier";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+    <title>
+        @pageTitle - @foundationName
+    </title>
+    <!-- =====================================================
+         COMMON ADMIN CSS
+         ===================================================== -->
+    <link rel="stylesheet"
+          href="~/css/admin.css"
+          asp-append-version="true" />
+<!-- Bootstrap Icons -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- =====================================================
+         PAGE-SPECIFIC CSS
+         ===================================================== -->
+    @if (!string.IsNullOrWhiteSpace(pageCss))
+    {
+        <link rel="stylesheet"
+              href="~/css/@pageCss"
+              asp-append-version="true" />
+    }
+    <!-- =====================================================
+         OPTIONAL VIEW-SPECIFIC STYLES
+         ===================================================== -->
+    @await RenderSectionAsync(
+        "Styles",
+        required: false)
+<style>
+/* =========================================================
+   ADMIN THEME — WARM ORANGE / CHARCOAL
+========================================================= */
+
+:root {
+    --admin-primary: #e87516;
+    --admin-primary-dark: #c95d08;
+    --admin-primary-light: #fff1e6;
+    --admin-bg: #f6f7f8;
+    --admin-sidebar: #1f2428;
+    --admin-sidebar-text: #c9ced2;
+    --admin-sidebar-muted: #899197;
+    --admin-border: #e4e6e8;
+    --admin-text: #25292d;
+}
+
+/* =========================================================
+   ICON NORMALIZATION
+========================================================= */
+
+.admin-nav-icon,
+.admin-external-icon,
+.admin-notification-button,
+.admin-notification-empty-icon,
+.admin-notification-item-icon,
+.admin-logout-btn {
+    line-height: 0;
+}
+
+.admin-nav-icon {
+    width: 21px;
+    height: 21px;
+    min-width: 21px;
+    flex: 0 0 21px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #9da5aa;
+}
+
+.admin-nav-icon i {
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-size: 17px;
+    line-height: 1;
+    font-style: normal;
+}
+
+.admin-nav-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.admin-sidebar-link:hover .admin-nav-icon,
+.admin-sidebar-link.active .admin-nav-icon {
+    color: var(--admin-primary);
+}
+
+.admin-external-icon,
+.admin-notification-button,
+.admin-notification-empty-icon,
+.admin-notification-item-icon,
+.admin-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-external-icon svg,
+.admin-notification-button svg,
+.admin-notification-empty-icon svg,
+.admin-notification-item-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    overflow: visible;
+    fill: currentColor;
+    stroke: none;
+}
+
+.admin-logout-btn svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* =========================================================
+   FIXED ADMIN LAYOUT
+========================================================= */
+
+html,
+body {
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    background: var(--admin-bg);
+}
+
+body.admin-site-body {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.admin-layout {
+    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+/* =========================================================
+   SIDEBAR THEME
+========================================================= */
+
+.admin-sidebar {
+    width: 248px;
+    height: 100vh;
+    min-height: 100vh;
+    flex: 0 0 248px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: linear-gradient(180deg, #1f2428 0%, #191d20 100%);
+    border-right: 1px solid rgba(0,0,0,.18);
+    color: var(--admin-sidebar-text);
+    scrollbar-width: thin;
+    scrollbar-color: #4a5258 transparent;
+}
+
+.admin-brand {
+    padding: 17px 15px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.admin-brand-link {
+    color: #fff;
+    text-decoration: none;
+}
+
+.admin-brand-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(0,0,0,.18);
+    overflow: hidden;
+}
+
+.admin-brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.admin-brand-title {
+    color: #fff;
+    font-weight: 750;
+}
+
+.admin-brand-subtitle {
+    color: #929ba1;
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.admin-navigation {
+    padding: 13px 10px;
+}
+
+.admin-nav-heading {
+    padding: 8px 11px 7px;
+    color: #737d84;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .13em;
+}
+
+.admin-sidebar-link {
+    position: relative;
+    min-height: 42px;
+    margin: 3px 0;
+    padding: 8px 11px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--admin-sidebar-text);
+    text-decoration: none;
+    transition: background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.admin-sidebar-link:hover {
+    background: rgba(255,255,255,.065);
+    border-color: rgba(255,255,255,.05);
+    color: #fff;
+    transform: translateX(1px);
+}
+
+.admin-sidebar-link.active {
+    background: linear-gradient(90deg, rgba(232,117,22,.20), rgba(232,117,22,.07));
+    border-color: rgba(232,117,22,.20);
+    color: #fff;
+}
+
+.admin-sidebar-link.active::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 0 4px 4px 0;
+    background: var(--admin-primary);
+}
+
+.admin-nav-text {
+    min-width: 0;
+    flex: 1;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.admin-external-icon {
+    margin-left: auto;
+    color: #747e84;
+}
+
+.admin-sidebar-link:hover .admin-external-icon {
+    color: var(--admin-primary);
+}
+
+/* =========================================================
+   MAIN / TOPBAR
+========================================================= */
+
+.admin-main.admin-fixed-layout {
+    height: 100vh;
+    min-height: 100vh;
+    min-width: 0;
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+    background: var(--admin-bg);
+}
+
+.admin-topbar {
+    min-height: 62px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-bottom: 1px solid var(--admin-border);
+    box-shadow: 0 2px 8px rgba(30,35,40,.035);
+    z-index: 100;
+}
+
+.admin-page-title-main {
+    color: #25292d;
+    font-weight: 750;
+}
+
+.admin-page-title-system {
+    color: #858d92;
+}
+
+/* =========================================================
+   CONTENT / FOOTER
+========================================================= */
+
+.admin-content.admin-content-scroll {
+    min-height: 0;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--admin-bg);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+}
+
+.admin-fixed-footer {
+    min-height: 38px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-top: 1px solid var(--admin-border);
+    color: #8a9196;
+}
+
+/* =========================================================
+   SIDEBAR BOTTOM
+========================================================= */
+
+.admin-sidebar-bottom {
+    margin-top: auto;
+    padding: 10px;
+    border-top: 1px solid rgba(255,255,255,.07);
+}
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+.admin-mobile-menu-button {
+    width: 38px;
+    height: 38px;
+    padding: 8px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--admin-border);
+    border-radius: 7px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.admin-mobile-menu-button span {
+    width: 18px;
+    height: 2px;
+    border-radius: 3px;
+    background: #444b50;
+}
+
+.admin-sidebar-overlay {
+    background: rgba(20,24,27,.52);
+}
+
+@@media (max-width: 700px) {
+
+    body.admin-site-body,
+    .admin-layout,
+    .admin-main.admin-fixed-layout {
+        height: 100dvh;
+        min-height: 100dvh;
+    }
+
+    .admin-mobile-menu-button {
+        display: inline-flex;
+    }
+
+    .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        width: 250px;
+        max-width: 86vw;
+        flex-basis: 250px;
+        transform: translateX(-105%);
+        transition: transform .22s ease;
+        box-shadow: 10px 0 30px rgba(0,0,0,.18);
+    }
+
+    .admin-sidebar.is-open {
+        transform: translateX(0);
+    }
+
+    .admin-topbar {
+        min-height: 56px;
+        padding: 0 12px;
+    }
+
+    .admin-page-title {
+        margin-left: 8px;
+    }
+
+    .admin-page-title-system,
+    .admin-page-title-separator {
+        display: none;
+    }
+
+    .admin-user-info {
+        display: none;
+    }
+
+    .admin-fixed-footer {
+        min-height: 34px;
+        padding: 0 11px;
+    }
+}
+
+@@media (max-width: 420px) {
+    .admin-footer span:last-child {
+        display: none;
+    }
+}
+</style>
+</head>
+<body class="admin-site-body">
+    <!-- =====================================================
+         ADMIN LAYOUT
+         ===================================================== -->
+    <div class="admin-layout">
+        <!-- =================================================
+             SIDEBAR
+             ================================================= -->
+        <aside class="admin-sidebar">
+            <!-- =================================================
+                 BRAND
+                 ================================================= -->
+            <div class="admin-brand">
+                @if (User.IsInRole(UserRole.PostManager) &&
+                     !User.IsInRole(UserRole.Administrator))
+                {
+                    <a asp-area="Admin"
+                       asp-controller="Posts"
+                       asp-action="Index"
+                       class="admin-brand-link">
+                    <span class="admin-brand-logo">
+                        @if (!string.IsNullOrWhiteSpace(foundationLogo))
+                        {
+                            <img src="@foundationLogo"
+                                 alt="@foundationName"
+                                 loading="lazy" />
+                        }
+                        else
+                        {
+                            <img src="~/images/foundation-logo.png"
+                                 alt="@foundationName"
+                                 loading="lazy" />
+                        }
+                    </span>
+                    <span class="admin-brand-content">
+                        <span class="admin-brand-title">
+                            @foundationName
+                        </span>
+                        <span class="admin-brand-subtitle">
+                            Administration
+                        </span>
+                    </span>
+                </a>
+                }
+                else
+                {
+                    <a asp-area="Admin"
+                       asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="admin-brand-link">
+                    <span class="admin-brand-logo">
+                        @if (!string.IsNullOrWhiteSpace(foundationLogo))
+                        {
+                            <img src="@foundationLogo"
+                                 alt="@foundationName"
+                                 loading="lazy" />
+                        }
+                        else
+                        {
+                            <img src="~/images/foundation-logo.png"
+                                 alt="@foundationName"
+                                 loading="lazy" />
+                        }
+                    </span>
+                    <span class="admin-brand-content">
+                        <span class="admin-brand-title">
+                            @foundationName
+                        </span>
+                        <span class="admin-brand-subtitle">
+                            Administration
+                        </span>
+                    </span>
+                </a>
+                }
+            </div>
+            <!-- =================================================
+                 NAVIGATION
+                 ================================================= -->
+            <nav class="admin-navigation">
+                <!-- MAIN MENU -->
+                <div class="admin-nav-heading">
+                    MAIN MENU
+                </div>
+                @if (User.IsInRole(UserRole.Administrator) ||
+                     User.IsInRole(UserRole.DonationVerifier))
+                {
+                    <!-- =================================================
+                         DASHBOARD
+                         ================================================= -->
+                    <a asp-area="Admin"
+                       asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("Dashboard", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6v-9h-6v9Zm0-16v5h6V4h-6Z" />
+                            </svg>
+                        </span>
+                        <span class="admin-nav-text">
+                            Dashboard
+                        </span>
+                    </a>
+                }
+                @if (User.IsInRole(UserRole.Administrator) ||
+                     User.IsInRole(UserRole.DonationVerifier))
+                {
+                    <!-- =================================================
+                         DONATIONS
+                         ================================================= -->
+                    <a asp-area="Admin"
+                       asp-controller="Donations"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("Donations", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M12 21s-7-4.35-9.33-8.2C.54 9.82 2.15 6 5.67 6c1.88 0 3.07 1.05 4.33 2.4C11.26 7.05 12.45 6 14.33 6 17.85 6 19.46 9.82 17.33 12.8 15 16.65 12 21 12 21Z" />
+                            </svg>
+                        </span>
+                        <span class="admin-nav-text">
+                            Donations
+                        </span>
+                    </a>
+                }
+                @if (User.IsInRole(UserRole.Administrator) ||
+                     User.IsInRole(UserRole.PostManager))
+                {
+                    <!-- =================================================
+                         POSTS
+                         ================================================= -->
+                    <a asp-area="Admin"
+                       asp-controller="Posts"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("Posts", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2 4v2h10V8H7Zm0 4v2h10v-2H7Zm0 4v1h7v-1H7Z" />
+                            </svg>
+                        </span>
+                        <span class="admin-nav-text">
+                            Posts
+                        </span>
+                    </a>
+                    <!-- =================================================
+                         Grievance & Support
+                         ================================================= -->
+                    <a asp-area="Admin"
+                       asp-controller="Grievance"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("Grievance", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <i class="bi bi-chat-left-text-fill" aria-hidden="true"></i>
+                        </span>
+                        <span class="admin-nav-text">
+                            Grievance
+                        </span>
+                    </a>
+                    <a asp-area="Admin"
+                       asp-controller="Support"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("Support", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <i class="bi bi-headset" aria-hidden="true"></i>
+                        </span>
+                        <span class="admin-nav-text">
+                            Support
+                        </span>
+                    </a>
+                }
+                @if (User.IsInRole(
+                    FoundationDonationSystem.Models.Enums.UserRole.Administrator))
+                {
+                    <!-- =================================================
+                         PAYMENT ACCOUNTS
+                         ================================================= -->
+                    <a asp-area="Admin"
+                       asp-controller="PaymentAccounts"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("PaymentAccounts", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M3 6h18v12H3V6Zm2 2v8h14V8H5Zm3 2h8v2H8v-2Z" />
+                            </svg>
+                        </span>
+                        <span class="admin-nav-text">
+                            Payment Accounts
+                        </span>
+                    </a>
+                    <!-- =================================================
+                         USERS
+                         ================================================= -->
+                    <a asp-area="Admin"
+                       asp-controller="Users"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("Users", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H5Zm14-9h2v2h-2v-2Zm-1 3h2v2h-2v-2Z" />
+                            </svg>
+                        </span>
+                        <span class="admin-nav-text">
+                            Users
+                        </span>
+                    </a>
+                    <!-- =================================================
+                         SETTINGS
+                         ================================================= -->
+                    <a asp-area="Admin"
+                       asp-controller="Settings"
+                       asp-action="Index"
+                       class="admin-sidebar-link @(controllerName.Equals("Settings", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <span class="admin-nav-icon">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M19.43 12.98a7.8 7.8 0 0 0 .05-.98 7.8 7.8 0 0 0-.05-.98l2.11-1.65-2-3.46-2.49 1a7.2 7.2 0 0 0-1.7-.98L15 3h-4l-.35 2.93c-.61.25-1.18.58-1.7.98l-2.49-1-2 3.46 2.11 1.65a7.8 7.8 0 0 0 0 1.96l-2.11 1.65 2 3.46 2.49-1c.52.4 1.09.73 1.7.98L11 21h4l.35-2.93a7.2 7.2 0 0 0 1.7-.98l2.49 1 2.49 1 2-3.46-2.11-1.65ZM13 15.5A3.5 3.5 0 1 1 13 8a3.5 3.5 0 0 1 0 7.5Z" />
+                            </svg>
+                        </span>
+                        <span class="admin-nav-text">
+                            Settings
+                        </span>
+                    </a>
+                }
+            </nav>
+            <!-- =================================================
+                 SIDEBAR BOTTOM
+                 ================================================= -->
+            <div class="admin-sidebar-bottom">
+                <!-- =================================================
+                     VIEW WEBSITE
+                     ================================================= -->
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index"
+                   class="admin-sidebar-link">
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 5c5.5 0 9.5 5 10 7-.5 2-4.5 7-10 7S2.5 14 2 12c.5-2 4.5-7 10-7Zm0 2c-3.6 0-6.7 2.8-7.8 5 1.1 2.2 4.2 5 7.8 5s6.7-2.8 7.8-5C18.7 9.8 15.6 7 12 7Zm0 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" />
+                        </svg>
+                    </span>
+                    <span class="admin-nav-text">
+                        View Website
+                    </span>
+                    <span class="admin-external-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M14 5h5v5h-2V8.41l-7.29 7.3-1.42-1.42L15.59 7H14V5ZM5 7h5v2H7v8h8v-3h2v5H5V7Z" />
+                        </svg>
+                    </span>
+                </a>
+            </div>
+        </aside>
+        <div id="adminSidebarOverlay"
+             class="admin-sidebar-overlay"
+             aria-hidden="true"></div>
+        <!-- =====================================================
+             MAIN AREA
+             ===================================================== -->
+        <main class="admin-main admin-fixed-layout">
+            <!-- =================================================
+                 TOP BAR
+                 ================================================= -->
+            <header class="admin-topbar">
+                <!-- =================================================
+                     PAGE TITLE
+                     ================================================= -->
+                <div class="admin-topbar-left">
+                    <button type="button"
+                            id="adminMobileMenuButton"
+                            class="admin-mobile-menu-button"
+                            aria-label="Open navigation menu"
+                            aria-expanded="false"
+                            title="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="admin-page-title">
+                        <span class="admin-page-title-main">
+                            @pageTitle
+                        </span>
+                        <span class="admin-page-title-separator">
+                            /
+                        </span>
+                        <span class="admin-page-title-system">
+                            Administration
+                        </span>
+                    </div>
+                </div>
+                <!-- =================================================
+                     TOPBAR RIGHT
+                     ================================================= -->
+                <div class="admin-topbar-right">
+                    <!-- =================================================
+                         NOTIFICATION
+                         ================================================= -->
+                    <div class="admin-notification-wrapper">
+                        <button type="button"
+                                id="adminNotificationButton"
+                                class="admin-notification-button"
+                                aria-label="Notifications"
+                                aria-expanded="false"
+                                title="Notifications">
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.5 11h5a2.5 2.5 0 0 1-5 0Z" />
+                            </svg>
+                            <span id="adminNotificationBadge"
+                                  class="admin-notification-badge"
+                                  style="display:none;">
+                                0
+                            </span>
+                        </button>
+                        <!-- =================================================
+                             NOTIFICATION PANEL
+                             ================================================= -->
+                        <div id="adminNotificationPanel"
+                             class="admin-notification-panel"
+                             aria-hidden="true">
+                            <!-- PANEL HEADER -->
+                            <div class="admin-notification-panel-header">
+                                <div>
+                                    <strong>
+                                        Notifications
+                                    </strong>
+                                    <span id="adminNotificationCount">
+                                        No new notifications
+                                    </span>
+                                </div>
+                                <button type="button"
+                                        id="adminNotificationClose"
+                                        class="admin-notification-close"
+                                        aria-label="Close notifications">
+                                    &times;
+                                </button>
+                            </div>
+                            <!-- NOTIFICATION LIST -->
+                            <div id="adminNotificationList"
+                                 class="admin-notification-list">
+                                <div class="admin-notification-empty">
+                                    <span class="admin-notification-empty-icon">
+                                        <svg viewBox="0 0 24 24"
+                                             aria-hidden="true">
+                                            <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.5 11h5a2.5 2.5 0 0 1-5 0Z" />
+                                        </svg>
+                                    </span>
+                                    <strong>
+                                        No new notifications
+                                    </strong>
+                                    <span>
+                                        New donation alerts will appear here.
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- PANEL FOOTER -->
+                            <div class="admin-notification-panel-footer">
+                                <a asp-area="Admin"
+                                   asp-controller="Donations"
+                                   asp-action="Index">
+                                    View Donations
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- =================================================
+                         PROFILE + LOGOUT
+                         ================================================= -->
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="admin-user-actions">
+                            <!-- =================================================
+                                 PROFILE BUTTON
+                                 ================================================= -->
+                            <button type="button"
+                                    class="admin-user-profile"
+                                    onclick="openProfileModal()"
+                                    aria-label="Open profile">
+                                <span class="admin-user-avatar">
+                                    @currentUserInitial
+                                </span>
+                                <span class="admin-user-info">
+                                    <span class="admin-user-name">
+                                        @currentUserName
+                                    </span>
+                                    <span class="admin-user-role">
+                                        @currentUserRole
+                                    </span>
+                                </span>
+                            </button>
+                            <!-- =================================================
+                                 LOGOUT
+                                 ================================================= -->
+                            <form asp-area=""
+                                  asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post"
+                                  class="admin-logout-form">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="admin-logout-btn"
+                                        title="Logout"
+                                        aria-label="Logout">
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+                                        <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5" />
+                                        <path d="M14 8l5 4-5 4" />
+                                        <path d="M19 12H9" />
+                                    </svg>
+                                    <span>
+                                        Logout
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </header>
+            <!-- =================================================
+                 PAGE CONTENT
+                 ================================================= -->
+            <div class="admin-content admin-content-scroll">
+                @RenderBody()
+            </div>
+            <!-- =================================================
+                 FOOTER
+                 ================================================= -->
+            <footer class="admin-footer admin-fixed-footer">
+                <span>
+                    &copy; @DateTime.Now.Year
+                    @foundationName
+                </span>
+                <span>
+                    Administration Panel
+                </span>
+            </footer>
+        </main>
+    </div>
+    <!-- =========================================================
+         PROFILE MODAL
+         ========================================================= -->
+    <div id="profileModal"
+         class="admin-profile-modal"
+         aria-hidden="true">
+        <div class="admin-profile-modal-overlay"
+             onclick="closeProfileModal()">
+        </div>
+        <div class="admin-profile-modal-dialog"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="profileModalTitle">
+            <!-- HEADER -->
+            <div class="admin-profile-modal-header">
+                <div>
+                    <span class="admin-profile-modal-eyebrow">
+                        Account
+                    </span>
+                    <h2 id="profileModalTitle">
+                        My Profile
+                    </h2>
+                </div>
+                <button type="button"
+                        class="admin-profile-modal-close"
+                        onclick="closeProfileModal()"
+                        aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <!-- BODY -->
+            <div id="profileModalBody"
+                 class="admin-profile-modal-body">
+                <div class="admin-profile-modal-loading">
+                    <div class="admin-profile-spinner"></div>
+                    <span>
+                        Loading profile...
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         COMMON JAVASCRIPT
+         ========================================================= -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+    <!-- =========================================================
+         OPTIONAL VIEW-SPECIFIC SCRIPTS
+         ========================================================= -->
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false)
+    <!-- =========================================================
+         MOBILE SIDEBAR / HAMBURGER MENU
+         ========================================================= -->
+    <script>
+        (() => {
+            "use strict";
+            const menuButton = document.getElementById("adminMobileMenuButton");
+            const sidebar = document.querySelector(".admin-sidebar");
+            const overlay = document.getElementById("adminSidebarOverlay");
+            if (!menuButton || !sidebar || !overlay) return;
+            function isMobile() {
+                return window.matchMedia("(max-width: 700px)").matches;
+            }
+            function closeMobileSidebar() {
+                sidebar.classList.remove("is-open");
+                overlay.classList.remove("is-visible");
+                document.body.classList.remove("admin-mobile-menu-open");
+                menuButton.classList.remove("is-active");
+                menuButton.setAttribute("aria-expanded", "false");
+                menuButton.setAttribute("aria-label", "Open navigation menu");
+            }
+            function openMobileSidebar() {
+                if (!isMobile()) return;
+                sidebar.classList.add("is-open");
+                overlay.classList.add("is-visible");
+                document.body.classList.add("admin-mobile-menu-open");
+                menuButton.classList.add("is-active");
+                menuButton.setAttribute("aria-expanded", "true");
+                menuButton.setAttribute("aria-label", "Close navigation menu");
+            }
+            menuButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                sidebar.classList.contains("is-open")
+                    ? closeMobileSidebar()
+                    : openMobileSidebar();
+            });
+            overlay.addEventListener("click", closeMobileSidebar);
+            sidebar.querySelectorAll("a").forEach(function (link) {
+                link.addEventListener("click", function () {
+                    if (isMobile()) closeMobileSidebar();
+                });
+            });
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") closeMobileSidebar();
+            });
+            window.addEventListener("resize", function () {
+                if (!isMobile()) closeMobileSidebar();
+            });
+        })();
+    </script>
+    <!-- =========================================================
+         GLOBAL ADMIN DONATION NOTIFICATION
+         ========================================================= -->
+    <script>
+        (() => {
+            "use strict";
+            /* =====================================================
+               CONFIGURATION
+               ===================================================== */
+            const CHECK_URL =
+                '@Url.Action(
+                    "CheckNewDonations",
+                    "Notification",
+                    new { area = "Admin" })';
+            const LATEST_URL =
+                '@Url.Action(
+                    "LatestDonation",
+                    "Notification",
+                    new { area = "Admin" })';
+            const STORAGE_KEY =
+                "foundation_admin_latest_donation_id";
+            const POLL_INTERVAL =
+                10000;
+            /* =====================================================
+               ELEMENTS
+               ===================================================== */
+            const notificationButton =
+                document.getElementById(
+                    "adminNotificationButton");
+            const notificationBadge =
+                document.getElementById(
+                    "adminNotificationBadge");
+            const notificationPanel =
+                document.getElementById(
+                    "adminNotificationPanel");
+            const notificationClose =
+                document.getElementById(
+                    "adminNotificationClose");
+            const notificationList =
+                document.getElementById(
+                    "adminNotificationList");
+            const notificationCount =
+                document.getElementById(
+                    "adminNotificationCount");
+            /* =====================================================
+               SAFETY CHECK
+               ===================================================== */
+            if (
+                !notificationButton ||
+                !notificationBadge ||
+                !notificationPanel ||
+                !notificationList
+            ) {
+                return;
+            }
+            /* =====================================================
+               STATE
+               ===================================================== */
+            let latestDonationId = 0;
+            let initialized = false;
+            let checking = false;
+            let unreadCount = 0;
+            const displayedNotifications =
+                new Set();
+            /* =====================================================
+               GET STORED DONATION ID
+               ===================================================== */
+            function getStoredDonationId() {
+                try {
+                    const value =
+                        parseInt(
+                            localStorage.getItem(
+                                STORAGE_KEY),
+                            10);
+                    return Number.isFinite(value)
+                        ? value
+                        : 0;
+                }
+                catch {
+                    return 0;
+                }
+            }
+            /* =====================================================
+               SAVE DONATION ID
+               ===================================================== */
+            function saveDonationId(id) {
+                if (
+                    !Number.isFinite(id) ||
+                    id <= 0
+                ) {
+                    return;
+                }
+                latestDonationId =
+                    Math.max(
+                        latestDonationId,
+                        id);
+                try {
+                    localStorage.setItem(
+                        STORAGE_KEY,
+                        latestDonationId.toString());
+                }
+                catch {
+                    // Ignore localStorage errors.
+                }
+            }
+            /* =====================================================
+               FORMAT AMOUNT
+               ===================================================== */
+            function formatAmount(amount) {
+                const value =
+                    Number(amount || 0);
+                return value.toLocaleString(
+                    "en-IN",
+                    {
+                        style: "currency",
+                        currency: "INR",
+                        maximumFractionDigits: 2
+                    });
+            }
+            /* =====================================================
+               FORMAT DATE
+               ===================================================== */
+            function formatDate(value) {
+                if (!value) {
+                    return "";
+                }
+                const date =
+                    new Date(value);
+                if (
+                    Number.isNaN(
+                        date.getTime())
+                ) {
+                    return "";
+                }
+                return date.toLocaleString(
+                    "en-IN",
+                    {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    });
+            }
+            /* =====================================================
+               ESCAPE HTML
+               ===================================================== */
+            function escapeHtml(value) {
+                return String(
+                    value ?? "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            /* =====================================================
+               UPDATE BADGE
+               ===================================================== */
+            function updateBadge(count) {
+                unreadCount =
+                    Math.max(
+                        0,
+                        Number(count) || 0);
+                if (unreadCount <= 0) {
+                    notificationBadge.style.display =
+                        "none";
+                    notificationBadge.textContent =
+                        "0";
+                    return;
+                }
+                notificationBadge.style.display =
+                    "flex";
+                notificationBadge.textContent =
+                    unreadCount > 99
+                        ? "99+"
+                        : unreadCount.toString();
+            }
+            /* =====================================================
+               UPDATE PANEL COUNT
+               ===================================================== */
+            function updateNotificationCount() {
+                if (!notificationCount) {
+                    return;
+                }
+                if (unreadCount <= 0) {
+                    notificationCount.textContent =
+                        "No new notifications";
+                    return;
+                }
+                notificationCount.textContent =
+                    unreadCount === 1
+                        ? "1 new notification"
+                        : `${unreadCount} new notifications`;
+            }
+            /* =====================================================
+               ADD NOTIFICATION
+               ===================================================== */
+            function addNotification(donation) {
+                if (!donation) {
+                    return false;
+                }
+                const donationId =
+                    Number(
+                        donation.donationId);
+                if (
+                    !Number.isFinite(donationId) ||
+                    donationId <= 0
+                ) {
+                    return false;
+                }
+                if (
+                    displayedNotifications.has(
+                        donationId)
+                ) {
+                    return false;
+                }
+                displayedNotifications.add(
+                    donationId);
+                const empty =
+                    notificationList.querySelector(
+                        ".admin-notification-empty");
+                if (empty) {
+                    empty.remove();
+                }
+                const item =
+                    document.createElement("a");
+                item.className =
+                    "admin-notification-item";
+                /*
+                 * Open Donations Index and
+                 * automatically open details.
+                 */
+                item.href =
+                    `/Admin/Donations?openDetails=${encodeURIComponent(
+                        donationId)}`;
+                item.innerHTML = `
+                    <span class="admin-notification-item-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 3a7 7 0 0 0-7 7v3.5L3 16v1h18v-1l-2-2.5V10a7 7 0 0 0-7-7Zm0 18a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 21Z" />
+                        </svg>
+                    </span>
+                    <span class="admin-notification-item-content">
+                        <strong>
+                            New Donation Received
+                        </strong>
+                        <span>
+                            ${escapeHtml(
+                                donation.donorName ||
+                                "Donor")}
+                        </span>
+                        <small>
+                            ${escapeHtml(
+                                donation.donationNumber ||
+                                "-")}
+                            &nbsp; • &nbsp;
+                            ${formatAmount(
+                                donation.amount)}
+                        </small>
+                        <small>
+                            ${formatDate(
+                                donation.createdAt)}
+                        </small>
+                    </span>
+                    <span class="admin-notification-item-arrow">
+                        →
+                    </span>
+                `;
+                notificationList.prepend(item);
+                /*
+                 * Maximum 10 notification items.
+                 */
+                const items =
+                    notificationList.querySelectorAll(
+                        ".admin-notification-item");
+                if (items.length > 10) {
+                    items[
+                        items.length - 1
+                    ].remove();
+                }
+                return true;
+            }
+            /* =====================================================
+               OPEN PANEL
+               ===================================================== */
+            function openPanel() {
+                notificationPanel.classList.add(
+                    "is-open");
+                notificationPanel.setAttribute(
+                    "aria-hidden",
+                    "false");
+                notificationButton.setAttribute(
+                    "aria-expanded",
+                    "true");
+                /*
+                 * Mark visible notifications as read.
+                 */
+                updateBadge(0);
+                updateNotificationCount();
+            }
+            /* =====================================================
+               CLOSE PANEL
+               ===================================================== */
+            function closePanel() {
+                notificationPanel.classList.remove(
+                    "is-open");
+                notificationPanel.setAttribute(
+                    "aria-hidden",
+                    "true");
+                notificationButton.setAttribute(
+                    "aria-expanded",
+                    "false");
+            }
+            /* =====================================================
+               TOGGLE PANEL
+               ===================================================== */
+            notificationButton.addEventListener(
+                "click",
+                function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (
+                        notificationPanel.classList.contains(
+                            "is-open")
+                    ) {
+                        closePanel();
+                    }
+                    else {
+                        openPanel();
+                    }
+                });
+            /* =====================================================
+               CLOSE BUTTON
+               ===================================================== */
+            if (notificationClose) {
+                notificationClose.addEventListener(
+                    "click",
+                    function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        closePanel();
+                    });
+            }
+            /* =====================================================
+               CLICK OUTSIDE
+               ===================================================== */
+            document.addEventListener(
+                "click",
+                function (event) {
+                    if (
+                        !notificationPanel.contains(
+                            event.target) &&
+                        !notificationButton.contains(
+                            event.target)
+                    ) {
+                        closePanel();
+                    }
+                });
+            /* =====================================================
+               ESC KEY
+               ===================================================== */
+            document.addEventListener(
+                "keydown",
+                function (event) {
+                    if (
+                        event.key === "Escape"
+                    ) {
+                        closePanel();
+                    }
+                });
+            /* =====================================================
+               PLAY NOTIFICATION SOUND
+               ===================================================== */
+            function playNotificationSound() {
+                try {
+                    const AudioContext =
+                        window.AudioContext ||
+                        window.webkitAudioContext;
+                    if (!AudioContext) {
+                        return;
+                    }
+                    const audioContext =
+                        new AudioContext();
+                    if (
+                        audioContext.state ===
+                        "suspended"
+                    ) {
+                        audioContext
+                            .resume()
+                            .catch(() => {});
+                    }
+                    const oscillator =
+                        audioContext.createOscillator();
+                    const gain =
+                        audioContext.createGain();
+                    oscillator.type =
+                        "sine";
+                    oscillator.frequency.value =
+                        880;
+                    gain.gain.setValueAtTime(
+                        0.0001,
+                        audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(
+                        0.08,
+                        audioContext.currentTime + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(
+                        0.0001,
+                        audioContext.currentTime + 0.18);
+                    oscillator.connect(gain);
+                    gain.connect(
+                        audioContext.destination);
+                    oscillator.start();
+                    oscillator.stop(
+                        audioContext.currentTime + 0.2);
+                    setTimeout(
+                        () => {
+                            audioContext
+                                .close()
+                                .catch(() => {});
+                        },
+                        500);
+                }
+                catch {
+                    // Notification sound is optional.
+                }
+            }
+            /* =====================================================
+               GET CURRENT LATEST DONATION
+               ===================================================== */
+            async function getLatestDonation() {
+                try {
+                    const response =
+                        await fetch(
+                            LATEST_URL,
+                            {
+                                method: "GET",
+                                cache: "no-store",
+                                credentials: "same-origin",
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            });
+                    if (!response.ok) {
+                        return null;
+                    }
+                    return await response.json();
+                }
+                catch (error) {
+                    console.warn(
+                        "Unable to initialize donation notification.",
+                        error);
+                    return null;
+                }
+            }
+            /* =====================================================
+               CHECK NEW DONATION
+               ===================================================== */
+            async function checkNewDonation() {
+                if (checking) {
+                    return;
+                }
+                checking = true;
+                try {
+                    const response =
+                        await fetch(
+                            `${CHECK_URL}?latestDonationId=${encodeURIComponent(
+                                latestDonationId)}`,
+                            {
+                                method: "GET",
+                                cache: "no-store",
+                                credentials: "same-origin",
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            });
+                    if (!response.ok) {
+                        return;
+                    }
+                    const data =
+                        await response.json();
+                    if (
+                        !data ||
+                        !data.hasNewDonation ||
+                        !data.donationId
+                    ) {
+                        return;
+                    }
+                    const donationId =
+                        Number(
+                            data.donationId);
+                    if (
+                        !Number.isFinite(donationId) ||
+                        donationId <= 0
+                    ) {
+                        return;
+                    }
+                    /*
+                     * Ignore old donations.
+                     */
+                    if (
+                        donationId <=
+                        latestDonationId
+                    ) {
+                        return;
+                    }
+                    /*
+                     * Save first.
+                     */
+                    saveDonationId(
+                        donationId);
+                    /*
+                     * Prevent duplicate display.
+                     */
+                    if (
+                        displayedNotifications.has(
+                            donationId)
+                    ) {
+                        return;
+                    }
+                    const added =
+                        addNotification(
+                            data);
+                    if (!added) {
+                        return;
+                    }
+                    unreadCount++;
+                    updateBadge(
+                        unreadCount);
+                    updateNotificationCount();
+                    playNotificationSound();
+                }
+                catch (error) {
+                    console.warn(
+                        "Donation notification check failed.",
+                        error);
+                }
+                finally {
+                    checking = false;
+                }
+            }
+            /* =====================================================
+               INITIALIZE NOTIFICATIONS
+               ===================================================== */
+            async function initializeNotifications() {
+                latestDonationId =
+                    getStoredDonationId();
+                const latest =
+                    await getLatestDonation();
+                if (
+                    latest &&
+                    latest.hasDonation &&
+                    latest.donationId
+                ) {
+                    const currentLatestId =
+                        Number(
+                            latest.donationId);
+                    if (
+                        Number.isFinite(
+                            currentLatestId)
+                    ) {
+                        /*
+                         * First initialization:
+                         * do not show old donations.
+                         */
+                        if (
+                            latestDonationId <= 0
+                        ) {
+                            saveDonationId(
+                                currentLatestId);
+                        }
+                        /*
+                         * Database is ahead.
+                         */
+                        else if (
+                            currentLatestId >
+                            latestDonationId
+                        ) {
+                            saveDonationId(
+                                currentLatestId);
+                        }
+                    }
+                }
+                initialized = true;
+                /*
+                 * Check every 10 seconds.
+                 */
+                setInterval(
+                    checkNewDonation,
+                    POLL_INTERVAL);
+            }
+            /* =====================================================
+               START
+               ===================================================== */
+            initializeNotifications();
+        })();
+    </script>
+    <!-- =========================================================
+         PROFILE MODAL JAVASCRIPT
+         ========================================================= -->
+    <script>
+        function openProfileModal() {
+            const modal =
+                document.getElementById(
+                    "profileModal");
+            const body =
+                document.getElementById(
+                    "profileModalBody");
+            if (!modal || !body) {
+                return;
+            }
+            /* =================================================
+               SHOW MODAL
+               ================================================= */
+            modal.classList.add("show");
+            modal.setAttribute(
+                "aria-hidden",
+                "false");
+            document.body.classList.add(
+                "admin-profile-modal-open");
+            /* =================================================
+               LOADING
+               ================================================= */
+            body.innerHTML = `
+                <div class="admin-profile-modal-loading">
+                    <div class="admin-profile-spinner"></div>
+                    <span>
+                        Loading profile...
+                    </span>
+                </div>
+            `;
+            /* =================================================
+               LOAD PROFILE
+               ================================================= */
+            fetch(
+                "/Admin/Profile/Index",
+                {
+                    method: "GET",
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+                        "Accept":
+                            "text/html"
+                    }
+                })
+                .then(
+                    async response => {
+                        if (!response.ok) {
+                            const text =
+                                await response.text();
+                            throw new Error(
+                                text ||
+                                "Unable to load profile.");
+                        }
+                        return response.text();
+                    })
+                .then(
+                    html => {
+                        body.innerHTML =
+                            html;
+                        executeProfileScripts(
+                            body);
+                    })
+                .catch(
+                    error => {
+                        console.error(
+                            "Profile error:",
+                            error);
+                        body.innerHTML = `
+                            <div class="admin-profile-modal-error">
+                                <strong>
+                                    Unable to load profile
+                                </strong>
+                                <p>
+                                    ${escapeProfileHtml(
+                                        error.message ||
+                                        "Something went wrong.")}
+                                </p>
+                                <button type="button"
+                                        class="admin-btn admin-btn-secondary"
+                                        onclick="closeProfileModal()">
+                                    Close
+                                </button>
+                            </div>
+                        `;
+                    });
+        }
+        /* =========================================================
+           CLOSE PROFILE MODAL
+           ========================================================= */
+        function closeProfileModal() {
+            const modal =
+                document.getElementById(
+                    "profileModal");
+            if (!modal) {
+                return;
+            }
+            modal.classList.remove(
+                "show");
+            modal.setAttribute(
+                "aria-hidden",
+                "true");
+            document.body.classList.remove(
+                "admin-profile-modal-open");
+        }
+        /* =========================================================
+           ESCAPE KEY
+           ========================================================= */
+        document.addEventListener(
+            "keydown",
+            function (event) {
+                if (
+                    event.key !== "Escape"
+                ) {
+                    return;
+                }
+                const modal =
+                    document.getElementById(
+                        "profileModal");
+                if (
+                    modal &&
+                    modal.classList.contains(
+                        "show")
+                ) {
+                    closeProfileModal();
+                }
+            });
+        /* =========================================================
+           EXECUTE PARTIAL SCRIPTS
+           ========================================================= */
+        function executeProfileScripts(
+            container) {
+            if (!container) {
+                return;
+            }
+            const scripts =
+                container.querySelectorAll(
+                    "script");
+            scripts.forEach(
+                function (oldScript) {
+                    const newScript =
+                        document.createElement(
+                            "script");
+                    if (oldScript.src) {
+                        newScript.src =
+                            oldScript.src;
+                    }
+                    else {
+                        newScript.textContent =
+                            oldScript.textContent;
+                    }
+                    document.body.appendChild(
+                        newScript);
+                    oldScript.remove();
+                });
+        }
+        /* =========================================================
+           HTML ESCAPE
+           ========================================================= */
+        function escapeProfileHtml(
+            value) {
+            const div =
+                document.createElement(
+                    "div");
+            div.textContent =
+                value ?? "";
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

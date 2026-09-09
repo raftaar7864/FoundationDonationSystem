@@ -1,0 +1,761 @@
+﻿@model FoundationDonationSystem.ViewModels.PublicPostDetailsViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Description"] =
+        string.IsNullOrWhiteSpace(Model.ShortDescription)
+            ? "Foundation update"
+            : Model.ShortDescription;
+    var hasImage =
+        !string.IsNullOrWhiteSpace(Model.FeaturedImagePath);
+    // Gallery images are supplied through the public details ViewModel
+    // after the Post -> PostImage relationship is added.
+    // The view supports the three configured gallery slots.
+    var galleryImages = new List<string>();
+    if (!string.IsNullOrWhiteSpace(Model.GalleryImage1Path))
+    {
+        galleryImages.Add(Model.GalleryImage1Path);
+    }
+    if (!string.IsNullOrWhiteSpace(Model.GalleryImage2Path))
+    {
+        galleryImages.Add(Model.GalleryImage2Path);
+    }
+    if (!string.IsNullOrWhiteSpace(Model.GalleryImage3Path))
+    {
+        galleryImages.Add(Model.GalleryImage3Path);
+    }
+    var galleryCount = galleryImages.Count;
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/public-posts.css"
+          asp-append-version="true" />
+}
+<main class="public-post-details-page"
+      id="publicPostArticle">
+    <!-- =========================================================
+         READING PROGRESS
+         ========================================================= -->
+    <div class="public-post-reading-progress">
+        <div id="publicPostReadingProgress"></div>
+    </div>
+    <!-- =========================================================
+         BREADCRUMB NAVIGATION
+         ========================================================= -->
+    <section class="public-post-breadcrumb-section">
+        <div class="public-posts-container">
+            <nav class="public-post-breadcrumb"
+                 aria-label="Breadcrumb">
+                <a asp-controller="Home"
+                   asp-action="Index">
+                    <i class="bi bi-house"></i>
+                    <span>
+                        Home
+                    </span>
+                </a>
+                <i class="bi bi-chevron-right"></i>
+                <a asp-controller="Posts"
+                   asp-action="Index">
+                    <span>
+                        Updates
+                    </span>
+                </a>
+                <i class="bi bi-chevron-right"></i>
+                <span class="public-post-breadcrumb-current">
+                    Article
+                </span>
+            </nav>
+        </div>
+    </section>
+    <!-- =========================================================
+         ARTICLE HERO
+         ========================================================= -->
+    <section class="public-post-detail-hero">
+        <div class="public-posts-container">
+            <div class="public-post-detail-hero-inner">
+                @if (hasImage)
+                {
+                    <div class="public-post-detail-hero-image">
+                        <img src="@Model.FeaturedImagePath"
+                             alt="@Model.Title" />
+                        <div class="public-post-detail-hero-overlay"></div>
+                    </div>
+                }
+                <div class="public-post-detail-hero-content">
+                    <!-- EYEBROW -->
+                    <span class="public-post-detail-eyebrow">
+                        <span class="public-post-detail-eyebrow-icon">
+                            <i class="bi bi-megaphone"></i>
+                        </span>
+                        Foundation Update
+                    </span>
+                    <!-- TITLE -->
+                    <h1>
+                        @Model.Title
+                    </h1>
+                    <!-- DESCRIPTION -->
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.ShortDescription))
+                    {
+                        <p class="public-post-detail-summary">
+                            @Model.ShortDescription
+                        </p>
+                    }
+                    <!-- META -->
+                    <div class="public-post-detail-meta">
+                        <span>
+                            <i class="bi bi-calendar3"></i>
+                            @Model.PostDate.ToString(
+                                "dd MMMM yyyy")
+                        </span>
+                        <span class="public-post-meta-divider"></span>
+                        <span>
+                            <i class="bi bi-newspaper"></i>
+                            Foundation Update
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         ARTICLE TOOLBAR
+         ========================================================= -->
+    <section class="public-post-detail-toolbar-section">
+        <div class="public-posts-container">
+            <div class="public-post-detail-toolbar">
+                <!-- BACK TO UPDATES -->
+                <a asp-controller="Posts"
+                   asp-action="Index"
+                   class="public-post-toolbar-back">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>
+                        All Updates
+                    </span>
+                </a>
+                <!-- SHARE -->
+                <div class="public-post-share">
+                    <span class="public-post-share-label">
+                        Share
+                    </span>
+                    <button type="button"
+                            class="public-post-share-btn"
+                            onclick="sharePublicPost()"
+                            aria-label="Share this update"
+                            title="Share">
+                        <i class="bi bi-share"></i>
+                    </button>
+                    <button type="button"
+                            class="public-post-share-btn"
+                            onclick="copyPublicPostLink()"
+                            aria-label="Copy article link"
+                            title="Copy link">
+                        <i class="bi bi-link-45deg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         POST GALLERY
+         ========================================================= -->
+    @if (galleryCount > 0)
+    {
+        <section class="public-post-detail-gallery-section"
+                 aria-labelledby="postGalleryTitle">
+            <div class="public-posts-container">
+                <div class="public-post-detail-gallery-header">
+                    <div>
+                        <span class="public-post-detail-gallery-eyebrow">
+                            Gallery
+                        </span>
+                        <h2 id="postGalleryTitle">
+                            Photos from this update
+                        </h2>
+                    </div>
+                    <span class="public-post-detail-gallery-count">
+                        @galleryCount
+                        @(galleryCount == 1 ? "Photo" : "Photos")
+                    </span>
+                </div>
+                <div class="public-post-detail-gallery"
+                     id="publicPostGallery">
+                    @for (var i = 0; i < galleryImages.Count; i++)
+                    {
+                        var imageNumber = i + 1;
+                        <button type="button"
+                                class="public-post-gallery-item"
+                                onclick="openPublicPostGallery(@i)"
+                                aria-label="Open gallery photo @imageNumber">
+                            <img src="@galleryImages[i]"
+                                 alt="@Model.Title - Photo @imageNumber"
+                                 loading="lazy" />
+                            <span class="public-post-gallery-overlay">
+                                <i class="bi bi-arrows-fullscreen"></i>
+                                <span>View</span>
+                            </span>
+                            <span class="public-post-gallery-number">
+                                @imageNumber
+                            </span>
+                        </button>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+    <!-- =========================================================
+         ARTICLE CONTENT
+         ========================================================= -->
+    <article class="public-post-detail-article">
+        <div class="public-posts-container">
+            <div class="public-post-detail-layout">
+                <!-- =================================================
+                     MAIN CONTENT
+                     ================================================= -->
+                <div class="public-post-detail-main">
+                    <div class="public-post-detail-content">
+                        @if (!string.IsNullOrWhiteSpace(Model.Content))
+                        {
+                            @Html.Raw(Model.Content)
+                        }
+                        else if (!string.IsNullOrWhiteSpace(
+                            Model.ShortDescription))
+                        {
+                            <p>
+                                @Model.ShortDescription
+                            </p>
+                        }
+                        else
+                        {
+                            <div class="public-post-no-content">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <p>
+                                    No additional content is available
+                                    for this update.
+                                </p>
+                            </div>
+                        }
+                    </div>
+                    <!-- =================================================
+                         ARTICLE END
+                         ================================================= -->
+                    <div class="public-post-detail-end">
+                        <div class="public-post-detail-end-icon">
+                            <i class="bi bi-check2-circle"></i>
+                        </div>
+                        <span>
+                            Thank you for staying connected with us.
+                        </span>
+                    </div>
+                    <!-- =================================================
+                         ARTICLE NAVIGATION
+                         ================================================= -->
+                    <div class="public-post-detail-navigation">
+                        <a asp-controller="Posts"
+                           asp-action="Index"
+                           class="public-post-detail-nav-card">
+                            <span class="public-post-detail-nav-icon">
+                                <i class="bi bi-arrow-left"></i>
+                            </span>
+                            <span class="public-post-detail-nav-text">
+                                <small>
+                                    Explore
+                                </small>
+                                <strong>
+                                    All Updates
+                                </strong>
+                            </span>
+                        </a>
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="public-post-detail-nav-card public-post-detail-nav-home">
+                            <span class="public-post-detail-nav-icon">
+                                <i class="bi bi-house"></i>
+                            </span>
+                            <span class="public-post-detail-nav-text">
+                                <small>
+                                    Return to
+                                </small>
+                                <strong>
+                                    Home
+                                </strong>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <!-- =================================================
+                     SIDEBAR
+                     ================================================= -->
+                <aside class="public-post-detail-sidebar">
+                    <!-- SUPPORT CARD -->
+                    <div class="public-post-support-card">
+                        <div class="public-post-support-icon">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <span class="public-post-support-eyebrow">
+                            Support Our Work
+                        </span>
+                        <h2>
+                            Together, we can make a difference.
+                        </h2>
+                        <p>
+                            Your support helps us continue our work
+                            and reach more people in need.
+                        </p>
+                        <a asp-controller="Donation"
+                           asp-action="Index"
+                           class="public-post-support-btn">
+                            <span>
+                                Donate Now
+                            </span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <!-- HOME CARD -->
+                    <div class="public-post-home-card">
+                        <div class="public-post-home-card-icon">
+                            <i class="bi bi-house-heart"></i>
+                        </div>
+                        <h3>
+                            Explore Our Foundation
+                        </h3>
+                        <p>
+                            Learn more about our mission,
+                            activities and initiatives.
+                        </p>
+                        <a asp-controller="Home"
+                           asp-action="Index">
+                            Visit Home
+                            <i class="bi bi-arrow-up-right"></i>
+                        </a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </article>
+    <!-- =========================================================
+         BOTTOM CTA
+         ========================================================= -->
+    <section class="public-post-bottom-cta">
+        <div class="public-posts-container">
+            <div class="public-post-bottom-cta-inner">
+                <div class="public-post-bottom-cta-content">
+                    <span>
+                        <i class="bi bi-heart"></i>
+                        Be part of the journey
+                    </span>
+                    <h2>
+                        Together, we can create meaningful change.
+                    </h2>
+                </div>
+                <div class="public-post-bottom-cta-actions">
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="public-post-cta-secondary">
+                        <i class="bi bi-house"></i>
+                        Home
+                    </a>
+                    <a asp-controller="Donation"
+                       asp-action="Index"
+                       class="public-post-cta-primary">
+                        <i class="bi bi-heart-fill"></i>
+                        Support Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- =============================================================
+     PUBLIC POST GALLERY LIGHTBOX
+     ============================================================= -->
+<div id="publicPostGalleryLightbox"
+     class="public-post-gallery-lightbox"
+     aria-hidden="true">
+    <div class="public-post-gallery-lightbox-overlay"
+         onclick="closePublicPostGallery()">
+    </div>
+    <div class="public-post-gallery-lightbox-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="publicPostGalleryLightboxTitle">
+        <div class="public-post-gallery-lightbox-header">
+            <span id="publicPostGalleryLightboxTitle">
+                Photo
+            </span>
+            <button type="button"
+                    class="public-post-gallery-lightbox-close"
+                    onclick="closePublicPostGallery()"
+                    aria-label="Close image viewer">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="public-post-gallery-lightbox-body">
+            <button type="button"
+                    class="public-post-gallery-lightbox-nav public-post-gallery-prev"
+                    onclick="previousPublicPostGallery()"
+                    aria-label="Previous photo">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <img id="publicPostGalleryLightboxImage"
+                 src=""
+                 alt="Post gallery image" />
+            <button type="button"
+                    class="public-post-gallery-lightbox-nav public-post-gallery-next"
+                    onclick="nextPublicPostGallery()"
+                    aria-label="Next photo">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+        <div class="public-post-gallery-lightbox-footer">
+            <span id="publicPostGalleryLightboxCounter">
+                1 / 1
+            </span>
+        </div>
+    </div>
+</div>
+<!-- =============================================================
+     INTERACTION SCRIPT
+     ============================================================= -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const progress =
+            document.getElementById(
+                "publicPostReadingProgress"
+            );
+        const article =
+            document.getElementById(
+                "publicPostArticle"
+            );
+        function updateReadingProgress() {
+            if (!progress || !article) {
+                return;
+            }
+            const articleTop =
+                article.offsetTop;
+            const articleHeight =
+                article.offsetHeight;
+            const viewportHeight =
+                window.innerHeight;
+            const scrollTop =
+                window.scrollY;
+            const total =
+                articleHeight -
+                viewportHeight;
+            if (total <= 0) {
+                progress.style.width = "100%";
+                return;
+            }
+            const current =
+                Math.max(
+                    0,
+                    scrollTop - articleTop
+                );
+            const percentage =
+                Math.min(
+                    100,
+                    Math.max(
+                        0,
+                        (current / total) * 100
+                    )
+                );
+            progress.style.width =
+                percentage + "%";
+        }
+        window.addEventListener(
+            "scroll",
+            updateReadingProgress,
+            { passive: true }
+        );
+        window.addEventListener(
+            "resize",
+            updateReadingProgress
+        );
+        updateReadingProgress();
+    });
+    /* =========================================================
+       SHARE
+       ========================================================= */
+    function sharePublicPost() {
+        const title =
+            @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(Model.Title)
+            );
+        const url =
+            window.location.href;
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                text: title,
+                url: url
+            }).catch(function() {
+                // User cancelled share.
+            });
+            return;
+        }
+        copyPublicPostLink();
+    }
+    /* =========================================================
+       COPY LINK
+       ========================================================= */
+    function copyPublicPostLink() {
+        const url =
+            window.location.href;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(url)
+                .then(function() {
+                    showPublicPostToast(
+                        "Article link copied."
+                    );
+                })
+                .catch(function() {
+                    fallbackCopyPublicPostLink(url);
+                });
+            return;
+        }
+        fallbackCopyPublicPostLink(url);
+    }
+    function fallbackCopyPublicPostLink(url) {
+        const input =
+            document.createElement("input");
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        try {
+            document.execCommand("copy");
+            showPublicPostToast(
+                "Article link copied."
+            );
+        }
+        catch (error) {
+            // Ignore copy failure.
+        }
+        document.body.removeChild(input);
+    }
+    /* =========================================================
+       PUBLIC POST GALLERY
+       ========================================================= */
+    const publicPostGalleryImages =
+        @Html.Raw(
+        System.Text.Json.JsonSerializer.Serialize(
+        galleryImages
+        )
+        );
+    let publicPostGalleryIndex = 0;
+    function openPublicPostGallery(index) {
+        if (!publicPostGalleryImages ||
+            publicPostGalleryImages.length === 0) {
+            return;
+        }
+        publicPostGalleryIndex =
+            Math.max(
+                0,
+                Math.min(
+                    index,
+                    publicPostGalleryImages.length - 1
+                )
+            );
+        updatePublicPostGalleryLightbox();
+        const lightbox =
+            document.getElementById(
+                "publicPostGalleryLightbox"
+            );
+        if (!lightbox) {
+            return;
+        }
+        lightbox.classList.add("show");
+        lightbox.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+        document.body.classList.add(
+            "public-post-gallery-lightbox-open"
+        );
+    }
+    function updatePublicPostGalleryLightbox() {
+        const image =
+            document.getElementById(
+                "publicPostGalleryLightboxImage"
+            );
+        const title =
+            document.getElementById(
+                "publicPostGalleryLightboxTitle"
+            );
+        const counter =
+            document.getElementById(
+                "publicPostGalleryLightboxCounter"
+            );
+        if (!image ||
+            publicPostGalleryImages.length === 0) {
+            return;
+        }
+        const current =
+            publicPostGalleryImages[
+            publicPostGalleryIndex
+            ];
+        image.src = current;
+        image.alt =
+            @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+            Model.Title
+            )
+            ) +
+            " - Photo " +
+            (publicPostGalleryIndex + 1);
+        if (title) {
+            title.textContent =
+                "Photo " +
+                (publicPostGalleryIndex + 1);
+        }
+        if (counter) {
+            counter.textContent =
+                (publicPostGalleryIndex + 1) +
+                " / " +
+                publicPostGalleryImages.length;
+        }
+    }
+    function closePublicPostGallery() {
+        const lightbox =
+            document.getElementById(
+                "publicPostGalleryLightbox"
+            );
+        if (!lightbox) {
+            return;
+        }
+        lightbox.classList.remove("show");
+        lightbox.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+        document.body.classList.remove(
+            "public-post-gallery-lightbox-open"
+        );
+        const image =
+            document.getElementById(
+                "publicPostGalleryLightboxImage"
+            );
+        if (image) {
+            image.src = "";
+        }
+    }
+    function previousPublicPostGallery() {
+        if (publicPostGalleryImages.length <= 1) {
+            return;
+        }
+        publicPostGalleryIndex =
+            publicPostGalleryIndex <= 0
+                ? publicPostGalleryImages.length - 1
+                : publicPostGalleryIndex - 1;
+        updatePublicPostGalleryLightbox();
+    }
+    function nextPublicPostGallery() {
+        if (publicPostGalleryImages.length <= 1) {
+            return;
+        }
+        publicPostGalleryIndex =
+            publicPostGalleryIndex >=
+                publicPostGalleryImages.length - 1
+                ? 0
+                : publicPostGalleryIndex + 1;
+        updatePublicPostGalleryLightbox();
+    }
+    document.addEventListener(
+        "keydown",
+        function(event) {
+            const lightbox =
+                document.getElementById(
+                    "publicPostGalleryLightbox"
+                );
+            if (!lightbox ||
+                !lightbox.classList.contains("show")) {
+                return;
+            }
+            if (event.key === "Escape") {
+                closePublicPostGallery();
+            }
+            if (event.key === "ArrowLeft") {
+                previousPublicPostGallery();
+            }
+            if (event.key === "ArrowRight") {
+                nextPublicPostGallery();
+            }
+        }
+    );
+    // Mobile swipe support.
+    let publicPostGalleryTouchStartX = 0;
+    let publicPostGalleryTouchEndX = 0;
+    document.addEventListener(
+        "touchstart",
+        function(event) {
+            const lightbox =
+                document.getElementById(
+                    "publicPostGalleryLightbox"
+                );
+            if (!lightbox ||
+                !lightbox.classList.contains("show")) {
+                return;
+            }
+            publicPostGalleryTouchStartX =
+                event.changedTouches[0].screenX;
+        },
+        { passive: true }
+    );
+    document.addEventListener(
+        "touchend",
+        function(event) {
+            const lightbox =
+                document.getElementById(
+                    "publicPostGalleryLightbox"
+                );
+            if (!lightbox ||
+                !lightbox.classList.contains("show")) {
+                return;
+            }
+            publicPostGalleryTouchEndX =
+                event.changedTouches[0].screenX;
+            const difference =
+                publicPostGalleryTouchEndX -
+                publicPostGalleryTouchStartX;
+            if (Math.abs(difference) < 45) {
+                return;
+            }
+            if (difference > 0) {
+                previousPublicPostGallery();
+            }
+            else {
+                nextPublicPostGallery();
+            }
+        },
+        { passive: true }
+    );
+    /* =========================================================
+       TOAST
+       ========================================================= */
+    function showPublicPostToast(message) {
+        let toast =
+            document.getElementById(
+                "publicPostToast"
+            );
+        if (!toast) {
+            toast =
+                document.createElement("div");
+            toast.id =
+                "publicPostToast";
+            toast.className =
+                "public-post-toast";
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML =
+            '<i class="bi bi-check-circle-fill"></i>' +
+            '<span>' +
+            message +
+            '</span>';
+        toast.classList.add("show");
+        clearTimeout(
+            window.publicPostToastTimer
+        );
+        window.publicPostToastTimer =
+            setTimeout(function() {
+                toast.classList.remove("show");
+            }, 2200);
+    }
+</script>

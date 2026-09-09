@@ -1,0 +1,969 @@
+@model IEnumerable<FoundationDonationSystem.Models.Donation>
+@using FoundationDonationSystem.Models.Enums
+@{
+    ViewData["Title"] = "Donations";
+    var donations =
+        Model?.ToList()
+        ?? new List<FoundationDonationSystem.Models.Donation>();
+    var search =
+        ViewBag.Search as string;
+    DonationStatus? selectedStatus =
+        ViewBag.Status as DonationStatus?;
+    PaymentMethod? selectedPaymentMethod =
+        ViewBag.PaymentMethod as PaymentMethod?;
+    var dateFrom =
+        ViewBag.DateFrom as string;
+    var dateTo =
+        ViewBag.DateTo as string;
+    int currentPage =
+        ViewBag.CurrentPage ?? 1;
+    int pageSize =
+        ViewBag.PageSize ?? 10;
+    int totalPages =
+        ViewBag.TotalPages ?? 0;
+    int totalItems =
+        ViewBag.TotalItems ?? 0;
+}
+<div class="admin-donations-page">
+    @Html.AntiForgeryToken()
+    <!-- =========================================================
+         PAGE HEADER
+         ========================================================= -->
+    <div class="admin-page-header">
+        <div>
+            <h1>
+                Donations
+            </h1>
+            <p>
+                Manage and verify donor submissions.
+            </p>
+        </div>
+        <div class="admin-page-header-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-primary"
+                    onclick="openOfflineDonationModal()">
+                + Collect Offline Donation
+            </button>
+        </div>
+    </div>
+<!-- =========================================================
+     FILTER / SEARCH / EXPORT
+     ========================================================= -->
+<div class="donation-toolbar">
+    <!-- =====================================================
+         SEARCH
+         ===================================================== -->
+    <form method="get"
+          asp-area="Admin"
+          asp-controller="Donations"
+          asp-action="Index"
+          class="donation-search-filter-form">
+        <div class="donation-search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-4-4"></path>
+            </svg>
+            <input type="search"
+                   name="search"
+                   value="@search"
+                   placeholder="Search donation no., donor, mobile or transaction ID..."
+                   autocomplete="off" />
+        </div>
+        <!-- =================================================
+             FILTER DROPDOWN
+             ================================================= -->
+        <div class="donation-filter-dropdown">
+            <button type="button"
+                    class="donation-filter-toggle"
+                    id="donationFilterToggle"
+                    aria-expanded="false"
+                    aria-controls="donationFilterPanel">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16M7 12h10M10 18h4"></path>
+                </svg>
+                <span>Filter</span>
+                @if (selectedStatus.HasValue ||
+                     selectedPaymentMethod.HasValue ||
+                     !string.IsNullOrWhiteSpace(dateFrom) ||
+                     !string.IsNullOrWhiteSpace(dateTo))
+                {
+                    <span class="donation-filter-active-dot"></span>
+                }
+                <svg class="donation-filter-chevron"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            </button>
+            <!-- =============================================
+                 FILTER PANEL
+                 ============================================= -->
+            <div class="donation-filter-panel"
+                 id="donationFilterPanel"
+                 aria-hidden="true">
+                <div class="donation-filter-panel-header">
+                    <div>
+                        <span class="donation-filter-panel-eyebrow">
+                            Refine Results
+                        </span>
+                        <h3>
+                            Filter Donations
+                        </h3>
+                    </div>
+                    <button type="button"
+                            class="donation-filter-close"
+                            id="donationFilterClose"
+                            aria-label="Close filters">
+                        &times;
+                    </button>
+                </div>
+                <!-- =========================================
+                     FILTER BODY
+                     ========================================= -->
+                <div class="donation-filter-panel-body">
+                    <!-- STATUS -->
+                    <div class="donation-filter-field">
+                        <label for="donationStatusFilter">
+                            Status
+                        </label>
+                        <select id="donationStatusFilter"
+                                name="status">
+                            <option value="">
+                                All
+                            </option>
+                            @foreach (var item in Enum.GetValues<DonationStatus>())
+                            {
+                                if (selectedStatus.HasValue &&
+                                    selectedStatus.Value == item)
+                                {
+                                    <option value="@item" selected>
+                                        @item
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@item">
+                                        @item
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <!-- PAYMENT METHOD -->
+                    <div class="donation-filter-field">
+                        <label for="donationPaymentMethodFilter">
+                            Payment Method
+                        </label>
+                        <select id="donationPaymentMethodFilter"
+                                name="paymentMethod">
+                            <option value="">
+                                All
+                            </option>
+                            @foreach (var item in Enum.GetValues<PaymentMethod>())
+                            {
+                                if (selectedPaymentMethod.HasValue &&
+                                    selectedPaymentMethod.Value == item)
+                                {
+                                    <option value="@item" selected>
+                                        @item
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@item">
+                                        @item
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <!-- DATE FROM -->
+                    <div class="donation-filter-field">
+                        <label for="donationDateFrom">
+                            Date From
+                        </label>
+                        <input type="date"
+                               id="donationDateFrom"
+                               name="dateFrom"
+                               value="@dateFrom" />
+                    </div>
+                    <!-- DATE TO -->
+                    <div class="donation-filter-field">
+                        <label for="donationDateTo">
+                            Date To
+                        </label>
+                        <input type="date"
+                               id="donationDateTo"
+                               name="dateTo"
+                               value="@dateTo" />
+                    </div>
+                    <!-- PAGE SIZE -->
+                    <div class="donation-filter-field">
+                        <label for="donationPageSize">
+                            Show
+                        </label>
+                        <select id="donationPageSize"
+                                name="pageSize">
+                            @if (pageSize == 10)
+                            {
+                                <option value="10" selected>
+                                    10
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="10">
+                                    10
+                                </option>
+                            }
+                            @if (pageSize == 20)
+                            {
+                                <option value="20" selected>
+                                    20
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="20">
+                                    20
+                                </option>
+                            }
+                            @if (pageSize == 50)
+                            {
+                                <option value="50" selected>
+                                    50
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="50">
+                                    50
+                                </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <!-- =========================================
+                     FILTER ACTIONS
+                     ========================================= -->
+                <div class="donation-filter-panel-actions">
+                    <button type="submit"
+                            class="admin-btn admin-btn-primary donation-filter-btn">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M4 6h16M7 12h10M10 18h4"></path>
+                        </svg>
+                        <span>
+                            Apply Filters
+                        </span>
+                    </button>
+                    <a class="admin-btn donation-clear-filter-btn"
+                       asp-area="Admin"
+                       asp-controller="Donations"
+                       asp-action="Index">
+                        Clear All
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- RESET PAGINATION WHEN SEARCH/FILTER IS SUBMITTED -->
+        <input type="hidden"
+               name="page"
+               value="1" />
+    </form>
+    <!-- =====================================================
+         EXPORT EXCEL
+         ===================================================== -->
+    <a asp-area="Admin"
+       asp-controller="Donations"
+       asp-action="ExportExcel"
+       asp-route-search="@search"
+       asp-route-status="@selectedStatus"
+       asp-route-paymentMethod="@selectedPaymentMethod"
+       asp-route-dateFrom="@dateFrom"
+       asp-route-dateTo="@dateTo"
+       class="admin-btn donation-export-btn">
+        <svg viewBox="0 0 24 24"
+             aria-hidden="true">
+            <path d="M4 4h16v16H4z"></path>
+            <path d="M8 8h8M8 12h8M8 16h5"></path>
+        </svg>
+        <span>
+            Export to Excel
+        </span>
+    </a>
+</div>
+    <!-- =========================================================
+         RESULT INFO
+         ========================================================= -->
+    <div class="donation-result-info">
+        <span>
+            Total Donations:
+            <strong>
+                @totalItems
+            </strong>
+        </span>
+        @if (totalItems > 0)
+        {
+            <span>
+                Page
+                <strong>
+                    @currentPage
+                </strong>
+                of
+                <strong>
+                    @totalPages
+                </strong>
+            </span>
+        }
+    </div>
+    <!-- =========================================================
+         DONATION TABLE
+         ========================================================= -->
+    <div class="donation-table-wrapper">
+        <table class="donation-table">
+            <thead>
+                <tr>
+                    <th>
+                        Donation No.
+                    </th>
+                    <th>
+                        Donor
+                    </th>
+                    <th>
+                        Mobile
+                    </th>
+                    <th>
+                        Amount
+                    </th>
+                    <th>
+                        Payment
+                    </th>
+                    <th>
+                        Transaction ID
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Action
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (donations.Any())
+                {
+                    foreach (var donation in donations)
+                    {
+                        <tr>
+                            <!-- =================================
+                                 DONATION NUMBER
+                                 ================================= -->
+                            <td>
+                                <strong>
+                                    @donation.DonationNumber
+                                </strong>
+                            </td>
+                            <!-- =================================
+                                 DONOR
+                                 ================================= -->
+                            <td>
+                                @donation.DonorName
+                            </td>
+                            <!-- =================================
+                                 MOBILE
+                                 ================================= -->
+                            <td>
+                                @donation.Mobile
+                            </td>
+                            <!-- =================================
+                                 AMOUNT
+                                 ================================= -->
+                            <td>
+                                ₹@donation.Amount.ToString("N2")
+                            </td>
+                            <!-- =================================
+                                 PAYMENT METHOD
+                                 ================================= -->
+                            <td>
+                                @if (donation.IsOfflineDonation)
+                                {
+                                    <span>
+                                        Cash
+                                    </span>
+                                }
+                                else
+                                {
+                                    @donation.PaymentMethod
+                                }
+                            </td>
+                            <!-- =================================
+                                 TRANSACTION ID
+                                 ================================= -->
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(
+                                    donation.TransactionId))
+                                {
+                                    <span>
+                                        @donation.TransactionId
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        —
+                                    </span>
+                                }
+                            </td>
+                            <!-- =================================
+                                 STATUS
+                                 ================================= -->
+                            <td>
+                                <span class="donation-status donation-status-@donation.Status.ToString().ToLowerInvariant()">
+                                    @donation.Status
+                                </span>
+                            </td>
+                            <!-- =================================
+                                 DATE
+                                 ================================= -->
+                            <td>
+                                @donation.CreatedAt.ToLocalTime().ToString("dd-MM-yyyy HH:mm")
+                            </td>
+                            <!-- =================================
+                                 ACTION
+                                 ================================= -->
+                            <td>
+                                <div class="donation-table-actions">
+                                    <!-- =================================
+                                         VIEW
+                                         ================================= -->
+                                    <button type="button"
+                                            class="table-action"
+                                            onclick="openDonationDetailsModal(
+                                                '@Url.Action(
+                                                    "Details",
+                                                    "Donations",
+                                                    new
+                                                    {
+                                                        area = "Admin",
+                                                        id = donation.Id
+                                                    })',
+                                                'Donation Details')">
+                                        View
+                                    </button>
+                                    <!-- =================================
+                                         DELETE
+                                         ================================= -->
+                                       <button type="button"
+                                        class="table-action table-action-delete"
+                                        onclick="openDeleteConfirmation(
+                                                @donation.Id,
+                                                '@Html.Raw(
+                                                    System.Text.Encodings.Web
+                                                        .HtmlEncoder
+                                                        .Default
+                                                        .Encode(
+                                                            donation.DonationNumber
+                                                        )
+                                                )')">
+                                            Delete
+                                        </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9"
+                            class="donation-empty">
+                            No donations found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- =========================================================
+         PAGINATION
+         ========================================================= -->
+    @if (totalPages > 1)
+    {
+        <div class="pagination-wrapper">
+            <!-- =============================================
+                 PAGINATION INFO
+                 ============================================= -->
+            <div class="pagination-info">
+                Page @currentPage of @totalPages
+            </div>
+            <div class="pagination">
+                @{
+                    var previousPage =
+                        currentPage - 1;
+                    var nextPage =
+                        currentPage + 1;
+                    /*
+                     * Build query parameters manually.
+                     *
+                     * This preserves:
+                     * - Search
+                     * - Status
+                     * - Payment Method
+                     * - Date From
+                     * - Date To
+                     * - Page Size
+                     */
+                    var queryParams =
+                        new List<string>();
+                    if (!string.IsNullOrWhiteSpace(search))
+                    {
+                        queryParams.Add(
+                            $"search={Uri.EscapeDataString(search)}");
+                    }
+                    if (selectedStatus.HasValue)
+                    {
+                        queryParams.Add(
+                            $"status={(int)selectedStatus.Value}");
+                    }
+                    if (selectedPaymentMethod.HasValue)
+                    {
+                        queryParams.Add(
+                            $"paymentMethod={(int)selectedPaymentMethod.Value}");
+                    }
+                    if (!string.IsNullOrWhiteSpace(dateFrom))
+                    {
+                        queryParams.Add(
+                            $"dateFrom={Uri.EscapeDataString(dateFrom)}");
+                    }
+                    if (!string.IsNullOrWhiteSpace(dateTo))
+                    {
+                        queryParams.Add(
+                            $"dateTo={Uri.EscapeDataString(dateTo)}");
+                    }
+                    queryParams.Add(
+                        $"pageSize={pageSize}");
+                    var baseQuery =
+                        string.Join(
+                            "&",
+                            queryParams);
+                    var previousUrl =
+                        Url.Action(
+                            "Index",
+                            "Donations",
+                            new
+                            {
+                                area = "Admin",
+                                page = previousPage
+                            });
+                    var nextUrl =
+                        Url.Action(
+                            "Index",
+                            "Donations",
+                            new
+                            {
+                                area = "Admin",
+                                page = nextPage
+                            });
+                }
+                <!-- =========================================
+                     PREVIOUS
+                     ========================================= -->
+                @if (currentPage > 1)
+                {
+                    <a class="pagination-btn"
+                       href="@(previousUrl)&@baseQuery">
+                        ‹ Previous
+                    </a>
+                }
+                else
+                {
+                    <span class="pagination-btn disabled">
+                        ‹ Previous
+                    </span>
+                }
+                <!-- =========================================
+                     PAGE NUMBERS
+                     ========================================= -->
+                @for (
+                    int i = 1;
+                    i <= totalPages;
+                    i++
+                )
+                {
+                    if (i == currentPage)
+                    {
+                        <span class="pagination-btn active">
+                            @i
+                        </span>
+                    }
+                    else
+                    {
+                        var pageUrl =
+                            Url.Action(
+                                "Index",
+                                "Donations",
+                                new
+                                {
+                                    area = "Admin",
+                                    page = i
+                                });
+                        <a class="pagination-btn"
+                           href="@(pageUrl)&@baseQuery">
+                            @i
+                        </a>
+                    }
+                }
+                <!-- =========================================
+                     NEXT
+                     ========================================= -->
+                @if (currentPage < totalPages)
+                {
+                    <a class="pagination-btn"
+                       href="@(nextUrl)&@baseQuery">
+                        Next ›
+                    </a>
+                }
+                else
+                {
+                    <span class="pagination-btn disabled">
+                        Next ›
+                    </span>
+                }
+            </div>
+        </div>
+    }
+    <!-- =========================================================
+         OFFLINE DONATION MODAL
+         ========================================================= -->
+    <div id="offlineDonationModal"
+         class="donation-modal">
+        <div class="donation-modal-overlay"
+             onclick="closeOfflineDonationModal()">
+        </div>
+        <div class="donation-modal-dialog offline-donation-modal-dialog">
+            <div class="donation-modal-header">
+                <h2>
+                    Collect Offline Donation
+                </h2>
+                <button type="button"
+                        class="donation-modal-close"
+                        onclick="closeOfflineDonationModal()">
+                    &times;
+                </button>
+            </div>
+            <div id="offlineDonationModalBody"
+                 class="donation-modal-body">
+                <div class="donation-modal-loading">
+                    Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         DETAILS MODAL
+         ========================================================= -->
+    <div id="donationDetailsModal"
+         class="donation-modal">
+        <div class="donation-modal-overlay"
+             onclick="closeDonationDetailsModal()">
+        </div>
+        <div class="donation-modal-dialog">
+            <div class="donation-modal-header">
+                <h2 id="donationDetailsModalTitle">
+                    Donation Details
+                </h2>
+                <button type="button"
+                        class="donation-modal-close"
+                        onclick="closeDonationDetailsModal()">
+                    &times;
+                </button>
+            </div>
+            <div id="donationDetailsModalBody"
+                 class="donation-modal-body">
+                <div class="donation-modal-loading">
+                    Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         DELETE CONFIRMATION MODAL
+         ========================================================= -->
+    <div id="donationDeleteModal"
+         class="donation-confirm-modal">
+        <div class="donation-confirm-overlay"
+             onclick="closeDeleteConfirmation()">
+        </div>
+        <div class="donation-confirm-dialog donation-delete-dialog">
+            <div class="donation-confirm-icon donation-delete-icon">
+                !
+            </div>
+            <div class="donation-confirm-content">
+                <h3>
+                    Delete Donation?
+                </h3>
+                <p>
+                    Are you sure you want to delete this donation?
+                </p>
+                <span>
+                    This action cannot be undone.
+                </span>
+                <div class="donation-delete-number">
+                    <span>
+                        Donation Number
+                    </span>
+                    <strong id="deleteDonationNumber">
+                    </strong>
+                </div>
+            </div>
+            <div class="donation-confirm-actions">
+                <button type="button"
+                        class="donation-confirm-cancel"
+                        onclick="closeDeleteConfirmation()">
+                    Cancel
+                </button>
+                <button type="button"
+                        id="confirmDeleteButton"
+                        class="donation-confirm-reject"
+                        onclick="confirmDeleteDonation()">
+                    Delete Donation
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         VERIFY CONFIRMATION MODAL
+         ========================================================= -->
+    <div id="donationVerifyModal"
+         class="donation-confirm-modal">
+        <div class="donation-confirm-overlay"
+             onclick="closeVerifyConfirmation()">
+        </div>
+        <div class="donation-confirm-dialog">
+            <div class="donation-confirm-icon">
+                ✓
+            </div>
+            <div class="donation-confirm-content">
+                <h3>
+                    Verify Donation?
+                </h3>
+                <p>
+                    Are you sure you want to verify this donation?
+                </p>
+                <span>
+                    Once verified, this donation will be marked
+                    as successfully verified.
+                </span>
+            </div>
+            <div class="donation-confirm-actions">
+                <button type="button"
+                        class="donation-confirm-cancel"
+                        onclick="closeVerifyConfirmation()">
+                    Cancel
+                </button>
+                <button type="button"
+                        id="confirmVerifyButton"
+                        class="donation-confirm-verify"
+                        onclick="confirmVerifyDonation()">
+                    Verify Donation
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         REJECT CONFIRMATION MODAL
+         ========================================================= -->
+    <div id="donationRejectModal"
+         class="donation-confirm-modal">
+        <div class="donation-confirm-overlay"
+             onclick="closeRejectConfirmation()">
+        </div>
+        <div class="donation-confirm-dialog donation-reject-dialog">
+            <div class="donation-confirm-icon donation-reject-icon">
+                !
+            </div>
+            <div class="donation-confirm-content">
+                <h3>
+                    Reject Donation?
+                </h3>
+                <p>
+                    Are you sure you want to reject this donation?
+                </p>
+                <span>
+                    Please provide a reason for rejecting this donation.
+                </span>
+            </div>
+            <div class="donation-reject-remarks">
+                <label for="rejectionRemarks">
+                    Rejection Remarks
+                </label>
+                <textarea id="rejectionRemarks"
+                          class="donation-reject-textarea"
+                          rows="3"
+                          maxlength="500"
+                          placeholder="Enter reason for rejection..."></textarea>
+                <div class="donation-reject-counter">
+                    <span id="rejectionRemarksCounter">
+                        0
+                    </span>
+                    / 500
+                </div>
+            </div>
+            <div class="donation-confirm-actions">
+                <button type="button"
+                        class="donation-confirm-cancel"
+                        onclick="closeRejectConfirmation()">
+                    Cancel
+                </button>
+                <button type="button"
+                        id="confirmRejectButton"
+                        class="donation-confirm-reject"
+                        onclick="confirmRejectDonation()">
+                    Reject Donation
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         SUCCESS MODAL
+         ========================================================= -->
+    <div id="donationSuccessModal"
+         class="donation-success-modal">
+        <div class="donation-success-overlay"
+             onclick="closeDonationSuccessModal()">
+        </div>
+        <div class="donation-success-dialog"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="donationSuccessTitle">
+            <!-- =============================================
+                 CLOSE BUTTON
+                 ============================================= -->
+            <button type="button"
+                    class="donation-success-close"
+                    onclick="closeDonationSuccessModal()"
+                    aria-label="Close">
+                ×
+            </button>
+            <!-- =============================================
+                 SUCCESS ICON
+                 ============================================= -->
+            <div class="donation-success-icon-wrapper">
+                <div class="donation-success-icon">
+                    ✓
+                </div>
+            </div>
+            <!-- =============================================
+                 SUCCESS CONTENT
+                 ============================================= -->
+            <div class="donation-success-content">
+                <h3 id="donationSuccessTitle">
+                    Donation Collected Successfully
+                </h3>
+                <p id="donationSuccessMessage">
+                    Cash donation collected successfully.
+                </p>
+                <!-- =========================================
+                     DONATION NUMBER
+                     ========================================= -->
+                <div id="donationSuccessNumberBox"
+                     class="donation-success-number-box">
+                    <span>
+                        Donation Number
+                    </span>
+                    <strong id="donationSuccessNumber">
+                    </strong>
+                </div>
+                <!-- =========================================
+                     OK BUTTON
+                     ========================================= -->
+                <button type="button"
+                        class="admin-btn admin-btn-primary donation-success-ok-button"
+                        onclick="closeDonationSuccessModal()">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- =========================================================
+     PAGE SCRIPTS
+     ========================================================= -->
+@section Scripts {
+    <script src="~/js/donations.js"
+            asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggle = document.getElementById("donationFilterToggle");
+            const panel = document.getElementById("donationFilterPanel");
+            const closeButton = document.getElementById("donationFilterClose");
+            const chevron = document.querySelector(".donation-filter-chevron");
+            // Stop if filter elements are not present
+            if (!toggle || !panel) {
+                return;
+            }
+            function openFilters() {
+                panel.classList.add("is-open");
+                toggle.classList.add("is-active");
+                toggle.setAttribute("aria-expanded", "true");
+                panel.setAttribute("aria-hidden", "false");
+                if (chevron) {
+                    chevron.classList.add("rotate");
+                }
+            }
+            function closeFilters() {
+                panel.classList.remove("is-open");
+                toggle.classList.remove("is-active");
+                toggle.setAttribute("aria-expanded", "false");
+                panel.setAttribute("aria-hidden", "true");
+                if (chevron) {
+                    chevron.classList.remove("rotate");
+                }
+            }
+            function toggleFilters(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (panel.classList.contains("is-open")) {
+                    closeFilters();
+                }
+                else {
+                    openFilters();
+                }
+            }
+            // Filter button
+            toggle.addEventListener("click", toggleFilters);
+            // Close button inside filter panel
+            if (closeButton) {
+                closeButton.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeFilters();
+                });
+            }
+            // Prevent clicks inside panel from closing it
+            panel.addEventListener("click", function (event) {
+                event.stopPropagation();
+            });
+            // Close when clicking outside
+            document.addEventListener("click", function (event) {
+                if (!panel.contains(event.target) &&
+                    !toggle.contains(event.target)) {
+                    closeFilters();
+                }
+            });
+            // Close with Escape key
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    closeFilters();
+                }
+            });
+            // Initial state
+            toggle.setAttribute("aria-expanded", "false");
+            panel.setAttribute("aria-hidden", "true");
+        });
+    </script>
+}

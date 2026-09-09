@@ -1,0 +1,463 @@
+@model FoundationDonationSystem.ViewModels.FoundationSettingViewModel
+@{
+    ViewData["Title"] = "Settings";
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/settings.css"
+          asp-append-version="true" />
+}
+<div class="admin-page settings-page">
+    <!-- =========================================================
+         PAGE HEADER
+         ========================================================= -->
+    <div class="admin-page-header settings-header">
+        <div class="settings-heading">
+            <div class="settings-heading-icon">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M19.43 12.98a7.8 7.8 0 0 0 .05-.98 7.8 7.8 0 0 0-.05-.98l2.11-1.65-2-3.46-2.49 1a7.2 7.2 0 0 0-1.7-.98L15 3h-4l-.35 2.93c-.61.25-1.18.58-1.7.98l-2.49-1-2 3.46 2.11 1.65a7.8 7.8 0 0 0 0 1.96l-2.11 1.65 2 3.46 2.49-1c.52.4 1.09.73 1.7.98L11 21h4l.35-2.93a7.2 7.2 0 0 0 1.7-.98l2.49 1 2.49 1 2-3.46-2.11-1.65ZM13 15.5A3.5 3.5 0 1 1 13 8a3.5 3.5 0 0 1 0 7.5Z" />
+                </svg>
+            </div>
+            <div>
+                <span class="settings-eyebrow">
+                    SYSTEM SETTINGS
+                </span>
+                <h1>
+                    Foundation Settings
+                </h1>
+                <p>
+                    Manage the foundation information used
+                    across the website and donation receipts.
+                </p>
+            </div>
+        </div>
+        <!-- =====================================================
+             UPDATE SETTINGS BUTTON
+             ===================================================== -->
+        <div class="settings-header-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-primary"
+                    id="updateSettingsButton">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z" />
+                </svg>
+                <span>
+                    Update Settings
+                </span>
+            </button>
+        </div>
+    </div>
+    <!-- =========================================================
+         SUCCESS MESSAGE
+         ========================================================= -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="admin-alert admin-alert-success">
+            <span class="admin-alert-icon">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="m9 16.17-3.88-3.88L3.7 13.71 9 19l12-12-1.41-1.41L9 16.17Z" />
+                </svg>
+            </span>
+            <span>
+                @TempData["SuccessMessage"]
+            </span>
+        </div>
+    }
+    <!-- =========================================================
+         ERROR MESSAGE
+         ========================================================= -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="admin-alert admin-alert-danger">
+            <span class="admin-alert-icon">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z" />
+                </svg>
+            </span>
+            <span>
+                @TempData["ErrorMessage"]
+            </span>
+        </div>
+    }
+    <!-- =========================================================
+         VALIDATION
+         ========================================================= -->
+    <div asp-validation-summary="ModelOnly"
+         class="admin-validation-summary">
+    </div>
+    <!-- =========================================================
+         SETTINGS FORM
+         ========================================================= -->
+    <form asp-area="Admin"
+          asp-controller="Settings"
+          asp-action="Index"
+          method="post"
+          class="settings-form"
+          id="settingsForm">
+        @Html.AntiForgeryToken()
+        <!-- =====================================================
+             FOUNDATION INFORMATION
+             ===================================================== -->
+        <div class="admin-table-card settings-card">
+            <div class="admin-table-header settings-card-header">
+                <div class="settings-card-title">
+                    <span class="settings-card-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 3 3 8v2h18V8l-9-5Zm-7 9v7H3v2h18v-2h-2v-7h-2v7h-3v-7h-2v7h-2v-7H8v7H5v-7H5Z" />
+                        </svg>
+                    </span>
+                    <span>
+                        <strong>
+                            Foundation Information
+                        </strong>
+                        <small>
+                            Official foundation details
+                        </small>
+                    </span>
+                </div>
+            </div>
+            <div class="settings-card-body">
+                <div class="settings-form-grid">
+                    <!-- FOUNDATION NAME -->
+                    <div class="settings-form-group settings-form-group-full">
+                        <label asp-for="FoundationName">
+                            Foundation Name
+                        </label>
+                        <input asp-for="FoundationName"
+                               class="form-control settings-input"
+                               autocomplete="organization"
+                               placeholder="Enter foundation name"
+                               readonly />
+                        <span asp-validation-for="FoundationName"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- TAGLINE -->
+                    <div class="settings-form-group settings-form-group-full">
+                        <label asp-for="Tagline">
+                            Tagline
+                        </label>
+                        <input asp-for="Tagline"
+                               class="form-control settings-input"
+                               placeholder="Enter foundation tagline"
+                               readonly />
+                        <span asp-validation-for="Tagline"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- ADDRESS -->
+                    <div class="settings-form-group settings-form-group-full">
+                        <label asp-for="Address">
+                            Address
+                        </label>
+                        <textarea asp-for="Address"
+                                  class="form-control settings-input"
+                                  rows="3"
+                                  placeholder="Enter registered office address"
+                                  readonly></textarea>
+                        <span asp-validation-for="Address"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- PHONE -->
+                    <div class="settings-form-group">
+                        <label asp-for="Phone">
+                            Phone
+                        </label>
+                        <input asp-for="Phone"
+                               class="form-control settings-input"
+                               autocomplete="tel"
+                               placeholder="+91 XXXXXXXXXX"
+                               readonly />
+                        <span asp-validation-for="Phone"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- EMAIL -->
+                    <div class="settings-form-group">
+                        <label asp-for="Email">
+                            Email
+                        </label>
+                        <input asp-for="Email"
+                               type="email"
+                               class="form-control settings-input"
+                               autocomplete="email"
+                               placeholder="info@example.org"
+                               readonly />
+                        <span asp-validation-for="Email"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- WEBSITE -->
+                    <div class="settings-form-group">
+                        <label asp-for="Website">
+                            Website
+                        </label>
+                        <input asp-for="Website"
+                               class="form-control settings-input"
+                               placeholder="www.example.org"
+                               readonly />
+                        <span asp-validation-for="Website"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- REGISTRATION -->
+                    <div class="settings-form-group">
+                        <label asp-for="RegistrationNumber">
+                            Registration Number
+                        </label>
+                        <input asp-for="RegistrationNumber"
+                               class="form-control settings-input"
+                               placeholder="Registration number"
+                               readonly />
+                        <span asp-validation-for="RegistrationNumber"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- PAN -->
+                    <div class="settings-form-group">
+                        <label asp-for="PAN">
+                            PAN
+                        </label>
+                        <input asp-for="PAN"
+                               class="form-control settings-input"
+                               placeholder="PAN number"
+                               readonly />
+                        <span asp-validation-for="PAN"
+                              class="field-validation">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             RECEIPT INFORMATION
+             ===================================================== -->
+        <div class="admin-table-card settings-card">
+            <div class="admin-table-header settings-card-header">
+                <div class="settings-card-title">
+                    <span class="settings-card-icon">
+                        <svg viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M6 2h9l5 5v15H6V2Zm8 2v5h5M9 13h6v2H9v-2Zm0 4h6v2H9v-2Z" />
+                        </svg>
+                    </span>
+                    <span>
+                        <strong>
+                            Donation Receipt
+                        </strong>
+                        <small>
+                            Information displayed on donation receipts
+                        </small>
+                    </span>
+                </div>
+            </div>
+            <div class="settings-card-body">
+                <div class="settings-form-grid">
+                    <!-- LOGO PATH -->
+                    <div class="settings-form-group settings-form-group-full">
+                        <label asp-for="LogoPath">
+                            Logo Path
+                        </label>
+                        <input asp-for="LogoPath"
+                               class="form-control settings-input"
+                               placeholder="/images/foundation-logo.png"
+                               readonly />
+                        <span class="settings-help-text">
+                            Example:
+                            /images/foundation-logo.png
+                        </span>
+                        <span asp-validation-for="LogoPath"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- RECEIPT FOOTER -->
+                    <div class="settings-form-group settings-form-group-full">
+                        <label asp-for="ReceiptFooter">
+                            Receipt Footer
+                        </label>
+                        <textarea asp-for="ReceiptFooter"
+                                  class="form-control settings-input"
+                                  rows="3"
+                                  placeholder="Enter receipt footer message"
+                                  readonly></textarea>
+                        <span asp-validation-for="ReceiptFooter"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- THANK YOU MESSAGE -->
+                    <div class="settings-form-group settings-form-group-full">
+                        <label asp-for="ThankYouMessage">
+                            Thank You Message
+                        </label>
+                        <textarea asp-for="ThankYouMessage"
+                                  class="form-control settings-input"
+                                  rows="3"
+                                  placeholder="Enter acknowledgement message"
+                                  readonly></textarea>
+                        <span asp-validation-for="ThankYouMessage"
+                              class="field-validation">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             SAVE ACTIONS
+             ===================================================== -->
+        <div class="settings-actions"
+             id="settingsActions"
+             style="display: none;">
+            <button type="button"
+                    class="admin-btn"
+                    id="cancelSettingsButton">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.41 4.29 19.71 2.88 18.3 9.17 12 2.88 5.7 4.29 4.29l6.3 6.3 6.3-6.3Z" />
+                </svg>
+                <span>
+                    Cancel
+                </span>
+            </button>
+            <button type="submit"
+                    class="admin-btn admin-btn-primary settings-save-btn"
+                    id="saveSettingsButton">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2-2V7l-4-4Zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6ZM6 5h8v4H6V5Z" />
+                </svg>
+                <span>
+                    Save Settings
+                </span>
+            </button>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+                const form =
+                    document.getElementById(
+                        "settingsForm"
+                    );
+                const updateButton =
+                    document.getElementById(
+                        "updateSettingsButton"
+                    );
+                const cancelButton =
+                    document.getElementById(
+                        "cancelSettingsButton"
+                    );
+                const actions =
+                    document.getElementById(
+                        "settingsActions"
+                    );
+                if (!form ||
+                    !updateButton ||
+                    !cancelButton ||
+                    !actions) {
+                    return;
+                }
+                const inputs =
+                    form.querySelectorAll(
+                        ".settings-input"
+                    );
+                /* =================================================
+                   DEFAULT READ-ONLY MODE
+                   ================================================= */
+                function setReadOnlyMode() {
+                    inputs.forEach(
+                        function(input) {
+                            input.setAttribute(
+                                "readonly",
+                                "readonly"
+                            );
+                        }
+                    );
+                    actions.style.display =
+                        "none";
+                    updateButton.style.display =
+                        "inline-flex";
+                }
+                /* =================================================
+                   EDIT MODE
+                   ================================================= */
+                function setEditMode() {
+                    inputs.forEach(
+                        function(input) {
+                            input.removeAttribute(
+                                "readonly"
+                            );
+                        }
+                    );
+                    actions.style.display =
+                        "flex";
+                    updateButton.style.display =
+                        "none";
+                    const firstInput =
+                        form.querySelector(
+                            ".settings-input"
+                        );
+                    if (firstInput) {
+                        firstInput.focus();
+                    }
+                }
+                /* =================================================
+                   UPDATE SETTINGS
+                   ================================================= */
+                updateButton.addEventListener(
+                    "click",
+                    function() {
+                        setEditMode();
+                    }
+                );
+                /* =================================================
+                   CANCEL SETTINGS
+                   ================================================= */
+                cancelButton.addEventListener(
+                    "click",
+                    function() {
+                        window.location.reload();
+                    }
+                );
+                /* =================================================
+                   SAVE SETTINGS
+                   ================================================= */
+                form.addEventListener(
+                    "submit",
+                    function() {
+                        const saveButton =
+                            document.getElementById(
+                                "saveSettingsButton"
+                            );
+                        if (!saveButton) {
+                            return;
+                        }
+                        saveButton.disabled =
+                            true;
+                        const buttonText =
+                            saveButton.querySelector(
+                                "span"
+                            );
+                        if (buttonText) {
+                            buttonText.textContent =
+                                "Saving...";
+                        }
+                    }
+                );
+                /* =================================================
+                   INITIAL STATE
+                   ================================================= */
+                setReadOnlyMode();
+            }
+        );
+    </script>
+}

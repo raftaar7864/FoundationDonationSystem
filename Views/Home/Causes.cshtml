@@ -1,0 +1,872 @@
+﻿@using FoundationDonationSystem.Models
+@using FoundationDonationSystem.ViewModels
+@using FoundationDonationSystem.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "Our Work";
+    var foundationSettings = await FoundationSettingsService.GetAsync();
+    var foundationName = foundationSettings.FoundationName;
+    var tagline = foundationSettings.Tagline;
+    var logoPath = foundationSettings.LogoPath;
+    var latestPosts = await DbContext.Posts
+        .AsNoTracking()
+        .Where(x => x.IsPublished)
+        .OrderBy(x => x.DisplayOrder)
+        .ThenByDescending(x => x.PostDate)
+        .ThenByDescending(x => x.CreatedAt)
+        .Take(3)
+        .Select(x => new PublicPostListViewModel
+        {
+            Id = x.Id,
+            Title = x.Title,
+            ShortDescription = x.ShortDescription,
+            FeaturedImagePath = x.FeaturedImagePath,
+            PostDate = x.PostDate
+        })
+        .ToListAsync();
+    var causes = new[]
+    {
+        new
+        {
+            Id = "education",
+            Icon = "🎓",
+            Title = "Education & Learning",
+            ShortDescription = "Supporting access to education, learning resources and opportunities for a brighter future.",
+            Description = "Education creates opportunities and helps individuals and communities build a stronger future. Our work supports initiatives that encourage learning, provide educational resources and help make meaningful educational opportunities more accessible.",
+            Points = new[]
+            {
+                "Educational support and learning resources",
+                "Encouraging children and young people to continue learning",
+                "Supporting community-based educational initiatives",
+                "Creating opportunities for a better future through education"
+            }
+        },
+        new
+        {
+            Id = "healthcare",
+            Icon = "❤️",
+            Title = "Health & Wellbeing",
+            ShortDescription = "Helping communities access support that contributes to healthier and more dignified lives.",
+            Description = "Good health is fundamental to a strong community. We support initiatives focused on wellbeing, awareness and assistance for people who may need additional support.",
+            Points = new[]
+            {
+                "Health and wellbeing initiatives",
+                "Community awareness and support",
+                "Assistance for people facing difficult circumstances",
+                "Promoting healthier and more caring communities"
+            }
+        },
+        new
+        {
+            Id = "community",
+            Icon = "🤝",
+            Title = "Community Support",
+            ShortDescription = "Standing with individuals and families and strengthening the communities around them.",
+            Description = "Strong communities are built when people support one another. Our community-focused work aims to provide meaningful assistance and encourage cooperation, compassion and collective responsibility.",
+            Points = new[]
+            {
+                "Support for individuals and families",
+                "Community assistance initiatives",
+                "Encouraging volunteerism and participation",
+                "Building stronger connections within communities"
+            }
+        },
+        new
+        {
+            Id = "livelihood",
+            Icon = "🌱",
+            Title = "Livelihood & Opportunity",
+            ShortDescription = "Creating pathways that help people build confidence, independence and sustainable opportunities.",
+            Description = "Sustainable opportunity can make a lasting difference in people's lives. We support initiatives that encourage skills, self-reliance and pathways toward greater economic and social participation.",
+            Points = new[]
+            {
+                "Skills and opportunity-oriented initiatives",
+                "Encouraging self-reliance and independence",
+                "Supporting people in building better futures",
+                "Promoting sustainable community development"
+            }
+        },
+        new
+        {
+            Id = "relief",
+            Icon = "🫶",
+            Title = "Relief & Assistance",
+            ShortDescription = "Providing compassionate support when individuals and communities face challenging situations.",
+            Description = "Unexpected circumstances can place significant pressure on individuals and families. Our relief-oriented work focuses on compassion, timely assistance and helping people move forward with dignity.",
+            Points = new[]
+            {
+                "Support during difficult circumstances",
+                "Assistance for vulnerable individuals and families",
+                "Community relief initiatives",
+                "Compassionate and responsible support"
+            }
+        },
+        new
+        {
+            Id = "social",
+            Icon = "🌍",
+            Title = "Social Development",
+            ShortDescription = "Supporting initiatives that encourage inclusion, dignity, participation and positive social change.",
+            Description = "Positive social development grows from inclusion, participation and shared responsibility. We work toward initiatives that contribute to stronger communities and create opportunities for people to participate and thrive.",
+            Points = new[]
+            {
+                "Inclusive community initiatives",
+                "Encouraging social participation",
+                "Supporting dignity and equal opportunity",
+                "Creating meaningful long-term community impact"
+            }
+        }
+    };
+}
+<div class="causes-page">
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+    <section class="causes-hero">
+        <div class="causes-hero-background"></div>
+        <div class="causes-container causes-hero-container">
+            <div class="causes-hero-content">
+                <div class="causes-eyebrow">
+                    <span class="causes-eyebrow-line"></span>
+                    <span>OUR WORK</span>
+                    <span class="causes-eyebrow-line"></span>
+                </div>
+                <h1 class="causes-hero-title">
+                    Making a Difference,
+                    <span>One Cause at a Time</span>
+                </h1>
+                <p class="causes-hero-text">
+                    @foundationName works to support meaningful initiatives
+                    that strengthen individuals, families and communities.
+                </p>
+                @if (!string.IsNullOrWhiteSpace(tagline))
+                {
+                    <p class="causes-hero-tagline">
+                        @tagline
+                    </p>
+                }
+                <div class="causes-hero-actions">
+                    <a asp-controller="Donation"
+                       asp-action="Index"
+                       class="causes-primary-button">
+                        <span>Support Our Work</span>
+                        <span class="causes-button-arrow">→</span>
+                    </a>
+                    <a href="#causes-list"
+                       class="causes-secondary-button">
+                        Explore Our Causes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         INTRODUCTION
+         ===================================================== -->
+    <section class="causes-intro">
+        <div class="causes-container">
+            <div class="causes-section-heading">
+                <div class="causes-section-eyebrow">
+                    WHAT WE DO
+                </div>
+                <h2>
+                    Turning Compassion Into
+                    <span>Meaningful Action</span>
+                </h2>
+                <p>
+                    Every community has different needs. Our work focuses
+                    on supporting causes where compassion, responsible
+                    action and community participation can create a
+                    meaningful difference.
+                </p>
+            </div>
+            <div class="causes-intro-grid">
+                <div class="causes-intro-card">
+                    <div class="causes-intro-icon">
+                        <span>💛</span>
+                    </div>
+                    <div class="causes-intro-content">
+                        <h3>
+                            Compassion
+                        </h3>
+                        <p>
+                            We believe meaningful change begins with
+                            understanding people's needs and responding
+                            with care and dignity.
+                        </p>
+                    </div>
+                </div>
+                <div class="causes-intro-card">
+                    <div class="causes-intro-icon">
+                        <span>🎯</span>
+                    </div>
+                    <div class="causes-intro-content">
+                        <h3>
+                            Purpose
+                        </h3>
+                        <p>
+                            We focus our efforts on initiatives designed
+                            to create practical and meaningful community
+                            impact.
+                        </p>
+                    </div>
+                </div>
+                <div class="causes-intro-card">
+                    <div class="causes-intro-icon">
+                        <span>🌱</span>
+                    </div>
+                    <div class="causes-intro-content">
+                        <h3>
+                            Lasting Impact
+                        </h3>
+                        <p>
+                            Our goal is to encourage positive change that
+                            can continue to benefit people and communities
+                            over time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         CAUSES LIST
+         ===================================================== -->
+    <section class="causes-list-section"
+             id="causes-list">
+        <div class="causes-container">
+            <div class="causes-section-heading causes-list-heading">
+                <div class="causes-section-eyebrow">
+                    OUR CAUSES
+                </div>
+                <h2>
+                    Areas Where Your
+                    <span>Support Matters</span>
+                </h2>
+                <p>
+                    Explore the areas of work supported by @foundationName.
+                    Select a cause to learn more about its purpose and
+                    the kind of difference your contribution can help make.
+                </p>
+            </div>
+            <div class="causes-work-layout">
+                <!-- =================================================
+                     CAUSE CARDS
+                     ================================================= -->
+                <div class="causes-cards">
+                    @foreach (var cause in causes)
+                    {
+                        <button type="button"
+                                class="cause-card @(cause.Id == "education" ? "active" : "")"
+                                data-cause="@cause.Id">
+                            <span class="cause-card-icon">
+                                @cause.Icon
+                            </span>
+                            <span class="cause-card-content">
+                                <span class="cause-card-title">
+                                    @cause.Title
+                                </span>
+                                <span class="cause-card-description">
+                                    @cause.ShortDescription
+                                </span>
+                            </span>
+                            <span class="cause-card-arrow">
+                                →
+                            </span>
+                        </button>
+                    }
+                </div>
+                <!-- =================================================
+                     CAUSE DETAILS
+                     ================================================= -->
+                <div class="causes-details">
+                    @foreach (var cause in causes)
+                    {
+                        <article class="cause-detail @(cause.Id == "education" ? "active" : "")"
+                                 data-cause-detail="@cause.Id">
+                            <div class="cause-detail-top">
+                                <div class="cause-detail-icon">
+                                    @cause.Icon
+                                </div>
+                                <div>
+                                    <div class="cause-detail-eyebrow">
+                                        OUR FOCUS
+                                    </div>
+                                    <h3>
+                                        @cause.Title
+                                    </h3>
+                                </div>
+                            </div>
+                            <p class="cause-detail-description">
+                                @cause.Description
+                            </p>
+                            <div class="cause-detail-divider"></div>
+                            <h4>
+                                How We Help
+                            </h4>
+                            <ul class="cause-detail-list">
+                                @foreach (var point in cause.Points)
+                                {
+                                    <li>
+                                        <span class="cause-check">
+                                            ✓
+                                        </span>
+                                        <span>
+                                            @point
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                            <div class="cause-detail-footer">
+                                <div class="cause-detail-message">
+                                    <span class="cause-detail-message-icon">
+                                        ♥
+                                    </span>
+                                    <span>
+                                        Together, small contributions
+                                        can become meaningful change.
+                                    </span>
+                                </div>
+                                <a asp-controller="Donation"
+                                   asp-action="Index"
+                                   class="cause-detail-button">
+                                    Support This Cause
+                                    <span>→</span>
+                                </a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         IMPACT SECTION
+         ===================================================== -->
+    <section class="causes-impact-section">
+        <div class="causes-container">
+            <div class="causes-impact-content">
+                <div class="causes-impact-icon">
+                    ♥
+                </div>
+                <div class="causes-impact-text">
+                    <div class="causes-section-eyebrow">
+                        YOUR CONTRIBUTION
+                    </div>
+                    <h2>
+                        Your Support Can
+                        <span>Make a Difference</span>
+                    </h2>
+                    <p>
+                        A contribution is more than a financial gift.
+                        It is a way of standing with people, supporting
+                        meaningful work and helping create opportunities
+                        for positive change.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         HOW YOU CAN HELP
+         ===================================================== -->
+    <section class="causes-help-section">
+        <div class="causes-container">
+            <div class="causes-section-heading">
+                <div class="causes-section-eyebrow">
+                    HOW YOU CAN HELP
+                </div>
+                <h2>
+                    Be Part of the
+                    <span>Change</span>
+                </h2>
+                <p>
+                    There are many ways to contribute to meaningful
+                    community work. Your support, participation and
+                    encouragement can all make a difference.
+                </p>
+            </div>
+            <div class="causes-help-grid">
+                <div class="causes-help-card">
+                    <div class="causes-help-number">
+                        01
+                    </div>
+                    <div class="causes-help-icon">
+                        💝
+                    </div>
+                    <h3>
+                        Make a Donation
+                    </h3>
+                    <p>
+                        Make a contribution to support the work of
+                        @foundationName.
+                    </p>
+                </div>
+                <div class="causes-help-card">
+                    <div class="causes-help-number">
+                        02
+                    </div>
+                    <div class="causes-help-icon">
+                        🤝
+                    </div>
+                    <h3>
+                        Support the Mission
+                    </h3>
+                    <p>
+                        Help spread awareness about causes that can
+                        benefit from community support.
+                    </p>
+                </div>
+                <div class="causes-help-card">
+                    <div class="causes-help-number">
+                        03
+                    </div>
+                    <div class="causes-help-icon">
+                        📣
+                    </div>
+                    <h3>
+                        Share the Message
+                    </h3>
+                    <p>
+                        Encourage others to participate and become
+                        part of positive community change.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         LATEST UPDATES
+         ===================================================== -->
+    <section class="causes-updates-section">
+        <div class="causes-container">
+            <div class="causes-updates-header">
+                <div class="causes-section-heading">
+                    <div class="causes-section-eyebrow">
+                        LATEST UPDATES
+                    </div>
+                    <h2>
+                        News, Activities &amp;
+                        <span>Foundation Updates</span>
+                    </h2>
+                    <p>
+                        Stay connected with the latest work, activities
+                        and important updates from @foundationName.
+                    </p>
+                </div>
+                <a asp-controller="Posts"
+                   asp-action="Index"
+                   class="causes-updates-view-all">
+                    <span>View All Updates</span>
+                    <span class="causes-updates-arrow">→</span>
+                </a>
+            </div>
+            @if (latestPosts.Any())
+            {
+                <div class="causes-updates-grid">
+                    @foreach (var post in latestPosts)
+                    {
+                        <article class="causes-update-card">
+                            <a asp-controller="Posts"
+                               asp-action="Details"
+                               asp-route-id="@post.Id"
+                               class="causes-update-image"
+                               aria-label="Read @post.Title">
+                                @if (!string.IsNullOrWhiteSpace(
+                                    post.FeaturedImagePath))
+                                {
+                                    <img src="@post.FeaturedImagePath"
+                                         alt="@post.Title"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="causes-update-placeholder">
+                                        <span>📰</span>
+                                    </div>
+                                }
+                                <span class="causes-update-date">
+                                    @post.PostDate.ToString("dd MMM yyyy")
+                                </span>
+                            </a>
+                            <div class="causes-update-content">
+                                <div class="causes-update-meta">
+                                    <span>UPDATE</span>
+                                    <span class="causes-update-meta-dot"></span>
+                                    <span>
+                                        @post.PostDate.ToString("dd MMMM yyyy")
+                                    </span>
+                                </div>
+                                <h3>
+                                    <a asp-controller="Posts"
+                                       asp-action="Details"
+                                       asp-route-id="@post.Id">
+                                        @post.Title
+                                    </a>
+                                </h3>
+                                @if (!string.IsNullOrWhiteSpace(
+                                    post.ShortDescription))
+                                {
+                                    <p>
+                                        @post.ShortDescription
+                                    </p>
+                                }
+                                <a asp-controller="Posts"
+                                   asp-action="Details"
+                                   asp-route-id="@post.Id"
+                                   class="causes-update-read-more">
+                                    Read More
+                                    <span>→</span>
+                                </a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="causes-updates-empty">
+                    <div class="causes-updates-empty-icon">
+                        📰
+                    </div>
+                    <h3>No updates available yet</h3>
+                    <p>
+                        New foundation updates and activities will appear here.
+                    </p>
+                </div>
+            }
+        </div>
+    </section>
+    <!-- =====================================================
+         DONATION CTA
+         ===================================================== -->
+    <section class="causes-donation-cta">
+        <div class="causes-container">
+            <div class="causes-cta-card">
+                <div class="causes-cta-decoration causes-cta-decoration-one"></div>
+                <div class="causes-cta-decoration causes-cta-decoration-two"></div>
+                <div class="causes-cta-content">
+                    <div class="causes-cta-icon">
+                        ♥
+                    </div>
+                    <div class="causes-cta-text">
+                        <div class="causes-cta-eyebrow">
+                            TOGETHER WE CAN
+                        </div>
+                        <h2>
+                            Help Us Create
+                            <span>A Meaningful Difference</span>
+                        </h2>
+                        <p>
+                            Your support can help us continue working
+                            toward stronger communities and a better
+                            future.
+                        </p>
+                    </div>
+                    <div class="causes-cta-action">
+                        <a asp-controller="Donation"
+                           asp-action="Index"
+                           class="causes-cta-button">
+                            Donate Now
+                            <span>→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         FOOTER NOTE
+         ===================================================== -->
+    <section class="causes-bottom-note">
+        <div class="causes-container">
+            <div class="causes-bottom-note-inner">
+                @if (!string.IsNullOrWhiteSpace(logoPath))
+                {
+                    <img src="@logoPath"
+                         alt="@foundationName"
+                         class="causes-bottom-logo" />
+                }
+                else
+                {
+                    <div class="causes-bottom-logo-fallback">
+                        @foundationName.Substring(0, 1).ToUpper()
+                    </div>
+                }
+                <p>
+                    Thank you for being part of a community that believes
+                    in compassion, opportunity and positive change.
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/causes.css"
+          asp-append-version="true" />
+    <style>
+        .causes-updates-section {
+            padding: 90px 0;
+            background: #fffaf5;
+            border-top: 1px solid #f5e7d9;
+        }
+        .causes-updates-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 30px;
+            margin-bottom: 42px;
+        }
+        .causes-updates-header .causes-section-heading {
+            margin-bottom: 0;
+        }
+        .causes-updates-view-all {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+            padding: 10px 16px;
+            border: 1px solid #fed7aa;
+            border-radius: 9px;
+            color: #9a3412;
+            background: #ffffff;
+            font-size: .88rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: .2s ease;
+        }
+        .causes-updates-view-all:hover {
+            color: #c2410c;
+            background: #fff7ed;
+            border-color: #fdba74;
+            transform: translateY(-2px);
+        }
+        .causes-updates-arrow,
+        .causes-update-read-more span {
+            transition: transform .2s ease;
+        }
+        .causes-updates-view-all:hover .causes-updates-arrow,
+        .causes-update-read-more:hover span {
+            transform: translateX(3px);
+        }
+        .causes-updates-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
+        }
+        .causes-update-card {
+            overflow: hidden;
+            border: 1px solid #eee7e0;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(124,45,18,.06);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+        .causes-update-card:hover {
+            transform: translateY(-4px);
+            border-color: #fed7aa;
+            box-shadow: 0 16px 34px rgba(124,45,18,.11);
+        }
+        .causes-update-image {
+            position: relative;
+            display: block;
+            height: 215px;
+            overflow: hidden;
+            background: #fff7ed;
+            text-decoration: none;
+        }
+        .causes-update-image img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform .35s ease;
+        }
+        .causes-update-card:hover .causes-update-image img {
+            transform: scale(1.04);
+        }
+        .causes-update-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff7ed;
+            color: #ea580c;
+            font-size: 48px;
+        }
+        .causes-update-date {
+            position: absolute;
+            left: 14px;
+            bottom: 14px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #9a3412;
+            background: rgba(255,255,255,.95);
+            font-size: .72rem;
+            font-weight: 800;
+            box-shadow: 0 3px 9px rgba(0,0,0,.1);
+        }
+        .causes-update-content {
+            padding: 21px;
+        }
+        .causes-update-meta {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 9px;
+            color: #a8a29e;
+            font-size: .7rem;
+            font-weight: 800;
+            letter-spacing: .06em;
+        }
+        .causes-update-meta-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #fdba74;
+        }
+        .causes-update-content h3 {
+            margin: 0;
+            color: #292524;
+            font-size: 1.15rem;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+        .causes-update-content h3 a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .causes-update-content h3 a:hover {
+            color: #c2410c;
+        }
+        .causes-update-content p {
+            display: -webkit-box;
+            margin: 10px 0 0;
+            overflow: hidden;
+            color: #78716c;
+            font-size: .88rem;
+            line-height: 1.7;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+        }
+        .causes-update-read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 16px;
+            color: #ea580c;
+            font-size: .85rem;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        .causes-update-read-more:hover {
+            color: #c2410c;
+        }
+        .causes-updates-empty {
+            padding: 50px 24px;
+            text-align: center;
+            border: 1px dashed #fed7aa;
+            border-radius: 16px;
+            background: #ffffff;
+        }
+        .causes-updates-empty-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: #ffedd5;
+            font-size: 25px;
+        }
+        .causes-updates-empty h3 {
+            margin: 0;
+            color: #292524;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+        .causes-updates-empty p {
+            margin: 7px 0 0;
+            color: #78716c;
+            font-size: .88rem;
+        }
+        @@media (max-width: 900px) {
+            .causes-updates-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @@media (max-width: 700px) {
+            .causes-updates-section {
+                padding: 65px 0;
+            }
+            .causes-updates-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .causes-updates-view-all {
+                width: 100%;
+            }
+            .causes-updates-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            .causes-update-image {
+                height: 225px;
+            }
+        }
+        @@media (max-width: 480px) {
+            .causes-update-image {
+                height: 195px;
+            }
+            .causes-update-content {
+                padding: 18px;
+            }
+        }
+    </style>
+}
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const causeCards =
+                document.querySelectorAll(".cause-card");
+            const causeDetails =
+                document.querySelectorAll(".cause-detail");
+            if (!causeCards.length || !causeDetails.length) {
+                return;
+            }
+            causeCards.forEach(function(card) {
+                card.addEventListener("click", function() {
+                    const selectedCause =
+                        card.getAttribute("data-cause");
+                    if (!selectedCause) {
+                        return;
+                    }
+                    causeCards.forEach(function(item) {
+                        item.classList.remove("active");
+                    });
+                    causeDetails.forEach(function(detail) {
+                        detail.classList.remove("active");
+                    });
+                    card.classList.add("active");
+                    const selectedDetail =
+                        document.querySelector(
+                            '[data-cause-detail="' +
+                            selectedCause +
+                            '"]'
+                        );
+                    if (selectedDetail) {
+                        selectedDetail.classList.add("active");
+                    }
+                });
+            });
+        });
+    </script>
+}

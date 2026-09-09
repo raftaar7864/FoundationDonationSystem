@@ -1,0 +1,443 @@
+@model FoundationDonationSystem.ViewModels.OfflineDonationCreateViewModel
+<div class="offline-donation-form">
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+    <div class="offline-donation-form-header">
+        <div>
+            <span class="offline-donation-form-eyebrow">
+                Offline Collection
+            </span>
+            <h3>
+                Collect Cash Donation
+            </h3>
+            <p>
+                Record a cash donation received offline and upload
+                the supporting donation voucher.
+            </p>
+        </div>
+    </div>
+    <!-- =====================================================
+         VALIDATION SUMMARY
+         ===================================================== -->
+    <div id="offlineDonationValidationSummary"
+         class="offline-donation-validation-summary"
+         aria-live="polite"
+         aria-atomic="true"
+         style="display:none;">
+    </div>
+    <!-- =====================================================
+         FORM
+         ===================================================== -->
+    <form id="offlineDonationForm"
+          method="post"
+          action="/Admin/Donations/CollectOffline"
+          enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <!-- =================================================
+             DONOR INFORMATION
+             ================================================= -->
+        <div class="offline-donation-section">
+            <div class="offline-donation-section-title">
+                <span class="offline-donation-section-icon">
+                    👤
+                </span>
+                <div>
+                    <h4>
+                        Donor Information
+                    </h4>
+                    <p>
+                        Enter the details of the person making the donation.
+                    </p>
+                </div>
+            </div>
+            <div class="offline-donation-grid">
+                <!-- =========================================
+                     FULL NAME
+                     ========================================= -->
+                <div class="offline-donation-field">
+                    <label for="DonorName">
+                        Full Name
+                        <span>*</span>
+                    </label>
+                    <input type="text"
+                           id="DonorName"
+                           name="DonorName"
+                           class="offline-donation-input"
+                           placeholder="Enter donor full name"
+                           autocomplete="name"
+                           maxlength="150"
+                           required
+                           value="@Model.DonorName" />
+                    <span data-field-error="DonorName"
+                          class="offline-donation-error">
+                    </span>
+                </div>
+                <!-- =========================================
+                     MOBILE
+                     ========================================= -->
+                <div class="offline-donation-field">
+                    <label for="Mobile">
+                        Mobile Number
+                        <span>*</span>
+                    </label>
+                    <input type="tel"
+                           id="Mobile"
+                           name="Mobile"
+                           class="offline-donation-input"
+                           placeholder="Enter 10 digit mobile number"
+                           autocomplete="tel"
+                           inputmode="numeric"
+                           maxlength="10"
+                           minlength="10"
+                           pattern="[6-9][0-9]{9}"
+                           title="Enter a valid 10 digit Indian mobile number starting with 6, 7, 8 or 9"
+                           required
+                           value="@Model.Mobile"
+                           oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" />
+                    <span data-field-error="Mobile"
+                          class="offline-donation-error">
+                    </span>
+                </div>
+                <!-- =========================================
+                     EMAIL
+                     ========================================= -->
+                <div class="offline-donation-field">
+                    <label for="Email">
+                        Email
+                        <small>
+                            Optional
+                        </small>
+                    </label>
+                    <input type="email"
+                           id="Email"
+                           name="Email"
+                           class="offline-donation-input"
+                           placeholder="Enter email address"
+                           autocomplete="email"
+                           maxlength="150"
+                           value="@Model.Email" />
+                    <span data-field-error="Email"
+                          class="offline-donation-error">
+                    </span>
+                </div>
+                <!-- =========================================
+                     ADDRESS
+                     ========================================= -->
+                <div class="offline-donation-field offline-donation-field-full">
+                    <label for="Address">
+                        Address
+                        <small>
+                            Optional
+                        </small>
+                    </label>
+                    <textarea id="Address"
+                              name="Address"
+                              class="offline-donation-textarea"
+                              rows="3"
+                              maxlength="500"
+                              placeholder="Enter donor address">@Model.Address</textarea>
+                    <span data-field-error="Address"
+                          class="offline-donation-error">
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- =================================================
+             DONATION INFORMATION
+             ================================================= -->
+        <div class="offline-donation-section">
+            <div class="offline-donation-section-title">
+                <span class="offline-donation-section-icon">
+                    ₹
+                </span>
+                <div>
+                    <h4>
+                        Donation Information
+                    </h4>
+                    <p>
+                        Enter the amount and date on which the cash
+                        donation was received.
+                    </p>
+                </div>
+            </div>
+            <div class="offline-donation-grid">
+                <!-- =========================================
+                     AMOUNT
+                     ========================================= -->
+                <div class="offline-donation-field">
+                    <label for="Amount">
+                        Donation Amount
+                        <span>*</span>
+                    </label>
+                    <div class="offline-donation-amount-wrapper">
+                        <span class="offline-donation-currency">
+                            ₹
+                        </span>
+                        <input type="number"
+                               id="Amount"
+                               name="Amount"
+                               step="0.01"
+                               min="1"
+                               max="999999999"
+                               required
+                               class="offline-donation-input offline-donation-amount-input"
+                               placeholder="0.00"
+                               inputmode="decimal"
+                               value="@(Model.Amount > 0 ? Model.Amount.ToString("0.00") : "")" />
+                    </div>
+                    <span data-field-error="Amount"
+                          class="offline-donation-error">
+                    </span>
+                </div>
+                <!-- =========================================
+                     COLLECTION DATE
+                     ========================================= -->
+                <div class="offline-donation-field">
+                    <label for="CollectionDate">
+                        Collection Date
+                        <span>*</span>
+                    </label>
+                    <input type="date"
+                           id="CollectionDate"
+                           name="CollectionDate"
+                           value="@Model.CollectionDate.ToString("yyyy-MM-dd")"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           required
+                           class="offline-donation-input" />
+                    <span data-field-error="CollectionDate"
+                          class="offline-donation-error">
+                    </span>
+                </div>
+            </div>
+            <!-- =============================================
+                 CASH INDICATOR
+                 ============================================= -->
+            <div class="offline-donation-cash-info">
+                <div class="offline-donation-cash-icon">
+                    ₹
+                </div>
+                <div>
+                    <strong>
+                        Payment Method: Cash
+                    </strong>
+                    <span>
+                        This donation will automatically be recorded
+                        as a cash donation.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- =================================================
+             OFFLINE VOUCHER
+             ================================================= -->
+        <div class="offline-donation-section">
+            <div class="offline-donation-section-title">
+                <span class="offline-donation-section-icon">
+                    📄
+                </span>
+                <div>
+                    <h4>
+                        Donation Voucher
+                    </h4>
+                    <p>
+                        Upload the signed offline donation voucher
+                        received for this cash collection.
+                    </p>
+                </div>
+            </div>
+            <div class="offline-donation-upload">
+                <!-- =========================================
+                     UPLOAD LABEL
+                     ========================================= -->
+                <div class="offline-donation-upload-label">
+                    <span>
+                        Offline Donation Voucher
+                    </span>
+                    <strong>
+                        *
+                    </strong>
+                </div>
+                <!-- =========================================
+                     DROPZONE
+                     ========================================= -->
+                <button type="button"
+                        id="offlineVoucherDropzone"
+                        class="offline-donation-dropzone">
+                    <div class="offline-donation-upload-icon">
+                        ↑
+                    </div>
+                    <div class="offline-donation-upload-content">
+                        <strong>
+                            Click to upload voucher
+                        </strong>
+                        <span>
+                            JPG, JPEG, PNG, WEBP or PDF
+                        </span>
+                        <small>
+                            File size must be less than 1 MB
+                        </small>
+                    </div>
+                </button>
+                <!-- =========================================
+                     FILE INPUT
+                     ========================================= -->
+                <input type="file"
+                       id="offlineVoucherInput"
+                       name="OfflineVoucher"
+                       accept=".jpg,.jpeg,.png,.webp,.pdf"
+                       required
+                       class="offline-donation-file-input" />
+                <!-- =========================================
+                     SELECTED FILE
+                     ========================================= -->
+                <div id="offlineVoucherPreview"
+                     class="offline-donation-file-preview"
+                     style="display:none;">
+                    <div class="offline-donation-file-preview-icon">
+                        📎
+                    </div>
+                    <div class="offline-donation-file-preview-info">
+                        <strong id="offlineVoucherFileName">
+                        </strong>
+                        <span id="offlineVoucherFileSize">
+                        </span>
+                    </div>
+                    <button type="button"
+                            id="offlineVoucherRemove"
+                            class="offline-donation-file-remove"
+                            aria-label="Remove selected voucher">
+                        ×
+                    </button>
+                </div>
+                <!-- =========================================
+                     FILE VALIDATION ERROR
+                     ========================================= -->
+                <span data-field-error="OfflineVoucher"
+                      class="offline-donation-error">
+                </span>
+            </div>
+        </div>
+        <!-- =================================================
+             REMARKS
+             ================================================= -->
+        <div class="offline-donation-section">
+            <div class="offline-donation-section-title">
+                <span class="offline-donation-section-icon">
+                    ☰
+                </span>
+                <div>
+                    <h4>
+                        Remarks
+                    </h4>
+                    <p>
+                        Add any additional information about this
+                        offline donation.
+                    </p>
+                </div>
+            </div>
+            <div class="offline-donation-field">
+                <label for="offlineDonationRemarks">
+                    Remarks
+                    <small>
+                        Optional
+                    </small>
+                </label>
+                <textarea id="offlineDonationRemarks"
+                          name="Remarks"
+                          class="offline-donation-textarea"
+                          rows="3"
+                          maxlength="500"
+                          placeholder="Enter any additional remarks...">@Model.Remarks</textarea>
+                <div class="offline-donation-character-count">
+                    <span id="offlineRemarksCounter">
+                        @((Model.Remarks ?? string.Empty).Length)
+                    </span>
+                    / 500
+                </div>
+                <span data-field-error="Remarks"
+                      class="offline-donation-error">
+                </span>
+            </div>
+        </div>
+        <!-- =================================================
+             IMPORTANT NOTICE
+             ================================================= -->
+        <div class="offline-donation-notice">
+            <div class="offline-donation-notice-icon">
+                !
+            </div>
+            <div>
+                <strong>
+                    Important
+                </strong>
+                <p>
+                    By submitting this form, the cash donation will
+                    be recorded as <strong>Pending</strong> and sent for verification.
+                    The donation will not be marked as verified until an
+                    authorized verifier reviews and approves it.
+                </p>
+            </div>
+        </div>
+        <!-- =================================================
+             ACTIONS
+             ================================================= -->
+        <div class="offline-donation-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-secondary"
+                    onclick="closeOfflineDonationModal()">
+                Cancel
+            </button>
+            <button type="submit"
+                    id="submitOfflineDonationButton"
+                    class="admin-btn admin-btn-primary">
+                <span class="offline-submit-icon">
+                    ✓
+                </span>
+                Collect Cash Donation
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    (function () {
+        "use strict";
+        const form = document.getElementById("offlineDonationForm");
+        const mobile = document.getElementById("Mobile");
+        if (!form || !mobile) return;
+        function validateMobile() {
+            mobile.value = (mobile.value || "")
+                .replace(/\D/g, "")
+                .slice(0, 10);
+            const valid = /^[6-9]\d{9}$/.test(mobile.value);
+            mobile.setCustomValidity(
+                valid
+                    ? ""
+                    : "Enter a valid 10 digit Indian mobile number starting with 6, 7, 8 or 9."
+            );
+            return valid;
+        }
+        mobile.addEventListener("input", validateMobile);
+        mobile.addEventListener("blur", validateMobile);
+        const summary = document.getElementById(
+            "offlineDonationValidationSummary"
+        );
+        function hideValidationSummary() {
+            if (!summary) return;
+            summary.innerHTML = "";
+            summary.style.display = "none";
+        }
+        // Never show an empty validation box when the modal opens.
+        hideValidationSummary();
+        form.addEventListener("submit", function (event) {
+            hideValidationSummary();
+            const mobileValid = validateMobile();
+            if (!mobileValid || !form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                form.reportValidity();
+                return false;
+            }
+        });
+    })();
+</script>

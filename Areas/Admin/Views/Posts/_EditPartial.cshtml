@@ -1,0 +1,1271 @@
+﻿@model FoundationDonationSystem.ViewModels.PostEditViewModel
+<div class="payment-popup-content post-form-popup-content">
+    <form asp-area="Admin"
+          asp-controller="Posts"
+          asp-action="Edit"
+          method="post"
+          enctype="multipart/form-data"
+          id="editPostForm">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+        <!-- =====================================================
+             VALIDATION
+        ====================================================== -->
+        <div asp-validation-summary="ModelOnly"
+             class="admin-validation-summary">
+        </div>
+        <!-- =====================================================
+             POST INFORMATION
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-file-text"></i>
+                </div>
+                <div>
+                    <h3>Post Information</h3>
+                    <p>
+                        Update the information for this foundation update.
+                    </p>
+                </div>
+            </div>
+            <div class="payment-form-grid">
+                <!-- TITLE -->
+                <div class="admin-form-group payment-form-group-full">
+                    <label asp-for="Title"
+                           class="admin-form-label">
+                        Title
+                        <span class="required-mark">*</span>
+                    </label>
+                    <input asp-for="Title"
+                           class="admin-form-control"
+                           placeholder="Enter post title"
+                           autocomplete="off" />
+                    <span asp-validation-for="Title"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- SHORT DESCRIPTION -->
+                <div class="admin-form-group payment-form-group-full">
+                    <label asp-for="ShortDescription"
+                           class="admin-form-label">
+                        Short Description
+                    </label>
+                    <textarea asp-for="ShortDescription"
+                              class="admin-form-control post-textarea"
+                              rows="3"
+                              maxlength="500"
+                              placeholder="Write a short description of the update..."></textarea>
+                    <span asp-validation-for="ShortDescription"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- CONTENT -->
+                <div class="admin-form-group payment-form-group-full">
+                    <label asp-for="Content"
+                           class="admin-form-label">
+                        Content
+                    </label>
+                    <div class="post-rich-editor" id="editPostRichEditor">
+                        <div class="post-rich-toolbar" role="toolbar" aria-label="Content formatting tools">
+                            <button type="button" class="post-rich-tool" data-command="bold" title="Bold" aria-label="Bold">
+                                <i class="bi bi-type-bold"></i>
+                            </button>
+                            <button type="button" class="post-rich-tool" data-command="italic" title="Italic" aria-label="Italic">
+                                <i class="bi bi-type-italic"></i>
+                            </button>
+                            <button type="button" class="post-rich-tool" data-command="underline" title="Underline" aria-label="Underline">
+                                <i class="bi bi-type-underline"></i>
+                            </button>
+                            <span class="post-rich-toolbar-divider"></span>
+                            <button type="button" class="post-rich-tool" data-command="fontSize" data-value="4" title="Increase font size" aria-label="Increase font size">
+                                <i class="bi bi-plus-lg"></i>
+                                <span>A</span>
+                            </button>
+                            <button type="button" class="post-rich-tool" data-command="fontSize" data-value="2" title="Decrease font size" aria-label="Decrease font size">
+                                <i class="bi bi-dash-lg"></i>
+                                <span>A</span>
+                            </button>
+                            <span class="post-rich-toolbar-divider"></span>
+                            <button type="button" class="post-rich-tool" data-command="insertUnorderedList" title="Bulleted list" aria-label="Bulleted list">
+                                <i class="bi bi-list-ul"></i>
+                            </button>
+                            <button type="button" class="post-rich-tool" data-command="insertOrderedList" title="Numbered list" aria-label="Numbered list">
+                                <i class="bi bi-list-ol"></i>
+                            </button>
+                            <span class="post-rich-toolbar-divider"></span>
+                            <button type="button" class="post-rich-tool" data-command="justifyLeft" title="Align left" aria-label="Align left">
+                                <i class="bi bi-text-left"></i>
+                            </button>
+                            <button type="button" class="post-rich-tool" data-command="justifyCenter" title="Align center" aria-label="Align center">
+                                <i class="bi bi-text-center"></i>
+                            </button>
+                            <button type="button" class="post-rich-tool" data-command="justifyRight" title="Align right" aria-label="Align right">
+                                <i class="bi bi-text-right"></i>
+                            </button>
+                            <span class="post-rich-toolbar-divider"></span>
+                            <button type="button" class="post-rich-tool" id="editInsertTableBtn" title="Insert table" aria-label="Insert table">
+                                <i class="bi bi-table"></i>
+                            </button>
+                            <button type="button" class="post-rich-tool" data-command="removeFormat" title="Clear formatting" aria-label="Clear formatting">
+                                <i class="bi bi-eraser"></i>
+                            </button>
+                        </div>
+                        <div class="post-rich-content"
+                             id="editPostContentEditor"
+                             contenteditable="true"
+                             role="textbox"
+                             aria-multiline="true"
+                             data-placeholder="Write the full post content..."></div>
+                        <textarea asp-for="Content"
+                                  id="editPostContent"
+                                  class="post-rich-hidden-input"
+                                  tabindex="-1"
+                                  aria-hidden="true"></textarea>
+                    </div>
+                    <span asp-validation-for="Content"
+                          class="field-validation">
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             CATEGORY
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-tags"></i>
+                </div>
+                <div>
+                    <h3>Post Category</h3>
+                    <p>Update the category and subcategory for this post.</p>
+                </div>
+            </div>
+            <div class="payment-form-grid">
+                <!-- CATEGORY -->
+                <div class="admin-form-group">
+                    <label asp-for="CategoryId"
+                           class="admin-form-label">
+                        Category
+                        <span class="required-mark">*</span>
+                    </label>
+                    <select asp-for="CategoryId"
+                            class="admin-form-control"
+                            id="editPostCategory">
+                        <option value="">Select Category</option>
+                        @if (ViewBag.PostCategories != null)
+                        {
+                            foreach (var category in ViewBag.PostCategories as IEnumerable<FoundationDonationSystem.Models.PostCategory>)
+                            {
+                                <option value="@category.Id"
+                                        selected="@(Model.CategoryId == category.Id)">
+                                    @category.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- SUBCATEGORY -->
+                <div class="admin-form-group"
+                     id="editSubCategoryGroup">
+                    <label asp-for="SubCategoryId"
+                           class="admin-form-label">
+                        Subcategory
+                    </label>
+                    <select asp-for="SubCategoryId"
+                            class="admin-form-control"
+                            id="editPostSubCategory">
+                        <option value="">Select Subcategory</option>
+                        @if (ViewBag.PostSubCategories != null)
+                        {
+                            foreach (var subCategory in ViewBag.PostSubCategories as IEnumerable<FoundationDonationSystem.Models.PostSubCategory>)
+                            {
+                                <option value="@subCategory.Id"
+                                        selected="@(Model.SubCategoryId == subCategory.Id)">
+                                    @subCategory.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="SubCategoryId"
+                          class="field-validation">
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             FEATURED IMAGE
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-image"></i>
+                </div>
+                <div>
+                    <h3>Featured Image</h3>
+                    <p>
+                        Replace the main cover image if required.
+                    </p>
+                </div>
+            </div>
+            <div class="post-existing-image-box">
+                @if (!string.IsNullOrWhiteSpace(Model.CurrentFeaturedImagePath))
+                {
+                    <div class="post-existing-image-preview"
+                         id="currentFeaturedImageBox">
+                        <img src="@Model.CurrentFeaturedImagePath"
+                             alt="Current featured image" />
+                        <div class="post-existing-image-info">
+                            <strong>
+                                Current Featured Image
+                            </strong>
+                            <span>
+                                Upload a new image below to replace it.
+                            </span>
+                        </div>
+                    </div>
+                }
+                <div class="post-image-upload-box">
+                    <div class="post-image-upload-content">
+                        <div class="post-image-upload-icon">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                        </div>
+                        <div class="post-image-upload-text">
+                            <strong>
+                                @(string.IsNullOrWhiteSpace(Model.CurrentFeaturedImagePath)
+                                    ? "Choose Featured Image"
+                                    : "Replace Featured Image")
+                            </strong>
+                            <span>
+                                JPG, JPEG, PNG or WEBP · Maximum 2 MB
+                            </span>
+                        </div>
+                        <label class="post-image-select-btn">
+                            <i class="bi bi-folder2-open"></i>
+                            Choose Image
+                            <input asp-for="FeaturedImage"
+                                   type="file"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   hidden
+                                   id="editFeaturedImageInput" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="editFeaturedImageNewPreview"
+                 class="post-new-image-preview"
+                 style="display:none;">
+                <img id="editFeaturedImagePreview"
+                     src=""
+                     alt="New featured image preview" />
+                <div>
+                    <strong>
+                        New image selected
+                    </strong>
+                    <span>
+                        This image will replace the current featured image.
+                    </span>
+                </div>
+                <button type="button"
+                        class="post-image-remove"
+                        onclick="removeEditFeaturedImage()"
+                        aria-label="Remove selected featured image">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <span asp-validation-for="FeaturedImage"
+                  class="field-validation">
+            </span>
+        </div>
+        <!-- =====================================================
+             GALLERY PHOTOS
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-images"></i>
+                </div>
+                <div>
+                    <h3>Gallery Photos</h3>
+                    <p>
+                        Manage up to 3 additional photos for this post.
+                    </p>
+                </div>
+            </div>
+            <div class="post-gallery-upload-grid">
+                <!-- =================================================
+                     PHOTO 1
+                ================================================== -->
+                <div class="post-gallery-upload-card"
+                     id="editGalleryCard1">
+                    <div class="post-gallery-number">
+                        01
+                    </div>
+                    <div class="post-gallery-preview"
+                         id="editGalleryPreviewWrap1">
+                        @if (!string.IsNullOrWhiteSpace(Model.GalleryImage1Path))
+                        {
+                            <img src="@Model.GalleryImage1Path"
+                                 class="post-gallery-preview-image"
+                                 alt="Gallery photo 1" />
+                        }
+                        else
+                        {
+                            <div class="post-gallery-placeholder">
+                                <i class="bi bi-image"></i>
+                                <span>
+                                    Photo 1
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <div class="post-gallery-card-content">
+                        <strong>
+                            Gallery Photo 1
+                        </strong>
+                        <span id="editGalleryStatus1">
+                            @(string.IsNullOrWhiteSpace(Model.GalleryImage1Path)
+                                ? "Empty slot"
+                                : "Current photo")
+                        </span>
+                        <label class="post-gallery-select-btn">
+                            <i class="bi bi-arrow-repeat"></i>
+                            @(string.IsNullOrWhiteSpace(Model.GalleryImage1Path)
+                                ? "Choose Photo"
+                                : "Replace Photo")
+                            <input asp-for="GalleryImage1"
+                                   type="file"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   hidden
+                                   id="editGalleryImageInput1" />
+                        </label>
+                        <button type="button"
+                                class="post-gallery-remove-btn"
+                                id="editGalleryRemoveBtn1"
+                                onclick="removeEditGalleryImage(1)"
+                                style="@(string.IsNullOrWhiteSpace(Model.GalleryImage1Path) ? "display:none;" : "display:inline-flex;")">
+                            <i class="bi bi-trash3"></i>
+                            Remove
+                        </button>
+                        <input asp-for="RemoveGalleryImage1"
+                               type="hidden"
+                               id="removeGalleryImage1"
+                               value="false" />
+                    </div>
+                </div>
+                <!-- =================================================
+                     PHOTO 2
+                ================================================== -->
+                <div class="post-gallery-upload-card"
+                     id="editGalleryCard2">
+                    <div class="post-gallery-number">
+                        02
+                    </div>
+                    <div class="post-gallery-preview"
+                         id="editGalleryPreviewWrap2">
+                        @if (!string.IsNullOrWhiteSpace(Model.GalleryImage2Path))
+                        {
+                            <img src="@Model.GalleryImage2Path"
+                                 class="post-gallery-preview-image"
+                                 alt="Gallery photo 2" />
+                        }
+                        else
+                        {
+                            <div class="post-gallery-placeholder">
+                                <i class="bi bi-image"></i>
+                                <span>
+                                    Photo 2
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <div class="post-gallery-card-content">
+                        <strong>
+                            Gallery Photo 2
+                        </strong>
+                        <span id="editGalleryStatus2">
+                            @(string.IsNullOrWhiteSpace(Model.GalleryImage2Path)
+                                ? "Empty slot"
+                                : "Current photo")
+                        </span>
+                        <label class="post-gallery-select-btn">
+                            <i class="bi bi-arrow-repeat"></i>
+                            @(string.IsNullOrWhiteSpace(Model.GalleryImage2Path)
+                                ? "Choose Photo"
+                                : "Replace Photo")
+                            <input asp-for="GalleryImage2"
+                                   type="file"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   hidden
+                                   id="editGalleryImageInput2" />
+                        </label>
+                        <button type="button"
+                                class="post-gallery-remove-btn"
+                                id="editGalleryRemoveBtn2"
+                                onclick="removeEditGalleryImage(2)"
+                                style="@(string.IsNullOrWhiteSpace(Model.GalleryImage2Path) ? "display:none;" : "display:inline-flex;")">
+                            <i class="bi bi-trash3"></i>
+                            Remove
+                        </button>
+                        <input asp-for="RemoveGalleryImage2"
+                               type="hidden"
+                               id="removeGalleryImage2"
+                               value="false" />
+                    </div>
+                </div>
+                <!-- =================================================
+                     PHOTO 3
+                ================================================== -->
+                <div class="post-gallery-upload-card"
+                     id="editGalleryCard3">
+                    <div class="post-gallery-number">
+                        03
+                    </div>
+                    <div class="post-gallery-preview"
+                         id="editGalleryPreviewWrap3">
+                        @if (!string.IsNullOrWhiteSpace(Model.GalleryImage3Path))
+                        {
+                            <img src="@Model.GalleryImage3Path"
+                                 class="post-gallery-preview-image"
+                                 alt="Gallery photo 3" />
+                        }
+                        else
+                        {
+                            <div class="post-gallery-placeholder">
+                                <i class="bi bi-image"></i>
+                                <span>
+                                    Photo 3
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <div class="post-gallery-card-content">
+                        <strong>
+                            Gallery Photo 3
+                        </strong>
+                        <span id="editGalleryStatus3">
+                            @(string.IsNullOrWhiteSpace(Model.GalleryImage3Path)
+                                ? "Empty slot"
+                                : "Current photo")
+                        </span>
+                        <label class="post-gallery-select-btn">
+                            <i class="bi bi-arrow-repeat"></i>
+                            @(string.IsNullOrWhiteSpace(Model.GalleryImage3Path)
+                                ? "Choose Photo"
+                                : "Replace Photo")
+                            <input asp-for="GalleryImage3"
+                                   type="file"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   hidden
+                                   id="editGalleryImageInput3" />
+                        </label>
+                        <button type="button"
+                                class="post-gallery-remove-btn"
+                                id="editGalleryRemoveBtn3"
+                                onclick="removeEditGalleryImage(3)"
+                                style="@(string.IsNullOrWhiteSpace(Model.GalleryImage3Path) ? "display:none;" : "display:inline-flex;")">
+                            <i class="bi bi-trash3"></i>
+                            Remove
+                        </button>
+                        <input asp-for="RemoveGalleryImage3"
+                               type="hidden"
+                               id="removeGalleryImage3"
+                               value="false" />
+                    </div>
+                </div>
+            </div>
+            <div class="post-gallery-help">
+                <i class="bi bi-info-circle"></i>
+                <span>
+                    Each post can contain up to 3 additional photos.
+                    Each photo must be JPG, JPEG, PNG or WEBP
+                    and cannot exceed 2 MB.
+                </span>
+            </div>
+        </div>
+        <!-- =====================================================
+             PUBLISHING SETTINGS
+        ====================================================== -->
+        <div class="post-form-section">
+            <div class="post-form-section-heading">
+                <div class="post-form-section-icon">
+                    <i class="bi bi-sliders"></i>
+                </div>
+                <div>
+                    <h3>Publishing Settings</h3>
+                    <p>
+                        Configure the post date, order and visibility.
+                    </p>
+                </div>
+            </div>
+            <div class="payment-form-grid">
+                <!-- POST DATE -->
+                <div class="admin-form-group">
+                    <label asp-for="PostDate"
+                           class="admin-form-label">
+                        Post Date
+                        <span class="required-mark">*</span>
+                    </label>
+                    <input asp-for="PostDate"
+                           type="date"
+                           class="admin-form-control" />
+                    <span asp-validation-for="PostDate"
+                          class="field-validation">
+                    </span>
+                </div>
+                <!-- DISPLAY ORDER -->
+                <div class="admin-form-group">
+                    <label asp-for="DisplayOrder"
+                           class="admin-form-label">
+                        Display Order
+                    </label>
+                    <input asp-for="DisplayOrder"
+                           type="number"
+                           min="0"
+                           class="admin-form-control"
+                           placeholder="0" />
+                    <span asp-validation-for="DisplayOrder"
+                          class="field-validation">
+                    </span>
+                </div>
+            </div>
+            <!-- PUBLISHED -->
+            <div class="payment-active-box">
+                <label class="payment-active-label">
+                    <span class="payment-active-text">
+                        <strong>
+                            Publish this post
+                        </strong>
+                        <small>
+                            Published posts are visible on the public website.
+                        </small>
+                    </span>
+                    <span class="admin-switch">
+                        <input asp-for="IsPublished"
+                               type="checkbox"
+                               id="editPostPublished" />
+                        <span class="admin-switch-slider"></span>
+                    </span>
+                </label>
+            </div>
+        </div>
+        <!-- =====================================================
+             ACTIONS
+        ====================================================== -->
+        <div class="payment-popup-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-secondary"
+                    onclick="closePostModal()">
+                <i class="bi bi-x-lg"></i>
+                Cancel
+            </button>
+            <button type="submit"
+                    class="admin-btn admin-btn-primary"
+                    id="editPostSubmitBtn">
+                <i class="bi bi-check2-circle"></i>
+                <span>
+                    Save Changes
+                </span>
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    (function() {
+        // =========================================================
+        // FEATURED IMAGE
+        // =========================================================
+        const featuredInput =
+            document.getElementById(
+                'editFeaturedImageInput'
+            );
+        if (featuredInput) {
+            featuredInput.addEventListener(
+                'change',
+                function() {
+                    const file =
+                        this.files &&
+                        this.files[0];
+                    if (!file) {
+                        return;
+                    }
+                    if (!validateEditPostImage(
+                        file,
+                        'Featured image'
+                    )) {
+                        this.value = '';
+                        return;
+                    }
+                    const reader =
+                        new FileReader();
+                    reader.onload =
+                        function(event) {
+                            const preview =
+                                document.getElementById(
+                                    'editFeaturedImagePreview'
+                                );
+                            const wrap =
+                                document.getElementById(
+                                    'editFeaturedImageNewPreview'
+                                );
+                            if (preview) {
+                                preview.src =
+                                    event.target.result;
+                            }
+                            if (wrap) {
+                                wrap.style.display =
+                                    'flex';
+                            }
+                        };
+                    reader.readAsDataURL(file);
+                }
+            );
+        }
+        // =========================================================
+        // GALLERY INPUTS
+        // =========================================================
+        [1, 2, 3].forEach(
+            function(number) {
+                const input =
+                    document.getElementById(
+                        'editGalleryImageInput' +
+                        number
+                    );
+                if (!input) {
+                    return;
+                }
+                input.addEventListener(
+                    'change',
+                    function() {
+                        const file =
+                            this.files &&
+                            this.files[0];
+                        if (!file) {
+                            return;
+                        }
+                        if (!validateEditPostImage(
+                            file,
+                            'Gallery photo ' +
+                            number
+                        )) {
+                            this.value = '';
+                            return;
+                        }
+                        const reader =
+                            new FileReader();
+                        reader.onload =
+                            function(event) {
+                                showEditGalleryPreview(
+                                    number,
+                                    event.target.result
+                                );
+                            };
+                        reader.readAsDataURL(file);
+                        // A new file means we are not
+                        // removing the slot.
+                        const removeField =
+                            document.getElementById(
+                                'removeGalleryImage' +
+                                number
+                            );
+                        if (removeField) {
+                            removeField.value =
+                                'false';
+                        }
+                    }
+                );
+            }
+        );
+        // =========================================================
+        // FORM SUBMIT
+        // =========================================================
+        const form =
+            document.getElementById(
+                'editPostForm'
+            );
+        if (form) {
+            form.addEventListener(
+                'submit',
+                async function(event) {
+                    event.preventDefault();
+                    const submitButton =
+                        document.getElementById(
+                            'editPostSubmitBtn'
+                        );
+                    if (submitButton) {
+                        submitButton.disabled =
+                            true;
+                        submitButton.innerHTML =
+                            '<i class="bi bi-hourglass-split"></i>' +
+                            '<span>Saving...</span>';
+                    }
+                    try {
+                        const formData =
+                            new FormData(form);
+                        const response =
+                            await fetch(
+                                form.action,
+                                {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With':
+                                            'XMLHttpRequest'
+                                    }
+                                }
+                            );
+                        const contentType =
+                            response.headers.get(
+                                'content-type'
+                            ) || '';
+                        if (contentType.includes(
+                            'application/json'
+                        )) {
+                            const result =
+                                await response.json();
+                            if (result.success) {
+                                closePostModal();
+                                if (
+                                    typeof showPostSuccessModal ===
+                                    'function'
+                                ) {
+                                    showPostSuccessModal(
+                                        result.message ||
+                                        'Post updated successfully.'
+                                    );
+                                }
+                                else {
+                                    window.location.reload();
+                                }
+                                return;
+                            }
+                            throw new Error(
+                                result.message ||
+                                'Unable to update post.'
+                            );
+                        }
+                        const html =
+                            await response.text();
+                        const modalBody =
+                            document.getElementById(
+                                'postModalBody'
+                            );
+                        if (modalBody) {
+                            modalBody.innerHTML =
+                                html;
+                            if (
+                                typeof executePostModalScripts ===
+                                'function'
+                            ) {
+                                executePostModalScripts(
+                                    modalBody
+                                );
+                            }
+                        }
+                    }
+                    catch (error) {
+                        const modalBody =
+                            document.getElementById(
+                                'postModalBody'
+                            );
+                        if (modalBody) {
+                            modalBody.innerHTML =
+                                '<div class="payment-account-modal-error">' +
+                                '<i class="bi bi-exclamation-triangle"></i>' +
+                                '<span>' +
+                                escapeEditPostHtml(
+                                    error.message ||
+                                    'Something went wrong.'
+                                ) +
+                                '</span>' +
+                                '</div>';
+                        }
+                    }
+                    finally {
+                        if (submitButton) {
+                            submitButton.disabled =
+                                false;
+                            submitButton.innerHTML =
+                                '<i class="bi bi-check2-circle"></i>' +
+                                '<span>Save Changes</span>';
+                        }
+                    }
+                }
+            );
+        }
+        // =========================================================
+        // IMAGE VALIDATION
+        // =========================================================
+        function validateEditPostImage(
+            file,
+            fieldName
+        ) {
+            const maxSize =
+                2 * 1024 * 1024;
+            const allowedTypes =
+                [
+                    'image/jpeg',
+                    'image/png',
+                    'image/webp'
+                ];
+            const allowedExtensions =
+                [
+                    '.jpg',
+                    '.jpeg',
+                    '.png',
+                    '.webp'
+                ];
+            const fileName =
+                file.name.toLowerCase();
+            const validExtension =
+                allowedExtensions.some(
+                    function(extension) {
+                        return fileName.endsWith(
+                            extension
+                        );
+                    }
+                );
+            if (!validExtension ||
+                !allowedTypes.includes(
+                    file.type
+                )) {
+                alert(
+                    fieldName +
+                    ' must be JPG, JPEG, PNG or WEBP.'
+                );
+                return false;
+            }
+            if (file.size > maxSize) {
+                alert(
+                    fieldName +
+                    ' cannot exceed 2 MB.'
+                );
+                return false;
+            }
+            return true;
+        }
+        // =========================================================
+        // SHOW GALLERY PREVIEW
+        // =========================================================
+        function showEditGalleryPreview(
+            number,
+            source
+        ) {
+            const wrap =
+                document.getElementById(
+                    'editGalleryPreviewWrap' +
+                    number
+                );
+            const removeButton =
+                document.getElementById(
+                    'editGalleryRemoveBtn' +
+                    number
+                );
+            const status =
+                document.getElementById(
+                    'editGalleryStatus' +
+                    number
+                );
+            if (wrap) {
+                wrap.innerHTML =
+                    '<img src="' +
+                    source +
+                    '" ' +
+                    'class="post-gallery-preview-image" ' +
+                    'alt="New gallery photo ' +
+                    number +
+                    ' preview">';
+            }
+            if (removeButton) {
+                removeButton.style.display =
+                    'inline-flex';
+            }
+            if (status) {
+                status.textContent =
+                    'New photo selected';
+            }
+        }
+        // =========================================================
+        // REMOVE GALLERY IMAGE
+        // =========================================================
+        window.removeEditGalleryImage =
+            function(number) {
+                const input =
+                    document.getElementById(
+                        'editGalleryImageInput' +
+                        number
+                    );
+                const wrap =
+                    document.getElementById(
+                        'editGalleryPreviewWrap' +
+                        number
+                    );
+                const removeButton =
+                    document.getElementById(
+                        'editGalleryRemoveBtn' +
+                        number
+                    );
+                const removeField =
+                    document.getElementById(
+                        'removeGalleryImage' +
+                        number
+                    );
+                const status =
+                    document.getElementById(
+                        'editGalleryStatus' +
+                        number
+                    );
+                if (input) {
+                    input.value = '';
+                }
+                if (removeField) {
+                    removeField.value =
+                        'true';
+                }
+                if (wrap) {
+                    wrap.innerHTML =
+                        '<div class="post-gallery-removed">' +
+                        '<i class="bi bi-trash3"></i>' +
+                        '<span>Photo will be removed</span>' +
+                        '</div>';
+                }
+                if (removeButton) {
+                    removeButton.style.display =
+                        'none';
+                }
+                if (status) {
+                    status.textContent =
+                        'Marked for removal';
+                }
+            };
+        // =========================================================
+        // REMOVE NEW FEATURED IMAGE
+        // =========================================================
+        window.removeEditFeaturedImage =
+            function() {
+                const input =
+                    document.getElementById(
+                        'editFeaturedImageInput'
+                    );
+                const wrap =
+                    document.getElementById(
+                        'editFeaturedImageNewPreview'
+                    );
+                if (input) {
+                    input.value = '';
+                }
+                if (wrap) {
+                    wrap.style.display =
+                        'none';
+                }
+            };
+        // =========================================================
+        // HTML ESCAPE
+        // =========================================================
+        function escapeEditPostHtml(
+            value
+        ) {
+            return String(value)
+                .replace(
+                    /&/g,
+                    '&amp;'
+                )
+                .replace(
+                    /</g,
+                    '&lt;'
+                )
+                .replace(
+                    />/g,
+                    '&gt;'
+                )
+                .replace(
+                    /"/g,
+                    '&quot;'
+                )
+                .replace(
+                    /'/g,
+                    '&#039;'
+                );
+        }
+        // =========================================================
+        // RICH TEXT CONTENT EDITOR
+        // =========================================================
+        const editRichEditor =
+            document.getElementById('editPostContentEditor');
+        const editRichInput =
+            document.getElementById('editPostContent');
+        const editRichEditorWrap =
+            document.getElementById('editPostRichEditor');
+        function syncEditRichContent() {
+            if (!editRichEditor || !editRichInput) {
+                return;
+            }
+            editRichInput.value =
+                editRichEditor.innerHTML.trim();
+        }
+        function restoreEditRichSelection(range) {
+            if (!editRichEditor) {
+                return;
+            }
+            editRichEditor.focus();
+            const selection =
+                window.getSelection();
+            if (!selection) {
+                return;
+            }
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+        function insertEditTable(rows, columns) {
+            if (!editRichEditor) {
+                return;
+            }
+            editRichEditor.focus();
+            const selection =
+                window.getSelection();
+            let range = null;
+            if (selection && selection.rangeCount > 0) {
+                range = selection.getRangeAt(0).cloneRange();
+            }
+            const table =
+                document.createElement('table');
+            table.className =
+                'post-content-table';
+            const tbody =
+                document.createElement('tbody');
+            for (let row = 0; row < rows; row++) {
+                const tr =
+                    document.createElement('tr');
+                for (let column = 0; column < columns; column++) {
+                    const cell =
+                        document.createElement(
+                            row === 0 ? 'th' : 'td'
+                        );
+                    cell.textContent =
+                        row === 0
+                            ? 'Heading'
+                            : 'Cell';
+                    tr.appendChild(cell);
+                }
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+            if (range) {
+                restoreEditRichSelection(range);
+                range.deleteContents();
+                range.insertNode(table);
+                const afterTable =
+                    document.createElement('p');
+                afterTable.innerHTML = '<br>';
+                table.parentNode.insertBefore(
+                    afterTable,
+                    table.nextSibling
+                );
+                const newRange =
+                    document.createRange();
+                newRange.setStartAfter(afterTable);
+                newRange.collapse(true);
+                const selectionAfter =
+                    window.getSelection();
+                if (selectionAfter) {
+                    selectionAfter.removeAllRanges();
+                    selectionAfter.addRange(newRange);
+                }
+            }
+            else {
+                editRichEditor.appendChild(table);
+                const afterTable =
+                    document.createElement('p');
+                afterTable.innerHTML = '<br>';
+                editRichEditor.appendChild(afterTable);
+                const newRange =
+                    document.createRange();
+                newRange.setStartAfter(afterTable);
+                newRange.collapse(true);
+                const selectionAfter =
+                    window.getSelection();
+                if (selectionAfter) {
+                    selectionAfter.removeAllRanges();
+                    selectionAfter.addRange(newRange);
+                }
+            }
+            syncEditRichContent();
+        }
+        if (editRichEditor && editRichInput) {
+            // Load existing HTML content into the editor.
+            editRichEditor.innerHTML =
+                editRichInput.value || '';
+            editRichEditor.addEventListener(
+                'input',
+                syncEditRichContent
+            );
+            editRichEditor.addEventListener(
+                'blur',
+                syncEditRichContent
+            );
+            editRichEditor.addEventListener(
+                'paste',
+                function(event) {
+                    // Keep pasted content simple and safe.
+                    event.preventDefault();
+                    const clipboard =
+                        event.clipboardData ||
+                        window.clipboardData;
+                    const plainText =
+                        clipboard
+                            ? clipboard.getData('text/plain')
+                            : '';
+                    document.execCommand(
+                        'insertText',
+                        false,
+                        plainText
+                    );
+                    syncEditRichContent();
+                }
+            );
+            if (editRichEditorWrap) {
+                editRichEditorWrap
+                    .querySelectorAll(
+                        '.post-rich-tool[data-command]'
+                    )
+                    .forEach(function(button) {
+                        button.addEventListener(
+                            'mousedown',
+                            function(event) {
+                                event.preventDefault();
+                            }
+                        );
+                        button.addEventListener(
+                            'click',
+                            function() {
+                                const command =
+                                    this.dataset.command;
+                                const value =
+                                    this.dataset.value ||
+                                    null;
+                                editRichEditor.focus();
+                                document.execCommand(
+                                    command,
+                                    false,
+                                    value
+                                );
+                                syncEditRichContent();
+                            }
+                        );
+                    });
+                const tableButton =
+                    document.getElementById(
+                        'editInsertTableBtn'
+                    );
+                if (tableButton) {
+                    tableButton.addEventListener(
+                        'mousedown',
+                        function(event) {
+                            event.preventDefault();
+                        }
+                    );
+                    tableButton.addEventListener(
+                        'click',
+                        function() {
+                            insertEditTable(3, 3);
+                        }
+                    );
+                }
+            }
+            // Always copy the formatted HTML into
+            // the model-bound textarea before submit.
+            const editForm =
+                document.getElementById('editPostForm');
+            if (editForm) {
+                editForm.addEventListener(
+                    'submit',
+                    function() {
+                        syncEditRichContent();
+                    },
+                    true
+                );
+            }
+        }
+        // =========================================================
+        // CATEGORY / SUBCATEGORY
+        // =========================================================
+        const categorySelect =
+            document.getElementById('editPostCategory');
+        const subCategorySelect =
+            document.getElementById('editPostSubCategory');
+        const subCategoryGroup =
+            document.getElementById('editSubCategoryGroup');
+        const allSubCategories = [
+            @if (ViewBag.PostSubCategories != null)
+            {
+                                foreach (var subCategory in ViewBag.PostSubCategories as IEnumerable<FoundationDonationSystem.Models.PostSubCategory>)
+                {
+                    <text>
+                            {
+                                id: @subCategory.Id,
+                            categoryId: @subCategory.PostCategoryId,
+                            name: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(subCategory.Name))
+                                                    },
+                    </text>
+                                }
+            }
+                ];
+        function updateEditSubCategories() {
+            if (!categorySelect || !subCategorySelect) {
+                return;
+            }
+            const categoryId =
+                parseInt(categorySelect.value || '0', 10);
+            const selectedValue =
+                subCategorySelect.value;
+            const selectedCategoryText =
+                categorySelect.options[
+                    categorySelect.selectedIndex
+                ]?.text?.trim() || '';
+            const isActivities =
+                selectedCategoryText.toLowerCase() === 'activities';
+            subCategorySelect.innerHTML =
+                '<option value="">Select Subcategory</option>';
+            if (!isActivities || !categoryId) {
+                subCategorySelect.value = '';
+                if (subCategoryGroup) {
+                    subCategoryGroup.style.display = 'none';
+                }
+                return;
+            }
+            const filtered =
+                allSubCategories.filter(function(item) {
+                    return item.categoryId === categoryId;
+                });
+            filtered.forEach(function(item) {
+                const option =
+                    document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name;
+                if (String(item.id) === String(selectedValue)) {
+                    option.selected = true;
+                }
+                subCategorySelect.appendChild(option);
+            });
+            if (subCategoryGroup) {
+                subCategoryGroup.style.display = 'block';
+            }
+        }
+        if (categorySelect) {
+            categorySelect.addEventListener(
+                'change',
+                function() {
+                    if (subCategorySelect) {
+                        subCategorySelect.value = '';
+                    }
+                    updateEditSubCategories();
+                }
+            );
+            updateEditSubCategories();
+        }
+    })();
+</script>

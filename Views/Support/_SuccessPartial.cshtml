@@ -1,0 +1,112 @@
+@{
+    var requestNumber = ViewBag.RequestNumber as string;
+}
+<div class="support-success-overlay" id="support-success">
+    <div class="support-success-popup">
+        <!-- Close -->
+        <button type="button"
+                class="support-success-close"
+                onclick="closeSupportSuccess()"
+                aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <!-- Success Icon -->
+        <div class="support-success-icon">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <!-- Kicker -->
+        <div class="support-success-kicker">
+            <i class="bi bi-heart-fill"></i>
+            Thank you for reaching out
+        </div>
+        <!-- Heading -->
+        <h2>Submission Successful</h2>
+        <h3>Support Request Submitted Successfully</h3>
+        <!-- Message -->
+        <p class="support-success-message">
+            Your support request has been received successfully.
+            Our responsible team will review your request and contact you
+            using the details provided in the form.
+        </p>
+        <!-- Request Number -->
+        @if (!string.IsNullOrWhiteSpace(requestNumber))
+        {
+            <div class="support-reference">
+                <span class="support-reference-label">
+                    <i class="bi bi-hash"></i>
+                    Your Request Number
+                </span>
+                <strong>@requestNumber</strong>
+            </div>
+        }
+        <!-- Information -->
+        <div class="support-success-info">
+            <!-- Under Review -->
+            <div class="support-info-card">
+                <div class="support-info-icon">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div class="support-info-content">
+                    <strong>Under Review</strong>
+                    <span>
+                        Your request will be reviewed by the
+                        responsible support team.
+                    </span>
+                </div>
+            </div>
+            <!-- Keep Number -->
+            <div class="support-info-card">
+                <div class="support-info-icon">
+                    <i class="bi bi-bookmark-fill"></i>
+                </div>
+                <div class="support-info-content">
+                    <strong>Keep Your Request Number</strong>
+                    <span>
+                        Please keep this number safely for
+                        future communication or reference.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- Actions -->
+        <div class="support-success-actions">
+            <!-- Home -->
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="support-btn support-btn-secondary">
+                <i class="bi bi-house-fill"></i>
+                <span>Home</span>
+            </a>
+            <!-- Print -->
+            <button type="button"
+                    class="support-btn support-btn-primary"
+                    onclick="window.print()">
+                <i class="bi bi-printer-fill"></i>
+                <span>Print</span>
+            </button>
+        </div>
+        <!-- Note -->
+        <div class="support-success-note">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>
+                Please keep your request number for future reference.
+            </span>
+        </div>
+    </div>
+</div>
+<script>
+    function closeSupportSuccess() {
+        const popup = document.getElementById("support-success");
+        if (popup) {
+            popup.classList.add("support-success-closing");
+            setTimeout(function() {
+                popup.remove();
+            }, 180);
+        }
+    }
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            closeSupportSuccess();
+        }
+    });
+</script>

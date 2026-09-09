@@ -1,0 +1,110 @@
+﻿@model FoundationDonationSystem.Models.PaymentAccount
+<div class="payment-popup-content">
+    <!-- ACCOUNT INFORMATION -->
+    <div class="payment-form-grid">
+        <div class="admin-form-group">
+            <label>
+                Account Name
+            </label>
+            <input type="text"
+                   class="admin-form-control"
+                   value="@Model.AccountName"
+                   readonly />
+        </div>
+        <div class="admin-form-group">
+            <label>
+                Bank Name
+            </label>
+            <input type="text"
+                   class="admin-form-control"
+                   value="@Model.BankName"
+                   readonly />
+        </div>
+        <div class="admin-form-group">
+            <label>
+                Account Number
+            </label>
+            <input type="text"
+                   class="admin-form-control"
+                   value="@Model.AccountNumber"
+                   readonly />
+        </div>
+        <div class="admin-form-group">
+            <label>
+                IFSC Code
+            </label>
+            <input type="text"
+                   class="admin-form-control"
+                   value="@Model.IFSC"
+                   readonly
+                   style="text-transform:uppercase;" />
+        </div>
+        <div class="admin-form-group">
+            <label>
+                Branch
+            </label>
+            <input type="text"
+                   class="admin-form-control"
+                   value="@(string.IsNullOrWhiteSpace(Model.Branch)
+                                   ? "—"
+                                   : Model.Branch)"
+                   readonly />
+        </div>
+        <div class="admin-form-group">
+            <label>
+                UPI ID
+            </label>
+            <input type="text"
+                   class="admin-form-control"
+                   value="@(string.IsNullOrWhiteSpace(Model.UpiId)
+                                   ? "—"
+                                   : Model.UpiId)"
+                   readonly />
+        </div>
+        <div class="admin-form-group">
+            <label>
+                Status
+            </label>
+            <div class="payment-detail-status">
+                @if (Model.IsActive)
+                {
+                    <span class="admin-status-badge status-verified">
+                        Active
+                    </span>
+                }
+                else
+                {
+                    <span class="admin-status-badge status-rejected">
+                        Inactive
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- EXISTING QR -->
+    @if (!string.IsNullOrWhiteSpace(Model.QrCodePath))
+    {
+        <div class="payment-popup-existing-qr">
+            <span>
+                QR Code
+            </span>
+            <img src="@Model.QrCodePath"
+                 alt="Payment QR Code" />
+        </div>
+    }
+    <!-- ACTIONS -->
+    <div class="payment-popup-actions">
+        <button type="button"
+                class="admin-btn admin-btn-secondary"
+                onclick="closePaymentAccountModal()">
+            Close
+        </button>
+        <button type="button"
+                class="admin-btn admin-btn-primary"
+                onclick="openPaymentAccountModal(
+            '/admin/paymentaccounts/edit/@Model.Id',
+            'Edit Payment Account')">
+            Edit
+        </button>
+    </div>
+</div>

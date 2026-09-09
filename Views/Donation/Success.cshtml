@@ -1,0 +1,188 @@
+﻿@model FoundationDonationSystem.Models.Donation
+@using FoundationDonationSystem.Models
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "Donation Submitted";
+    var foundationSettings =
+        await FoundationSettingsService.GetAsync();
+    var foundationName =
+        string.IsNullOrWhiteSpace(foundationSettings.FoundationName)
+            ? "Our Foundation"
+            : foundationSettings.FoundationName;
+    var foundationTagline =
+        string.IsNullOrWhiteSpace(foundationSettings.Tagline)
+            ? "Serving with compassion • Supporting with purpose"
+            : foundationSettings.Tagline;
+    var thankYouMessage =
+        string.IsNullOrWhiteSpace(foundationSettings.ThankYouMessage)
+            ? "Your contribution makes a difference."
+            : foundationSettings.ThankYouMessage;
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/donation.css"
+          asp-append-version="true" />
+}
+<div class="donation-success-page">
+    <div class="donation-success-wrapper">
+        <!-- =========================================================
+             SUCCESS CARD
+             ========================================================= -->
+        <div class="donation-success-card">
+            <!-- SUCCESS HEADER -->
+            <div class="donation-success-icon"
+                 aria-hidden="true">
+                <span>
+                    ✓
+                </span>
+            </div>
+            <div class="donation-success-heading">
+                <span class="donation-success-label">
+                    Donation Submitted Successfully
+                </span>
+                <h1>
+                    Thank You for Your Generosity!
+                </h1>
+                <p>
+                    Your donation details have been successfully
+                    submitted to @foundationName and are now
+                    awaiting verification.
+                </p>
+            </div>
+            <!-- =====================================================
+                 REFERENCE NUMBER
+                 ===================================================== -->
+            <div class="donation-reference-card">
+                <div class="donation-reference-icon"
+                     aria-hidden="true">
+                    #
+                </div>
+                <div class="donation-reference-content">
+                    <span>
+                        Donation Reference Number
+                    </span>
+                    <strong>
+                        @Model.DonationNumber
+                    </strong>
+                    <small>
+                        Please keep this number safe for future reference.
+                    </small>
+                </div>
+            </div>
+            <!-- =====================================================
+                 DONATION SUMMARY
+                 ===================================================== -->
+            <div class="donation-success-summary">
+                <div class="success-summary-header">
+                    <h2>
+                        Donation Summary
+                    </h2>
+                </div>
+                <div class="success-summary-grid">
+                    <!-- DONOR -->
+                    <div class="success-summary-item">
+                        <span class="summary-label">
+                            Donor Name
+                        </span>
+                        <strong class="summary-value">
+                            @Model.DonorName
+                        </strong>
+                    </div>
+                    <!-- AMOUNT -->
+                    <div class="success-summary-item">
+                        <span class="summary-label">
+                            Donation Amount
+                        </span>
+                        <strong class="summary-value amount">
+                            ₹@Model.Amount.ToString("N2")
+                        </strong>
+                    </div>
+                    <!-- PAYMENT METHOD -->
+                    <div class="success-summary-item">
+                        <span class="summary-label">
+                            Payment Method
+                        </span>
+                        <strong class="summary-value">
+                            @Model.PaymentMethod
+                        </strong>
+                    </div>
+                    <!-- TRANSACTION ID -->
+                    <div class="success-summary-item">
+                        <span class="summary-label">
+                            Transaction ID
+                        </span>
+                        <strong class="summary-value transaction-id">
+                            @Model.TransactionId
+                        </strong>
+                    </div>
+                </div>
+            </div>
+            <!-- =====================================================
+                 VERIFICATION STATUS
+                 ===================================================== -->
+            <div class="donation-verification-status">
+                <div class="verification-status-icon"
+                     aria-hidden="true">
+                    <span>
+                        ⏳
+                    </span>
+                </div>
+                <div class="verification-status-content">
+                    <strong>
+                        Pending Verification
+                    </strong>
+                    <p>
+                        Our team will review your payment details
+                        and verify your donation shortly.
+                    </p>
+                </div>
+            </div>
+            <!-- =====================================================
+                 INFORMATION NOTE
+                 ===================================================== -->
+            <div class="donation-success-note">
+                <span class="note-icon"
+                      aria-hidden="true">
+                    i
+                </span>
+                <p>
+                    Please save your
+                    <strong>
+                        @Model.DonationNumber
+                    </strong>
+                    donation reference number. You can use it
+                    to check the verification status of your donation.
+                </p>
+            </div>
+            <!-- =====================================================
+                 ACTIONS
+                 ===================================================== -->
+            <div class="donation-success-actions">
+                <a asp-controller="DonationStatus"
+                   asp-action="Index"
+                   class="donation-success-primary-btn">
+                    <span>
+                        Check Donation Status
+                    </span>
+                    <span class="btn-arrow"
+                          aria-hidden="true">
+                        →
+                    </span>
+                </a>
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="donation-success-secondary-btn">
+                    Back to Website
+                </a>
+            </div>
+            <!-- =====================================================
+                 FOOTER
+                 ===================================================== -->
+            <div class="donation-success-footer">
+                <span>
+                    @thankYouMessage
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

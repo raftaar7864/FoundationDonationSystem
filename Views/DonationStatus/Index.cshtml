@@ -1,0 +1,272 @@
+﻿@model FoundationDonationSystem.ViewModels.DonationStatusViewModel
+@using FoundationDonationSystem.Models.Enums
+@using FoundationDonationSystem.Models
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "Donation Status";
+    var foundationSettings =
+        await FoundationSettingsService.GetAsync();
+    var foundationName =
+        string.IsNullOrWhiteSpace(foundationSettings.FoundationName)
+            ? "Our Foundation"
+            : foundationSettings.FoundationName;
+    var foundationTagline =
+        string.IsNullOrWhiteSpace(foundationSettings.Tagline)
+            ? "Serving with compassion • Supporting with purpose"
+            : foundationSettings.Tagline;
+    var thankYouMessage =
+        string.IsNullOrWhiteSpace(foundationSettings.ThankYouMessage)
+            ? "Your contribution makes a difference."
+            : foundationSettings.ThankYouMessage;
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/donation.css"
+          asp-append-version="true" />
+}
+<div class="donation-status-page">
+    <div class="donation-status-container">
+        <div class="donation-status-card">
+            <!-- =====================================================
+                 HEADER
+                 ===================================================== -->
+            <div class="donation-status-header">
+                <h1>
+                    Check Donation Status
+                </h1>
+                <p>
+                    Enter your donation reference number to view
+                    the current status of your donation to
+                    @foundationName.
+                </p>
+            </div>
+            <!-- =====================================================
+                 SEARCH
+                 ===================================================== -->
+            <div class="donation-status-search">
+                <form asp-controller="DonationStatus"
+                      asp-action="Index"
+                      method="get"
+                      class="donation-status-search-form">
+                    <div class="donation-status-search-input">
+                        <input id="donationNumber"
+                               name="donationNumber"
+                               value="@Model.DonationNumber"
+                               placeholder="Enter donation reference number"
+                               autocomplete="off" />
+                    </div>
+                    <button type="submit"
+                            class="donation-status-search-button">
+                        Check Status
+                    </button>
+                </form>
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary">
+                </div>
+            </div>
+            <!-- =====================================================
+                 RESULT
+                 ===================================================== -->
+            @if (Model.Status.HasValue)
+            {
+                <div class="donation-status-result">
+                    <!-- =================================================
+                         REFERENCE
+                         ================================================= -->
+                    <div class="donation-status-reference">
+                        <div>
+                            <div class="donation-status-reference-label">
+                                Donation Reference
+                            </div>
+                            <div class="donation-status-reference-value">
+                                @Model.DonationNumber
+                            </div>
+                        </div>
+                        <!-- STATUS BADGE -->
+                        <div class="donation-status-badge
+                            donation-status-badge-@Model.Status.Value.ToString().ToLowerInvariant()">
+                            @if (Model.Status.Value == DonationStatus.Pending)
+                            {
+                                <span>
+                                    Pending Verification
+                                </span>
+                            }
+                            else if (Model.Status.Value == DonationStatus.Verified)
+                            {
+                                <span>
+                                    Verified
+                                </span>
+                            }
+                            else if (Model.Status.Value == DonationStatus.Rejected)
+                            {
+                                <span>
+                                    Rejected
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    @Model.Status.Value
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    <!-- =================================================
+                         DETAILS
+                         ================================================= -->
+                    <div class="donation-status-details">
+                        <!-- DONOR -->
+                        <div class="donation-status-detail">
+                            <div class="donation-status-detail-label">
+                                Donor Name
+                            </div>
+                            <div class="donation-status-detail-value">
+                                @Model.DonorName
+                            </div>
+                        </div>
+                        <!-- AMOUNT -->
+                        <div class="donation-status-detail">
+                            <div class="donation-status-detail-label">
+                                Donation Amount
+                            </div>
+                            <div class="donation-status-detail-value">
+                                ₹@Model.Amount.ToString("N2")
+                            </div>
+                        </div>
+                        <!-- STATUS -->
+                        <div class="donation-status-detail">
+                            <div class="donation-status-detail-label">
+                                Status
+                            </div>
+                            <div class="donation-status-detail-value">
+                                @if (Model.Status.Value == DonationStatus.Pending)
+                                {
+                                    <span>
+                                        Pending Verification
+                                    </span>
+                                }
+                                else if (Model.Status.Value == DonationStatus.Verified)
+                                {
+                                    <span>
+                                        Verified
+                                    </span>
+                                }
+                                else if (Model.Status.Value == DonationStatus.Rejected)
+                                {
+                                    <span>
+                                        Rejected
+                                    </span>
+                                }
+                                else
+                                {
+                                    @Model.Status.Value
+                                }
+                            </div>
+                        </div>
+                        <!-- RECEIPT -->
+                        @if (!string.IsNullOrWhiteSpace(Model.DonationSlipNumber))
+                        {
+                            <div class="donation-status-detail">
+                                <div class="donation-status-detail-label">
+                                    Donation Receipt
+                                </div>
+                                <div class="donation-status-detail-value">
+                                    @Model.DonationSlipNumber
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <!-- =================================================
+                         AMOUNT
+                         ================================================= -->
+                    <div class="donation-status-amount">
+                        <div class="donation-status-amount-label">
+                            Donation Amount
+                        </div>
+                        <div class="donation-status-amount-value">
+                            ₹@Model.Amount.ToString("N2")
+                        </div>
+                    </div>
+                    <!-- =================================================
+                         STATUS MESSAGE
+                         ================================================= -->
+                    @if (Model.Status.Value == DonationStatus.Pending)
+                    {
+                        <div class="donation-status-message donation-status-message-warning">
+                            <strong>
+                                Verification in Progress
+                            </strong>
+                            <p>
+                                Your donation to @foundationName has been received.
+                                Our team will review the payment details
+                                and update the status after verification.
+                            </p>
+                        </div>
+                    }
+                    else if (Model.Status.Value == DonationStatus.Verified)
+                    {
+                        <div class="donation-status-message donation-status-message-success">
+                            <strong>
+                                Donation Verified
+                            </strong>
+                            <p>
+                                Your donation has been successfully verified.
+                                @thankYouMessage
+                            </p>
+                        </div>
+                    }
+                    else if (Model.Status.Value == DonationStatus.Rejected)
+                    {
+                        <div class="donation-status-message donation-status-message-danger">
+                            <strong>
+                                Donation Requires Attention
+                            </strong>
+                            <p>
+                                Your donation could not be verified at this time.
+                                Please review the remarks below for more information.
+                            </p>
+                        </div>
+                    }
+                    <!-- =================================================
+                         REMARKS
+                         ================================================= -->
+                    @if (!string.IsNullOrWhiteSpace(Model.VerificationRemarks))
+                    {
+                        <div class="donation-status-message donation-status-message-warning">
+                            <strong>
+                                Verification Remarks
+                            </strong>
+                            <p>
+                                @Model.VerificationRemarks
+                            </p>
+                        </div>
+                    }
+                    <!-- =================================================
+                         ACTIONS
+                         ================================================= -->
+                    <div class="donation-status-actions">
+                        @if (Model.Status.Value == DonationStatus.Verified)
+                        {
+                            <a asp-controller="DonationStatus"
+                               asp-action="DownloadSlip"
+                               asp-route-donationNumber="@Model.DonationNumber"
+                               class="donation-status-primary-btn">
+                                <span class="status-action-icon">
+                                    ↓
+                                </span>
+                                <span>
+                                    Download Donation Slip
+                                </span>
+                            </a>
+                        }
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="donation-status-secondary-btn">
+                            Back to Website
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

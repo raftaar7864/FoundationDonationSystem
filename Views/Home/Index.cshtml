@@ -1,0 +1,1583 @@
+﻿@using FoundationDonationSystem.Models
+@using FoundationDonationSystem.ViewModels
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "Home";
+    var foundation = await FoundationSettingsService.GetAsync();
+    var foundationName = string.IsNullOrWhiteSpace(foundation.FoundationName)
+        ? "Foundation"
+        : foundation.FoundationName;
+    var tagline = string.IsNullOrWhiteSpace(foundation.Tagline)
+        ? "Serving with compassion • Supporting with purpose"
+        : foundation.Tagline;
+    var logoPath = string.IsNullOrWhiteSpace(foundation.LogoPath)
+        ? Url.Content("~/images/foundation-logo.png")
+        : foundation.LogoPath;
+    var latestPosts =
+        ViewBag.LatestPosts as IEnumerable<PublicPostListViewModel>
+        ?? Enumerable.Empty<PublicPostListViewModel>();
+    const string facebookUrl =
+        "https://www.facebook.com/profile.php?id=61580846158459";
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/home.css"
+          asp-append-version="true" />
+    <style>
+        /* =========================================================
+                   UNIQUE HOME EXPERIENCE
+                   ========================================================= */
+        .foundation-home {
+            --home-orange: #f97316;
+            --home-orange-dark: #c2410c;
+            --home-ink: #172033;
+            --home-muted: #64748b;
+            --home-line: #e8eaf0;
+            --home-soft: #fff7ed;
+            overflow: hidden;
+        }
+        .home-container {
+            width: min(1180px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+        /* Hero */
+        .home-hero {
+            position: relative;
+            min-height: clamp(600px, 78vh, 760px);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: radial-gradient(circle at 84% 20%, rgba(249,115,22,.18), transparent 30%), radial-gradient(circle at 12% 85%, rgba(251,191,36,.12), transparent 28%), linear-gradient(135deg,#fffaf5 0%,#ffffff 48%,#fff7ed 100%);
+        }
+            .home-hero::before {
+                content: "";
+                position: absolute;
+                width: 420px;
+                height: 420px;
+                right: -170px;
+                top: -170px;
+                border: 1px solid rgba(249,115,22,.14);
+                border-radius: 50%;
+            }
+            .home-hero::after {
+                content: "";
+                position: absolute;
+                width: 680px;
+                height: 680px;
+                right: -300px;
+                top: -300px;
+                border: 1px solid rgba(249,115,22,.08);
+                border-radius: 50%;
+            }
+        .home-hero-container {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: minmax(0,1.08fr) minmax(360px,.92fr);
+            gap: 70px;
+            align-items: center;
+            padding: 72px 0 84px;
+        }
+        .home-hero-content {
+            max-width: 700px;
+        }
+        .home-eyebrow,
+        .home-section-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--home-orange-dark);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+        .home-eyebrow-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--home-orange);
+            box-shadow: 0 0 0 5px rgba(249,115,22,.10);
+        }
+        .home-hero-title {
+            margin: 18px 0 12px;
+            color: var(--home-ink);
+            font-size: clamp(42px,6vw,76px);
+            line-height: .98;
+            letter-spacing: -.045em;
+            font-weight: 800;
+        }
+            .home-hero-title span {
+                display: block;
+                color: var(--home-orange);
+            }
+        .home-hero-tagline {
+            max-width: 620px;
+            margin: 0 0 15px;
+            color: #334155;
+            font-size: clamp(20px,2.1vw,27px);
+            line-height: 1.35;
+            font-weight: 650;
+        }
+        .home-hero-description {
+            max-width: 620px;
+            margin: 0;
+            color: var(--home-muted);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        .home-hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 28px;
+        }
+        .home-primary-button,
+        .home-secondary-button,
+        .home-outline-button,
+        .home-contact-button {
+            min-height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 0 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .home-primary-button {
+            color: #fff;
+            background: linear-gradient(135deg,#f97316,#ea580c);
+            box-shadow: 0 12px 25px rgba(234,88,12,.20);
+        }
+            .home-primary-button:hover,
+            .home-contact-button:hover {
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 15px 28px rgba(234,88,12,.24);
+            }
+            .home-primary-button svg,
+            .home-secondary-button svg,
+            .home-outline-button svg,
+            .home-contact-button svg,
+            .home-text-link svg,
+            .home-updates-view-all svg,
+            .home-update-read-more svg {
+                width: 16px;
+                height: 16px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                flex: 0 0 16px;
+            }
+        .home-secondary-button {
+            color: var(--home-ink);
+            background: #fff;
+            border: 1px solid #e2e8f0;
+        }
+            .home-secondary-button:hover {
+                color: var(--home-orange-dark);
+                border-color: #fed7aa;
+                transform: translateY(-2px);
+            }
+        .home-trust-note {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 650;
+        }
+        .home-trust-icon {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            color: #ea580c;
+            background: #ffedd5;
+        }
+            .home-trust-icon svg {
+                width: 16px;
+                height: 16px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.7;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        /* Hero visual */
+        .home-hero-visual {
+            position: relative;
+            min-height: 410px;
+            display: grid;
+            place-items: center;
+        }
+        .home-hero-orbit {
+            position: absolute;
+            border: 1px solid rgba(249,115,22,.16);
+            border-radius: 50%;
+        }
+        .home-orbit-one {
+            width: 390px;
+            height: 390px;
+        }
+        .home-orbit-two {
+            width: 500px;
+            height: 500px;
+        }
+        .home-hero-card {
+            position: relative;
+            width: min(390px,90%);
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,.9);
+            border-radius: 28px;
+            background: rgba(255,255,255,.88);
+            box-shadow: 0 28px 70px rgba(51,65,85,.14);
+            backdrop-filter: blur(14px);
+        }
+        .home-hero-logo {
+            width: 82px;
+            height: 82px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 24px;
+            border-radius: 22px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            overflow: hidden;
+        }
+            .home-hero-logo img {
+                width: 70%;
+                height: 70%;
+                object-fit: contain;
+            }
+        .home-hero-card-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f97316;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+        .home-hero-card-content strong {
+            display: block;
+            color: var(--home-ink);
+            font-size: 29px;
+            line-height: 1.12;
+            letter-spacing: -.025em;
+        }
+        .home-hero-card-content p {
+            margin: 13px 0 0;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.65;
+        }
+        .home-hero-heart {
+            position: absolute;
+            right: -15px;
+            bottom: -15px;
+            width: 62px;
+            height: 62px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            border: 7px solid #fff;
+            border-radius: 50%;
+            background: #f97316;
+            box-shadow: 0 12px 28px rgba(234,88,12,.24);
+        }
+            .home-hero-heart svg {
+                width: 25px;
+                height: 25px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.7;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        .home-scroll-indicator {
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            z-index: 3;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 750;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .home-scroll-arrow {
+            display: grid;
+            place-items: center;
+            width: 24px;
+            height: 24px;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+        }
+            .home-scroll-arrow svg {
+                width: 13px;
+                height: 13px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.7;
+            }
+        /* Shared sections */
+        .home-intro,
+        .home-how-it-works,
+        .home-updates,
+        .home-community {
+            padding: 92px 0;
+        }
+        .home-intro {
+            background: #fff;
+        }
+        .home-section-heading {
+            max-width: 680px;
+        }
+            .home-section-heading h2 {
+                margin: 10px 0 10px;
+                color: var(--home-ink);
+                font-size: clamp(29px,4vw,45px);
+                line-height: 1.08;
+                letter-spacing: -.035em;
+            }
+            .home-section-heading p {
+                margin: 0;
+                color: var(--home-muted);
+                font-size: 15px;
+                line-height: 1.75;
+            }
+        .home-section-heading-center {
+            margin: 0 auto;
+            text-align: center;
+        }
+        .home-intro-grid {
+            display: grid;
+            grid-template-columns: minmax(0,1fr) minmax(360px,.86fr);
+            gap: 70px;
+            margin-top: 55px;
+            align-items: start;
+        }
+        .home-intro-main {
+            position: relative;
+            padding: 5px 0 5px 62px;
+        }
+        .home-section-number {
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: #fed7aa;
+            font-size: 27px;
+            font-weight: 850;
+        }
+        .home-intro-main h3 {
+            margin: 0 0 15px;
+            color: var(--home-ink);
+            font-size: 29px;
+            line-height: 1.2;
+        }
+        .home-intro-main p {
+            margin: 0 0 14px;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.85;
+        }
+        .home-text-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 7px;
+            color: #ea580c;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        .home-values {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .home-value-card {
+            width: 100%;
+            min-height: 68px;
+            display: grid;
+            grid-template-columns: 42px minmax(0,1fr) 22px;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 13px;
+            border: 1px solid #edf0f4;
+            border-radius: 13px;
+            color: var(--home-ink);
+            background: #fff;
+            text-align: left;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+            .home-value-card:hover,
+            .home-value-card.is-active {
+                border-color: #fed7aa;
+                background: #fffaf5;
+                transform: translateX(3px);
+            }
+        .home-value-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            color: #ea580c;
+            background: #fff7ed;
+        }
+            .home-value-icon svg {
+                width: 20px;
+                height: 20px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.7;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        .home-value-card strong,
+        .home-value-card small {
+            display: block;
+        }
+        .home-value-card strong {
+            font-size: 13px;
+        }
+        .home-value-card small {
+            margin-top: 2px;
+            color: #94a3b8;
+            font-size: 10px;
+        }
+        .home-value-arrow {
+            color: #cbd5e1;
+            font-size: 18px;
+        }
+        .home-value-detail {
+            margin-top: 8px;
+            padding: 16px 18px;
+            border-left: 3px solid #f97316;
+            border-radius: 0 10px 10px 0;
+            background: #fff7ed;
+            transition: opacity .14s ease, transform .14s ease;
+        }
+            .home-value-detail.is-changing {
+                opacity: .25;
+                transform: translateY(3px);
+            }
+        .home-detail-label {
+            display: block;
+            color: #c2410c;
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .home-value-detail p {
+            margin: 6px 0 0;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+        /* Process */
+        .home-how-it-works {
+            background: #fafafa;
+            border-top: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .home-process {
+            display: grid;
+            grid-template-columns: 1fr 70px 1fr 70px 1fr;
+            align-items: center;
+            margin-top: 55px;
+        }
+        .home-process-item {
+            text-align: center;
+        }
+        .home-process-number {
+            margin-bottom: 11px;
+            color: #fb923c;
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: .12em;
+        }
+        .home-process-icon {
+            width: 62px;
+            height: 62px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 16px;
+            color: #ea580c;
+            border: 1px solid #fed7aa;
+            border-radius: 50%;
+            background: #fff;
+        }
+            .home-process-icon svg {
+                width: 25px;
+                height: 25px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.7;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        .home-process-item h3 {
+            margin: 0 0 8px;
+            color: var(--home-ink);
+            font-size: 16px;
+        }
+        .home-process-item p {
+            max-width: 230px;
+            margin: 0 auto;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+        .home-process-line {
+            height: 1px;
+            background: #e2e8f0;
+        }
+        /* Updates */
+        .home-updates {
+            background: #fff;
+        }
+        .home-updates-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 38px;
+        }
+        .home-updates-view-all {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #ea580c;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        .home-updates-grid {
+            display: grid;
+            grid-template-columns: repeat(3,minmax(0,1fr));
+            gap: 18px;
+        }
+        .home-update-card {
+            overflow: hidden;
+            border: 1px solid #edf0f4;
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 7px 22px rgba(15,23,42,.035);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+            .home-update-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 17px 35px rgba(15,23,42,.08);
+            }
+        .home-update-image {
+            position: relative;
+            display: block;
+            height: 190px;
+            overflow: hidden;
+            background: #f8fafc;
+            text-decoration: none;
+        }
+            .home-update-image img {
+                width: 100%;
+                height: 100%;
+                display: block;
+                object-fit: cover;
+                transition: transform .4s ease;
+            }
+        .home-update-card:hover .home-update-image img {
+            transform: scale(1.04);
+        }
+        .home-update-date {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            padding: 6px 8px;
+            border-radius: 7px;
+            color: #fff;
+            background: rgba(15,23,42,.78);
+            backdrop-filter: blur(7px);
+            font-size: 9px;
+            font-weight: 800;
+        }
+        .home-update-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            color: #cbd5e1;
+            background: linear-gradient(135deg,#fff7ed,#f8fafc);
+        }
+            .home-update-image-placeholder svg {
+                width: 40px;
+                height: 40px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        .home-update-content {
+            padding: 17px 18px 18px;
+        }
+        .home-update-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #94a3b8;
+            font-size: 9px;
+            font-weight: 750;
+        }
+            .home-update-meta svg {
+                width: 13px;
+                height: 13px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.6;
+            }
+        .home-update-content h3 {
+            margin: 9px 0 8px;
+            font-size: 17px;
+            line-height: 1.35;
+        }
+            .home-update-content h3 a {
+                color: var(--home-ink);
+                text-decoration: none;
+            }
+                .home-update-content h3 a:hover {
+                    color: #ea580c;
+                }
+        .home-update-content p {
+            display: -webkit-box;
+            margin: 0 0 13px;
+            overflow: hidden;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.65;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .home-update-read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #ea580c;
+            font-size: 11px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        .home-updates-empty {
+            padding: 55px 20px;
+            text-align: center;
+            border: 1px dashed #e2e8f0;
+            border-radius: 15px;
+            background: #fafafa;
+        }
+        .home-updates-empty-icon {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 13px;
+            color: #fb923c;
+            border-radius: 14px;
+            background: #fff7ed;
+        }
+            .home-updates-empty-icon svg {
+                width: 25px;
+                height: 25px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.5;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        .home-updates-empty h3 {
+            margin: 0 0 5px;
+            color: var(--home-ink);
+            font-size: 17px;
+        }
+        .home-updates-empty p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        /* New community / Facebook section */
+        .home-community {
+            position: relative;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+        .home-community-card {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0,1fr) 330px;
+            gap: 40px;
+            align-items: center;
+            padding: 38px 42px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            border-radius: 22px;
+            background: #fff;
+            box-shadow: 0 18px 45px rgba(15,23,42,.06);
+        }
+            .home-community-card::after {
+                content: "";
+                position: absolute;
+                width: 260px;
+                height: 260px;
+                right: -100px;
+                top: -120px;
+                border: 45px solid rgba(249,115,22,.055);
+                border-radius: 50%;
+            }
+        .home-community-copy {
+            position: relative;
+            z-index: 1;
+        }
+            .home-community-copy h2 {
+                max-width: 650px;
+                margin: 9px 0 10px;
+                color: var(--home-ink);
+                font-size: clamp(27px,3.5vw,40px);
+                line-height: 1.1;
+                letter-spacing: -.03em;
+            }
+            .home-community-copy p {
+                max-width: 630px;
+                margin: 0;
+                color: #64748b;
+                font-size: 14px;
+                line-height: 1.75;
+            }
+        .home-facebook-button {
+            position: relative;
+            z-index: 2;
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 0 22px;
+            border-radius: 12px;
+            color: #fff;
+            background: #1877f2;
+            text-decoration: none;
+            box-shadow: 0 13px 28px rgba(24,119,242,.18);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+            .home-facebook-button:hover {
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 17px 32px rgba(24,119,242,.25);
+            }
+        .home-facebook-icon {
+            width: 31px;
+            height: 31px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,.18);
+        }
+            .home-facebook-icon svg {
+                width: 18px;
+                height: 18px;
+                fill: currentColor;
+                stroke: none;
+            }
+        .home-facebook-button strong,
+        .home-facebook-button small {
+            display: block;
+            text-align: left;
+        }
+        .home-facebook-button strong {
+            font-size: 13px;
+        }
+        .home-facebook-button small {
+            margin-top: 2px;
+            opacity: .8;
+            font-size: 9px;
+            font-weight: 600;
+        }
+        /* CTA */
+        .home-donation-cta {
+            padding: 82px 0;
+            background: #fff;
+        }
+        .home-donation-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 35px;
+            overflow: hidden;
+            padding: 42px 46px;
+            border-radius: 24px;
+            color: #fff;
+            background: linear-gradient(120deg,#c2410c,#ea580c 55%,#f97316);
+            box-shadow: 0 20px 50px rgba(194,65,12,.18);
+        }
+            .home-donation-card::before {
+                content: "";
+                position: absolute;
+                width: 300px;
+                height: 300px;
+                right: -80px;
+                top: -160px;
+                border: 50px solid rgba(255,255,255,.08);
+                border-radius: 50%;
+            }
+        .home-donation-content {
+            position: relative;
+            z-index: 1;
+            max-width: 720px;
+        }
+            .home-donation-content .home-section-eyebrow {
+                color: #fed7aa;
+            }
+            .home-donation-content h2 {
+                margin: 10px 0 9px;
+                font-size: clamp(28px,4vw,43px);
+                line-height: 1.08;
+                letter-spacing: -.035em;
+            }
+            .home-donation-content p {
+                margin: 0;
+                color: #ffedd5;
+                font-size: 14px;
+                line-height: 1.7;
+            }
+        .home-donation-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 22px;
+        }
+        .home-primary-button-light {
+            color: #c2410c;
+            background: #fff;
+            box-shadow: none;
+        }
+            .home-primary-button-light:hover {
+                color: #c2410c;
+                background: #fff7ed;
+            }
+        .home-outline-button {
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.4);
+            background: rgba(255,255,255,.08);
+        }
+            .home-outline-button:hover {
+                color: #fff;
+                background: rgba(255,255,255,.16);
+                transform: translateY(-2px);
+            }
+        .home-donation-symbol {
+            position: relative;
+            z-index: 1;
+            flex: 0 0 auto;
+        }
+        .home-donation-circle {
+            width: 135px;
+            height: 135px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.24);
+            border-radius: 50%;
+            background: rgba(255,255,255,.08);
+        }
+            .home-donation-circle svg {
+                width: 53px;
+                height: 53px;
+                fill: none;
+                stroke: #fff;
+                stroke-width: 1.4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        /* Contact */
+        .home-contact-strip {
+            padding: 28px 0;
+            background: #172033;
+        }
+        .home-contact-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+            .home-contact-content .home-section-eyebrow {
+                color: #fb923c;
+            }
+            .home-contact-content h2 {
+                margin: 5px 0 3px;
+                color: #fff;
+                font-size: 23px;
+            }
+            .home-contact-content p {
+                margin: 0;
+                color: #94a3b8;
+                font-size: 11px;
+            }
+        .home-contact-button {
+            flex: 0 0 auto;
+            color: #fff;
+            background: #f97316;
+        }
+        /* Responsive */
+        @@media (max-width:1000px) {
+            .home-hero-container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                padding-top: 55px;
+            }
+            .home-hero-content {
+                max-width: 760px;
+                margin: 0 auto;
+                text-align: center;
+            }
+            .home-hero-actions,
+            .home-trust-note {
+                justify-content: center;
+            }
+            .home-hero-visual {
+                min-height: 320px;
+            }
+            .home-orbit-two {
+                width: 410px;
+                height: 410px;
+            }
+            .home-intro-grid {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+            .home-updates-grid {
+                grid-template-columns: repeat(2,minmax(0,1fr));
+            }
+            .home-community-card {
+                grid-template-columns: 1fr;
+            }
+            .home-facebook-button {
+                max-width: 340px;
+            }
+        }
+        @@media (max-width:760px) {
+            .home-container {
+                width: min(100% - 28px,1180px);
+            }
+            .home-hero {
+                min-height: auto;
+            }
+            .home-hero-container {
+                padding: 50px 0 75px;
+            }
+            .home-hero-title {
+                font-size: clamp(38px,11vw,58px);
+            }
+            .home-hero-description {
+                font-size: 14px;
+            }
+            .home-hero-visual {
+                min-height: 270px;
+            }
+            .home-hero-card {
+                width: min(350px,88%);
+                padding: 24px;
+            }
+            .home-orbit-one {
+                width: 290px;
+                height: 290px;
+            }
+            .home-orbit-two {
+                width: 350px;
+                height: 350px;
+            }
+            .home-intro,
+            .home-how-it-works,
+            .home-updates,
+            .home-community,
+            .home-donation-cta {
+                padding: 62px 0;
+            }
+            .home-process {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            .home-process-line {
+                width: 1px;
+                height: 35px;
+                margin: 0 auto;
+            }
+            .home-updates-header {
+                display: block;
+                margin-bottom: 25px;
+            }
+            .home-updates-view-all {
+                margin-top: 15px;
+            }
+            .home-updates-grid {
+                grid-template-columns: 1fr;
+            }
+            .home-community-card {
+                padding: 27px 23px;
+            }
+            .home-donation-card {
+                display: block;
+                padding: 32px 25px;
+            }
+            .home-donation-symbol {
+                display: none;
+            }
+            .home-contact-content {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+            .home-contact-button {
+                width: 100%;
+            }
+            .home-scroll-indicator {
+                display: none;
+            }
+        }
+        @@media (max-width:480px) {
+            .home-hero-actions {
+                flex-direction: column;
+            }
+            .home-primary-button,
+            .home-secondary-button,
+            .home-outline-button {
+                width: 100%;
+            }
+            .home-intro-main {
+                padding-left: 48px;
+            }
+            .home-value-card {
+                grid-template-columns: 38px minmax(0,1fr) 16px;
+                gap: 9px;
+            }
+            .home-value-icon {
+                width: 38px;
+                height: 38px;
+            }
+            .home-community-copy h2 {
+                font-size: 29px;
+            }
+            .home-facebook-button {
+                width: 100%;
+            }
+            .home-donation-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+}
+<div class="foundation-home">
+    <!-- =========================================================
+         HERO
+         ========================================================= -->
+    <section class="home-hero">
+        <div class="home-container home-hero-container">
+            <div class="home-hero-content">
+                <span class="home-eyebrow">
+                    <span class="home-eyebrow-dot"></span>
+                    Making a difference together
+                </span>
+                <h1 class="home-hero-title">
+                    Welcome to
+                    <span>@foundationName</span>
+                </h1>
+                <p class="home-hero-tagline">
+                    @tagline
+                </p>
+                <p class="home-hero-description">
+                    Together, we can support meaningful causes, strengthen
+                    communities and create opportunities for a better future.
+                    Every contribution, big or small, can make a difference.
+                </p>
+                <div class="home-hero-actions">
+                    <a class="home-primary-button"
+                       asp-controller="Donation"
+                       asp-action="Index">
+                        <span>Make a Donation</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 12h13M13 6l6 6-6 6" />
+                        </svg>
+                    </a>
+                    <a class="home-secondary-button" href="#about">
+                        Learn More
+                    </a>
+                </div>
+                <div class="home-trust-note">
+                    <span class="home-trust-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3 4 6v5c0 5.2 3.4 8.8 8 10 4.6-1.2 8-4.8 8-10V6l-8-3Z" />
+                            <path d="m8.5 12 2.2 2.2 4.8-5" />
+                        </svg>
+                    </span>
+                    <span>Transparent and purpose-driven giving</span>
+                </div>
+            </div>
+            <div class="home-hero-visual" aria-hidden="true">
+                <div class="home-hero-orbit home-orbit-one"></div>
+                <div class="home-hero-orbit home-orbit-two"></div>
+                <div class="home-hero-card">
+                    <div class="home-hero-logo">
+                        <img src="@logoPath" alt="@foundationName" />
+                    </div>
+                    <div class="home-hero-card-content">
+                        <span class="home-hero-card-label">Together we can</span>
+                        <strong>Create meaningful change</strong>
+                        <p>Your support helps turn compassion into action.</p>
+                    </div>
+                    <div class="home-hero-heart">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20.8 8.7c0 5.5-8.8 10.3-8.8 10.3S3.2 14.2 3.2 8.7C3.2 5.8 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.2C13 4.9 14.5 4 16.2 4c2.6 0 4.6 1.8 4.6 4.7Z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-scroll-indicator">
+            <span>Scroll to explore</span>
+            <span class="home-scroll-arrow">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </span>
+        </div>
+    </section>
+    <!-- =========================================================
+         INTRODUCTION
+         ========================================================= -->
+    <section class="home-intro" id="about">
+        <div class="home-container">
+            <div class="home-section-heading">
+                <span class="home-section-eyebrow">
+                    About @foundationName
+                </span>
+                <h2>Compassion that turns into action</h2>
+                <p>
+                    We believe positive change begins when people come
+                    together with a shared purpose.
+                </p>
+            </div>
+            <div class="home-intro-grid">
+                <div class="home-intro-main">
+                    <div class="home-section-number">01</div>
+                    <h3>Building a better tomorrow, together.</h3>
+                    <p>
+                        @foundationName is committed to supporting meaningful
+                        initiatives and helping create a stronger and more
+                        caring community.
+                    </p>
+                    <p>
+                        Through the generosity of people like you, we can
+                        support work that makes a real difference in the
+                        lives of individuals and communities.
+                    </p>
+                    <a class="home-text-link"
+                       asp-controller="Home"
+                       asp-action="About">
+                        Discover our story
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="home-values">
+                    <button type="button"
+                            class="home-value-card is-active"
+                            data-value="mission">
+                        <span class="home-value-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 21s-7-4.4-9.2-8.2C.8 9.7 2.3 6 5.8 6c2 0 3.3 1.2 4.2 2.6C10.9 7.2 12.2 6 14.2 6c3.5 0 5 3.7 3 6.8C16 16.6 12 21 12 21Z" />
+                            </svg>
+                        </span>
+                        <span>
+                            <strong>Our Mission</strong>
+                            <small>Purpose with compassion</small>
+                        </span>
+                        <span class="home-value-arrow">→</span>
+                    </button>
+                    <button type="button"
+                            class="home-value-card"
+                            data-value="community">
+                        <span class="home-value-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M16 20v-1.5a4.5 4.5 0 0 0-9 0V20" />
+                                <circle cx="11.5" cy="8" r="3" />
+                                <path d="M17 10a2.8 2.8 0 1 0 0-5.6M18 20v-1.2a4 4 0 0 0-2.6-3.7" />
+                            </svg>
+                        </span>
+                        <span>
+                            <strong>Our Community</strong>
+                            <small>People at the heart</small>
+                        </span>
+                        <span class="home-value-arrow">→</span>
+                    </button>
+                    <button type="button"
+                            class="home-value-card"
+                            data-value="impact">
+                        <span class="home-value-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 19V9M10 19V5M16 19v-8M22 19V3" />
+                            </svg>
+                        </span>
+                        <span>
+                            <strong>Our Impact</strong>
+                            <small>Action that matters</small>
+                        </span>
+                        <span class="home-value-arrow">→</span>
+                    </button>
+                    <div class="home-value-detail"
+                         id="homeValueDetail"
+                         aria-live="polite">
+                        <span class="home-detail-label">Our Mission</span>
+                        <p>
+                            To serve with compassion and transform
+                            generosity into meaningful action.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         HOW IT WORKS
+         ========================================================= -->
+    <section class="home-how-it-works">
+        <div class="home-container">
+            <div class="home-section-heading home-section-heading-center">
+                <span class="home-section-eyebrow">How You Can Help</span>
+                <h2>Your generosity can make a difference</h2>
+                <p>
+                    Giving is simple. Choose to support a cause and
+                    become part of something meaningful.
+                </p>
+            </div>
+            <div class="home-process">
+                <div class="home-process-item">
+                    <div class="home-process-number">01</div>
+                    <div class="home-process-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
+                        </svg>
+                    </div>
+                    <h3>Choose to Give</h3>
+                    <p>
+                        Decide how you would like to support
+                        @foundationName.
+                    </p>
+                </div>
+                <div class="home-process-line"></div>
+                <div class="home-process-item">
+                    <div class="home-process-number">02</div>
+                    <div class="home-process-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="14" rx="2" />
+                            <path d="M3 10h18M7 15h4" />
+                        </svg>
+                    </div>
+                    <h3>Complete Your Donation</h3>
+                    <p>
+                        Provide your donation and transaction details
+                        through our secure form.
+                    </p>
+                </div>
+                <div class="home-process-line"></div>
+                <div class="home-process-item">
+                    <div class="home-process-number">03</div>
+                    <div class="home-process-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 7 10 17l-5-5" />
+                        </svg>
+                    </div>
+                    <h3>Make an Impact</h3>
+                    <p>
+                        Your generosity becomes part of our continuing
+                        work for the community.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         LATEST UPDATES
+         ========================================================= -->
+    <section class="home-updates">
+        <div class="home-container">
+            <div class="home-updates-header">
+                <div class="home-section-heading">
+                    <span class="home-section-eyebrow">Latest Updates</span>
+                    <h2>News, activities and foundation updates</h2>
+                    <p>
+                        Stay connected with the latest work, activities
+                        and important updates from @foundationName.
+                    </p>
+                </div>
+                <a class="home-updates-view-all"
+                   asp-controller="Posts"
+                   asp-action="Index">
+                    <span>View All Updates</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                </a>
+            </div>
+            @if (latestPosts.Any())
+            {
+                <div class="home-updates-grid">
+                    @foreach (var post in latestPosts)
+                    {
+                        <article class="home-update-card">
+                            <a class="home-update-image"
+                               asp-controller="Posts"
+                               asp-action="Details"
+                               asp-route-id="@post.Id"
+                               aria-label="Read @post.Title">
+                                @if (!string.IsNullOrWhiteSpace(post.FeaturedImagePath))
+                                {
+                                    <img src="@post.FeaturedImagePath"
+                                         alt="@post.Title"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="home-update-image-placeholder">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                                            <circle cx="8" cy="9" r="1.5" />
+                                            <path d="m5 17 4.5-4.5 3 3 2-2L19 17" />
+                                        </svg>
+                                    </div>
+                                }
+                                <span class="home-update-date">
+                                    @post.PostDate.ToString("dd MMM yyyy")
+                                </span>
+                            </a>
+                            <div class="home-update-content">
+                                <span class="home-update-meta">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="3" y="4" width="18" height="17" rx="2" />
+                                        <path d="M16 2v4M8 2v4M3 10h18" />
+                                    </svg>
+                                    @post.PostDate.ToString("dd MMMM yyyy")
+                                </span>
+                                <h3>
+                                    <a asp-controller="Posts"
+                                       asp-action="Details"
+                                       asp-route-id="@post.Id">
+                                        @post.Title
+                                    </a>
+                                </h3>
+                                @if (!string.IsNullOrWhiteSpace(post.ShortDescription))
+                                {
+                                    <p>@post.ShortDescription</p>
+                                }
+                                <a class="home-update-read-more"
+                                   asp-controller="Posts"
+                                   asp-action="Details"
+                                   asp-route-id="@post.Id">
+                                    Read More
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="home-updates-empty">
+                    <div class="home-updates-empty-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5h16v14H4z" />
+                            <path d="M8 9h8M8 13h6" />
+                        </svg>
+                    </div>
+                    <h3>No updates available yet</h3>
+                    <p>
+                        New foundation updates and activities will appear here.
+                    </p>
+                </div>
+            }
+        </div>
+    </section>
+    <!-- =========================================================
+         FACEBOOK / COMMUNITY
+         ========================================================= -->
+    <section class="home-community">
+        <div class="home-container">
+            <div class="home-community-card">
+                <div class="home-community-copy">
+                    <span class="home-section-eyebrow">
+                        Follow Our Journey
+                    </span>
+                    <h2>
+                        See the people, moments and stories behind the work.
+                    </h2>
+                    <p>
+                        Stay connected with @foundationName on Facebook for
+                        community moments, activities, announcements and
+                        updates. Join our growing online community and be part
+                        of the conversation.
+                    </p>
+                </div>
+                <a class="home-facebook-button"
+                   href="@facebookUrl"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Visit @foundationName on Facebook">
+                    <span class="home-facebook-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 8h3V4h-3c-3.3 0-5 1.8-5 5v3H6v4h3v4h4v-4h3.2l.8-4H13V9c0-.7.3-1 1-1Z" />
+                        </svg>
+                    </span>
+                    <span>
+                        <strong>Follow us on Facebook</strong>
+                        <small>Connect • Discover • Support</small>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         DONATION CTA
+         ========================================================= -->
+    <section class="home-donation-cta">
+        <div class="home-container">
+            <div class="home-donation-card">
+                <div class="home-donation-content">
+                    <span class="home-section-eyebrow">
+                        Be Part of the Change
+                    </span>
+                    <h2>Give today. Make a difference tomorrow.</h2>
+                    <p>
+                        Your contribution can help us continue serving
+                        with compassion and purpose.
+                    </p>
+                    <div class="home-donation-actions">
+                        <a class="home-primary-button home-primary-button-light"
+                           asp-controller="Donation"
+                           asp-action="Index">
+                            Donate Now
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5 12h13M13 6l6 6-6 6" />
+                            </svg>
+                        </a>
+                        <a class="home-outline-button"
+                           asp-controller="DonationStatus"
+                           asp-action="Index">
+                            Check Donation Status
+                        </a>
+                    </div>
+                </div>
+                <div class="home-donation-symbol" aria-hidden="true">
+                    <span class="home-donation-circle">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20.8 8.7c0 5.5-8.8 10.3-8.8 10.3S3.2 14.2 3.2 8.7C3.2 5.8 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.2C13 4.9 14.5 4 16.2 4c2.6 0 4.6 1.8 4.6 4.7Z" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         CONTACT
+         ========================================================= -->
+    <section class="home-contact-strip">
+        <div class="home-container">
+            <div class="home-contact-content">
+                <div>
+                    <span class="home-section-eyebrow">Stay Connected</span>
+                    <h2>Have a question?</h2>
+                    <p>We would be happy to hear from you.</p>
+                </div>
+                <a class="home-contact-button"
+                   asp-controller="Home"
+                   asp-action="Contact">
+                    Contact Us
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const valueCards =
+                document.querySelectorAll(".home-value-card");
+            const detail =
+                document.getElementById("homeValueDetail");
+            if (!valueCards.length || !detail) {
+                return;
+            }
+            const valueContent = {
+                mission: {
+                    title: "Our Mission",
+                    text: "To serve with compassion and transform generosity into meaningful action."
+                },
+                community: {
+                    title: "Our Community",
+                    text: "People are at the heart of everything we do. Together, we can build a stronger and more caring community."
+                },
+                impact: {
+                    title: "Our Impact",
+                    text: "We aim to turn every act of generosity into purposeful support for people and communities."
+                }
+            };
+            valueCards.forEach(function (card) {
+                card.addEventListener("click", function () {
+                    const value =
+                        card.getAttribute("data-value");
+                    const content =
+                        valueContent[value];
+                    if (!content) {
+                        return;
+                    }
+                    valueCards.forEach(function (item) {
+                        item.classList.remove("is-active");
+                    });
+                    card.classList.add("is-active");
+                    detail.classList.add("is-changing");
+                    window.setTimeout(function () {
+                        const label =
+                            detail.querySelector(".home-detail-label");
+                        const paragraph =
+                            detail.querySelector("p");
+                        if (label) {
+                            label.textContent = content.title;
+                        }
+                        if (paragraph) {
+                            paragraph.textContent = content.text;
+                        }
+                        detail.classList.remove("is-changing");
+                    }, 140);
+                });
+            });
+        });
+    </script>
+}

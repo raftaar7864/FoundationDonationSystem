@@ -1,0 +1,56 @@
+﻿@model FoundationDonationSystem.Models.PaymentAccount
+<div class="payment-popup-content">
+    <div class="payment-delete-warning">
+        <div class="payment-delete-icon">
+            !
+        </div>
+        <h3>
+            Delete Payment Account?
+        </h3>
+        <p>
+            You are about to permanently delete:
+        </p>
+        <strong class="payment-delete-account-name">
+            @Model.AccountName
+        </strong>
+        <p class="payment-delete-description">
+            This action cannot be undone.
+        </p>
+    </div>
+    <div class="payment-delete-details">
+        <div>
+            <span>Bank</span>
+            <strong>
+                @Model.BankName
+            </strong>
+        </div>
+        <div>
+            <span>Account Number</span>
+            <strong>
+                @Model.AccountNumber
+            </strong>
+        </div>
+        <div>
+            <span>IFSC</span>
+            <strong>
+                @Model.IFSC
+            </strong>
+        </div>
+    </div>
+    <form id="deletePaymentAccountForm"
+          method="post"
+          action="/admin/paymentaccounts/delete/@Model.Id">
+        @Html.AntiForgeryToken()
+        <div class="payment-popup-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-secondary"
+                    onclick="closePaymentAccountModal()">
+                Cancel
+            </button>
+            <button type="submit"
+                    class="admin-btn action-danger">
+                Delete Payment Account
+            </button>
+        </div>
+    </form>
+</div>

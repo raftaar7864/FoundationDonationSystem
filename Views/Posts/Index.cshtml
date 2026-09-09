@@ -1,0 +1,700 @@
+﻿@model IEnumerable<FoundationDonationSystem.ViewModels.PublicPostListViewModel>
+@{
+    ViewData["Title"] = "Latest Updates";
+    ViewData["Description"] =
+        "Read the latest updates, activities and work from our foundation.";
+    var posts = Model?.ToList()
+        ?? new List<FoundationDonationSystem.ViewModels.PublicPostListViewModel>();
+    var categories =
+        ViewBag.PostCategories
+        as IEnumerable<FoundationDonationSystem.Models.PostCategory>
+        ?? Enumerable.Empty<FoundationDonationSystem.Models.PostCategory>();
+    var subCategories =
+        ViewBag.PostSubCategories
+        as IEnumerable<FoundationDonationSystem.Models.PostSubCategory>
+        ?? Enumerable.Empty<FoundationDonationSystem.Models.PostSubCategory>();
+    int? selectedCategoryId = ViewBag.CategoryId;
+    int? selectedSubCategoryId = ViewBag.SubCategoryId;
+    string? search = ViewBag.Search as string;
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/public-posts.css"
+          asp-append-version="true" />
+    <style>
+        /* =========================================================
+                           PUBLIC POSTS SEARCH
+                           ========================================================= */
+        .public-posts-search-field {
+            grid-column: 1 / -1;
+            min-width: 0;
+            margin-bottom: 1px;
+        }
+            .public-posts-search-field label {
+                display: block !important;
+                visibility: visible !important;
+                margin-bottom: 5px;
+                color: #64748b;
+                font-size: 10px;
+                font-weight: 700;
+            }
+        .public-posts-search-box {
+            position: relative;
+            width: 100%;
+        }
+            .public-posts-search-box i {
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                z-index: 1;
+                transform: translateY(-50%);
+                color: #94a3b8;
+                font-size: 14px;
+                pointer-events: none;
+            }
+        .public-posts-search-input {
+            width: 100%;
+            min-height: 38px;
+            height: 38px;
+            padding: 8px 38px 8px 34px;
+            border: 1px solid #dbe1e8;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #334155;
+            font: inherit;
+            font-size: 11px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+            .public-posts-search-input::placeholder {
+                color: #a1aab8;
+            }
+            .public-posts-search-input:focus {
+                border-color: #f97316;
+                box-shadow: 0 0 0 3px rgba(249, 115, 22, .09);
+            }
+        .public-posts-search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            transform: translateY(-50%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+            .public-posts-search-clear:hover {
+                background: #f1f5f9;
+                color: #475569;
+            }
+            .public-posts-search-clear i {
+                position: static;
+                transform: none;
+                font-size: 12px;
+            }
+        /* =========================================================
+                           PUBLIC POSTS FILTER
+                           ========================================================= */
+        .public-posts-filter {
+            margin-bottom: 24px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .045);
+        }
+        .public-posts-filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .public-posts-filter-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 700;
+        }
+            .public-posts-filter-title i {
+                color: #f97316;
+            }
+        .public-posts-filter-count {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+        .public-posts-filter-form {
+            display: grid;
+            grid-template-columns: minmax(260px, 2fr) minmax(170px, 1fr) minmax(170px, 1fr) auto auto;
+            gap: 9px;
+            align-items: end;
+            width: 100%;
+        }
+        .public-posts-search-field {
+            grid-column: auto !important;
+            display: block !important;
+            width: 100%;
+            min-width: 0;
+        }
+        .public-posts-search-box {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+        .public-posts-search-input {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100% !important;
+            min-height: 38px;
+            height: 38px;
+            padding: 8px 38px 8px 34px;
+            border: 1px solid #dbe1e8;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #334155;
+            font: inherit;
+            font-size: 11px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .public-posts-filter-field {
+            min-width: 0;
+        }
+            .public-posts-filter-field label {
+                display: block;
+                margin-bottom: 5px;
+                color: #64748b;
+                font-size: 10px;
+                font-weight: 700;
+            }
+        .public-posts-filter-select {
+            width: 100%;
+            min-height: 38px;
+            padding: 8px 10px;
+            border: 1px solid #dbe1e8;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #334155;
+            font: inherit;
+            font-size: 11px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+            .public-posts-filter-select:focus {
+                border-color: #f97316;
+                box-shadow: 0 0 0 3px rgba(249, 115, 22, .09);
+            }
+        .public-posts-filter-btn,
+        .public-posts-filter-clear {
+            min-height: 38px;
+            height: 38px;
+            padding: 0 13px;
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .public-posts-filter-btn {
+            border: 1px solid #ea580c;
+            background: #f97316;
+            color: #ffffff;
+            cursor: pointer;
+        }
+            .public-posts-filter-btn:hover {
+                background: #ea580c;
+                color: #ffffff;
+                text-decoration: none;
+                transform: translateY(-1px);
+            }
+        .public-posts-filter-clear {
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #64748b;
+        }
+            .public-posts-filter-clear:hover {
+                background: #f1f5f9;
+                color: #334155;
+                text-decoration: none;
+            }
+        .public-posts-filter-active {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .public-posts-filter-chip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 23px;
+            padding: 0 8px;
+            border-radius: 999px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #c2410c;
+            font-size: 9px;
+            font-weight: 700;
+        }
+        .public-posts-filter-empty {
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 10px;
+        }
+        .public-post-card-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 5px;
+            color: #ea580c;
+            font-size: 9px;
+            font-weight: 700;
+        }
+            .public-post-card-category span + span::before {
+                content: "/";
+                margin-right: 4px;
+                color: #cbd5e1;
+            }
+        @@media (max-width: 760px) {
+            .public-posts-filter {
+                padding: 13px;
+                margin-bottom: 18px;
+            }
+            .public-posts-filter-form {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            }
+            .public-posts-search-field {
+                grid-column: 1 / -1 !important;
+            }
+            .public-posts-filter-btn,
+            .public-posts-filter-clear {
+                width: 100%;
+            }
+        }
+        @@media (max-width: 500px) {
+            .public-posts-filter-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .public-posts-filter-form {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .public-posts-search-field {
+                margin-bottom: 0;
+            }
+            .public-posts-search-input,
+            .public-posts-filter-select,
+            .public-posts-filter-btn,
+            .public-posts-filter-clear {
+                min-height: 37px;
+                height: 37px;
+            }
+        }
+    </style>
+}
+<main class="public-posts-page">
+    <!-- =========================================================
+         PAGE HERO
+         ========================================================= -->
+    <section class="public-posts-hero">
+        <div class="public-posts-container">
+            <div class="public-posts-hero-content">
+                <span class="public-posts-eyebrow">
+                    <i class="bi bi-newspaper"></i>
+                    Foundation Updates
+                </span>
+                <h1>
+                    Latest Updates
+                </h1>
+                <p>
+                    Stay connected with our latest activities,
+                    initiatives and work.
+                </p>
+            </div>
+        </div>
+    </section>
+    <!-- =========================================================
+         PUBLIC POSTS
+         ========================================================= -->
+    <section class="public-posts-section">
+        <div class="public-posts-container">
+            <!-- =================================================
+                 CATEGORY / SUB CATEGORY FILTER
+                 ================================================= -->
+            <div class="public-posts-filter">
+                <div class="public-posts-filter-header">
+                    <div class="public-posts-filter-title">
+                        <i class="bi bi-funnel"></i>
+                        <span>Filter Updates</span>
+                    </div>
+                    <span class="public-posts-filter-count">
+                        @posts.Count
+                        @(posts.Count == 1 ? "update" : "updates")
+                        found
+                    </span>
+                </div>
+                <form method="get"
+                      asp-controller="Posts"
+                      asp-action="Index"
+                      class="public-posts-filter-form">
+                    <!-- SEARCH -->
+                    <div class="public-posts-search-field">
+                        <label for="publicPostSearch">
+                            Search
+                        </label>
+                        <div class="public-posts-search-box">
+                            <i class="bi bi-search" aria-hidden="true"></i>
+                            <input type="search"
+                                   id="publicPostSearch"
+                                   name="search"
+                                   value="@search"
+                                   class="public-posts-search-input"
+                                   placeholder="Search updates, activities, initiatives..."
+                                   autocomplete="off" />
+                            @if (!string.IsNullOrWhiteSpace(search))
+                            {
+                                <button type="button"
+                                        class="public-posts-search-clear"
+                                        id="publicPostSearchClear"
+                                        aria-label="Clear search">
+                                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    <!-- CATEGORY -->
+                    <div class="public-posts-filter-field">
+                        <label for="publicPostCategory">
+                            Category
+                        </label>
+                        <select id="publicPostCategory"
+                                name="categoryId"
+                                class="public-posts-filter-select">
+                            <option value="">
+                                All Categories
+                            </option>
+                            @foreach (var category in categories)
+                            {
+                                if (selectedCategoryId == category.Id)
+                                {
+                                    <option value="@category.Id"
+                                            selected>
+                                        @category.Name
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@category.Id">
+                                        @category.Name
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <!-- SUB CATEGORY -->
+                    <div class="public-posts-filter-field">
+                        <label for="publicPostSubCategory">
+                            Sub Category
+                        </label>
+                        <select id="publicPostSubCategory"
+                                name="subCategoryId"
+                                class="public-posts-filter-select">
+                            <option value="">
+                                All Sub Categories
+                            </option>
+                            @foreach (var subCategory in subCategories)
+                            {
+                                var isSelected =
+                                    selectedSubCategoryId ==
+                                    subCategory.Id;
+                                @if (isSelected)
+                                {
+                                    <option value="@subCategory.Id"
+                                            data-category-id="@subCategory.PostCategoryId"
+                                            selected>
+                                        @subCategory.Name
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@subCategory.Id"
+                                            data-category-id="@subCategory.PostCategoryId">
+                                        @subCategory.Name
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <!-- APPLY -->
+                    <button type="submit"
+                            class="public-posts-filter-btn">
+                        <i class="bi bi-funnel"></i>
+                        <span>Apply Filter</span>
+                    </button>
+                    <!-- CLEAR -->
+                    <a asp-controller="Posts"
+                       asp-action="Index"
+                       class="public-posts-filter-clear">
+                        <i class="bi bi-x-circle"></i>
+                        <span>Clear</span>
+                    </a>
+                </form>
+                @if (!string.IsNullOrWhiteSpace(search) ||
+                     selectedCategoryId.HasValue ||
+                     selectedSubCategoryId.HasValue)
+                {
+                    <div class="public-posts-filter-active">
+                        @if (!string.IsNullOrWhiteSpace(search))
+                        {
+                            <span class="public-posts-filter-chip">
+                                Search: @search
+                            </span>
+                        }
+                        @if (selectedCategoryId.HasValue)
+                        {
+                            var selectedCategory =
+                                categories.FirstOrDefault(
+                                    x => x.Id == selectedCategoryId.Value);
+                            if (selectedCategory != null)
+                            {
+                                <span class="public-posts-filter-chip">
+                                    Category: @selectedCategory.Name
+                                </span>
+                            }
+                        }
+                        @if (selectedSubCategoryId.HasValue)
+                        {
+                            var selectedSubCategory =
+                                subCategories.FirstOrDefault(
+                                    x => x.Id == selectedSubCategoryId.Value);
+                            if (selectedSubCategory != null)
+                            {
+                                <span class="public-posts-filter-chip">
+                                    Sub Category: @selectedSubCategory.Name
+                                </span>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+            @if (posts.Any())
+            {
+                <div class="public-posts-grid">
+                    @foreach (var post in posts)
+                    {
+                        <article class="public-post-card">
+                            <!-- =====================================
+                                 FEATURED IMAGE
+                                 ===================================== -->
+                            <a asp-controller="Posts"
+                               asp-action="Details"
+                               asp-route-id="@post.Id"
+                               class="public-post-card-image-link"
+                               aria-label="Read @post.Title">
+                                <div class="public-post-card-image">
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        post.FeaturedImagePath))
+                                    {
+                                        <img src="@post.FeaturedImagePath"
+                                             alt="@post.Title"
+                                             loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <div class="public-post-card-placeholder">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    }
+                                    <span class="public-post-card-date">
+                                        <i class="bi bi-calendar3"></i>
+                                        @post.PostDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </div>
+                            </a>
+                            <!-- =====================================
+                                 CARD CONTENT
+                                 ===================================== -->
+                            <div class="public-post-card-body">
+                                <div class="public-post-card-meta">
+                                    <span>
+                                        <i class="bi bi-clock"></i>
+                                        @post.PostDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(
+                                    post.CategoryName))
+                                {
+                                    <div class="public-post-card-category">
+                                        <span>
+                                            <i class="bi bi-folder2"></i>
+                                            @post.CategoryName
+                                        </span>
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            post.SubCategoryName))
+                                        {
+                                            <span>
+                                                @post.SubCategoryName
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                                <!-- TITLE -->
+                                <h2>
+                                    <a asp-controller="Posts"
+                                       asp-action="Details"
+                                       asp-route-id="@post.Id">
+                                        @post.Title
+                                    </a>
+                                </h2>
+                                <!-- SHORT DESCRIPTION -->
+                                @if (!string.IsNullOrWhiteSpace(
+                                    post.ShortDescription))
+                                {
+                                    <p>
+                                        @post.ShortDescription
+                                    </p>
+                                }
+                                <!-- READ MORE -->
+                                <a asp-controller="Posts"
+                                   asp-action="Details"
+                                   asp-route-id="@post.Id"
+                                   class="public-post-read-more">
+                                    <span>
+                                        Read More
+                                    </span>
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- =============================================
+                     FILTERED EMPTY STATE
+                     ============================================= -->
+                <div class="public-posts-empty">
+                    <div class="public-posts-empty-icon">
+                        <i class="bi bi-funnel"></i>
+                    </div>
+                    <h2>
+                        No updates found
+                    </h2>
+                    <p>
+                        @if (!string.IsNullOrWhiteSpace(search) &&
+                             (selectedCategoryId.HasValue ||
+                              selectedSubCategoryId.HasValue))
+                        {
+                            <text>No published updates match your search and selected filters.</text>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(search))
+                        {
+                            <text>No published updates match your search.</text>
+                        }
+                        else
+                        {
+                            <text>No published updates match the selected category or sub category.</text>
+                        }
+                    </p>
+                    <a asp-controller="Posts"
+                       asp-action="Index"
+                       class="public-posts-back-btn">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>
+                            View All Updates
+                        </span>
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+</main>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const category =
+                document.getElementById("publicPostCategory");
+            const subCategory =
+                document.getElementById("publicPostSubCategory");
+            if (!category || !subCategory) {
+                return;
+            }
+            const allOptions =
+                Array.from(
+                    subCategory.querySelectorAll(
+                        "option[data-category-id]"
+                    )
+                );
+            function updateSubCategories(resetInvalidSelection) {
+                const categoryId = category.value;
+                const currentValue = subCategory.value;
+                allOptions.forEach(function (option) {
+                    const matches =
+                        !categoryId ||
+                        option.dataset.categoryId === categoryId;
+                    option.hidden = !matches;
+                    option.disabled = !matches;
+                });
+                if (
+                    resetInvalidSelection &&
+                    currentValue &&
+                    categoryId
+                ) {
+                    const currentOption =
+                        allOptions.find(
+                            option =>
+                                option.value === currentValue
+                        );
+                    if (
+                        currentOption &&
+                        currentOption.dataset.categoryId !==
+                        categoryId
+                    ) {
+                        subCategory.value = "";
+                    }
+                }
+            }
+            category.addEventListener(
+                "change",
+                function () {
+                    updateSubCategories(true);
+                }
+            );
+            updateSubCategories(false);
+            // =====================================================
+            // CLEAR SEARCH
+            // =====================================================
+            const searchInput =
+                document.getElementById("publicPostSearch");
+            const searchClear =
+                document.getElementById("publicPostSearchClear");
+            if (searchInput && searchClear) {
+                searchClear.addEventListener("click", function () {
+                    searchInput.value = "";
+                    searchInput.focus();
+                });
+            }
+        });
+    </script>
+}

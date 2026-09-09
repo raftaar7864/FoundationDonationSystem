@@ -1,0 +1,443 @@
+﻿@using FoundationDonationSystem.Models
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "Contact Us";
+    var foundationSettings = await FoundationSettingsService.GetAsync();
+    var foundationName = foundationSettings.FoundationName;
+    var tagline = foundationSettings.Tagline;
+    var logoPath = foundationSettings.LogoPath;
+    var address = foundationSettings.Address;
+    var phone = foundationSettings.Phone;
+    var email = foundationSettings.Email;
+    var website = foundationSettings.Website;
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/contact.css"
+          asp-append-version="true" />
+}
+<div class="contact-page">
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+    <section class="contact-hero">
+        <div class="contact-hero-background"></div>
+        <div class="contact-container contact-hero-container">
+            <div class="contact-hero-content">
+                <div class="contact-eyebrow">
+                    <span class="contact-eyebrow-line"></span>
+                    <span>GET IN TOUCH</span>
+                    <span class="contact-eyebrow-line"></span>
+                </div>
+                <h1 class="contact-hero-title">
+                    We'd Love to
+                    <span>Hear From You</span>
+                </h1>
+                <p class="contact-hero-text">
+                    Whether you want to learn more about @foundationName,
+                    support our work, or simply get in touch, we are here
+                    to hear from you.
+                </p>
+                @if (!string.IsNullOrWhiteSpace(tagline))
+                {
+                    <p class="contact-hero-tagline">
+                        @tagline
+                    </p>
+                }
+                <div class="contact-hero-actions">
+                    <a href="#contact-information"
+                       class="contact-primary-button">
+                        <span>Contact Information</span>
+                        <span class="contact-button-arrow">↓</span>
+                    </a>
+                    <a asp-controller="Donation"
+                       asp-action="Index"
+                       class="contact-secondary-button">
+                        Support Our Work
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         CONTACT INFORMATION
+         ===================================================== -->
+    <section class="contact-information-section"
+             id="contact-information">
+        <div class="contact-container">
+            <div class="contact-section-heading">
+                <div class="contact-section-eyebrow">
+                    CONTACT INFORMATION
+                </div>
+                <h2>
+                    Let's Stay
+                    <span>Connected</span>
+                </h2>
+                <p>
+                    You can reach @foundationName using any of the
+                    contact details below. We appreciate your interest
+                    and look forward to hearing from you.
+                </p>
+            </div>
+            <div class="contact-information-grid">
+                <!-- ADDRESS -->
+                <div class="contact-information-card">
+                    <div class="contact-information-icon">
+                        📍
+                    </div>
+                    <div class="contact-information-content">
+                        <div class="contact-information-label">
+                            ADDRESS
+                        </div>
+                        <h3>
+                            Visit Us
+                        </h3>
+                        @if (!string.IsNullOrWhiteSpace(address))
+                        {
+                            <p>
+                                @address
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="contact-not-available">
+                                Address information will be updated soon.
+                            </p>
+                        }
+                    </div>
+                </div>
+                <!-- PHONE -->
+                <div class="contact-information-card">
+                    <div class="contact-information-icon">
+                        📞
+                    </div>
+                    <div class="contact-information-content">
+                        <div class="contact-information-label">
+                            PHONE
+                        </div>
+                        <h3>
+                            Call Us
+                        </h3>
+                        @if (!string.IsNullOrWhiteSpace(phone))
+                        {
+                            <a href="tel:@phone"
+                               class="contact-information-link">
+                                @phone
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="contact-not-available">
+                                Phone information will be updated soon.
+                            </p>
+                        }
+                    </div>
+                </div>
+                <!-- EMAIL -->
+                <div class="contact-information-card">
+                    <div class="contact-information-icon">
+                        ✉️
+                    </div>
+                    <div class="contact-information-content">
+                        <div class="contact-information-label">
+                            EMAIL
+                        </div>
+                        <h3>
+                            Write to Us
+                        </h3>
+                        @if (!string.IsNullOrWhiteSpace(email))
+                        {
+                            <a href="mailto:@email"
+                               class="contact-information-link">
+                                @email
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="contact-not-available">
+                                Email information will be updated soon.
+                            </p>
+                        }
+                    </div>
+                </div>
+                <!-- WEBSITE -->
+                <div class="contact-information-card">
+                    <div class="contact-information-icon">
+                        🌐
+                    </div>
+                    <div class="contact-information-content">
+                        <div class="contact-information-label">
+                            WEBSITE
+                        </div>
+                        <h3>
+                            Find Us Online
+                        </h3>
+                        @if (!string.IsNullOrWhiteSpace(website))
+                        {
+                            var displayWebsite = website
+                                .Replace("https://", "")
+                                .Replace("http://", "")
+                                .TrimEnd('/');
+                            var websiteUrl = website;
+                            if (!website.StartsWith("http://",
+                                StringComparison.OrdinalIgnoreCase)
+                                &&
+                                !website.StartsWith("https://",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                websiteUrl = "https://" + website;
+                            }
+                            <a href="@websiteUrl"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="contact-information-link">
+                                @displayWebsite
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="contact-not-available">
+                                Website information will be updated soon.
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         CONTACT / MESSAGE AREA
+         ===================================================== -->
+    <section class="contact-message-section">
+        <div class="contact-container">
+            <div class="contact-message-layout">
+                <!-- LEFT -->
+                <div class="contact-message-content">
+                    <div class="contact-section-eyebrow">
+                        SEND US A MESSAGE
+                    </div>
+                    <h2>
+                        Have a Question?
+                        <span>Let's Talk.</span>
+                    </h2>
+                    <p>
+                        If you have a question about our work, donation
+                        process, initiatives or anything else related to
+                        @foundationName, you can get in touch with us.
+                    </p>
+                    <div class="contact-message-points">
+                        <div class="contact-message-point">
+                            <span class="contact-message-point-icon">
+                                ✓
+                            </span>
+                            <span>
+                                Learn more about our work and initiatives
+                            </span>
+                        </div>
+                        <div class="contact-message-point">
+                            <span class="contact-message-point-icon">
+                                ✓
+                            </span>
+                            <span>
+                                Ask questions about making a donation
+                            </span>
+                        </div>
+                        <div class="contact-message-point">
+                            <span class="contact-message-point-icon">
+                                ✓
+                            </span>
+                            <span>
+                                Get information about our foundation
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- RIGHT -->
+                <div class="contact-message-card">
+                    <div class="contact-message-card-header">
+                        <div class="contact-message-card-icon">
+                            ✉
+                        </div>
+                        <div>
+                            <h3>
+                                Contact @foundationName
+                            </h3>
+                            <p>
+                                We are happy to hear from you.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="contact-message-actions">
+                        @if (!string.IsNullOrWhiteSpace(email))
+                        {
+                            <a href="mailto:@email"
+                               class="contact-message-action">
+                                <span class="contact-message-action-icon">
+                                    ✉️
+                                </span>
+                                <span class="contact-message-action-content">
+                                    <strong>
+                                        Send an Email
+                                    </strong>
+                                    <small>
+                                        @email
+                                    </small>
+                                </span>
+                                <span class="contact-message-action-arrow">
+                                    →
+                                </span>
+                            </a>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(phone))
+                        {
+                            <a href="tel:@phone"
+                               class="contact-message-action">
+                                <span class="contact-message-action-icon">
+                                    📞
+                                </span>
+                                <span class="contact-message-action-content">
+                                    <strong>
+                                        Call Us
+                                    </strong>
+                                    <small>
+                                        @phone
+                                    </small>
+                                </span>
+                                <span class="contact-message-action-arrow">
+                                    →
+                                </span>
+                            </a>
+                        }
+                        <a asp-controller="Donation"
+                           asp-action="Index"
+                           class="contact-message-action">
+                            <span class="contact-message-action-icon">
+                                💝
+                            </span>
+                            <span class="contact-message-action-content">
+                                <strong>
+                                    Make a Donation
+                                </strong>
+                                <small>
+                                    Support our work
+                                </small>
+                            </span>
+                            <span class="contact-message-action-arrow">
+                                →
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         FOUNDATION CARD
+         ===================================================== -->
+    <section class="contact-foundation-section">
+        <div class="contact-container">
+            <div class="contact-foundation-card">
+                <div class="contact-foundation-brand">
+                    @if (!string.IsNullOrWhiteSpace(logoPath))
+                    {
+                        <img src="@logoPath"
+                             alt="@foundationName"
+                             class="contact-foundation-logo" />
+                    }
+                    else
+                    {
+                        <div class="contact-foundation-logo-fallback">
+                            @foundationName.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+                    <div>
+                        <h3>
+                            @foundationName
+                        </h3>
+                        @if (!string.IsNullOrWhiteSpace(tagline))
+                        {
+                            <p>
+                                @tagline
+                            </p>
+                        }
+                    </div>
+                </div>
+                <div class="contact-foundation-divider"></div>
+                <div class="contact-foundation-message">
+                    <span class="contact-foundation-heart">
+                        ♥
+                    </span>
+                    <p>
+                        Thank you for your interest in @foundationName.
+                        Your support, encouragement and participation
+                        help us continue working toward meaningful
+                        community impact.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         DONATION CTA
+         ===================================================== -->
+    <section class="contact-donation-cta">
+        <div class="contact-container">
+            <div class="contact-cta-card">
+                <div class="contact-cta-decoration contact-cta-decoration-one"></div>
+                <div class="contact-cta-decoration contact-cta-decoration-two"></div>
+                <div class="contact-cta-content">
+                    <div class="contact-cta-icon">
+                        ♥
+                    </div>
+                    <div class="contact-cta-text">
+                        <div class="contact-cta-eyebrow">
+                            BE PART OF THE CHANGE
+                        </div>
+                        <h2>
+                            Your Support Can
+                            <span>Make a Difference</span>
+                        </h2>
+                        <p>
+                            If you would like to support the work of
+                            @foundationName, you can make a contribution
+                            through our secure donation process.
+                        </p>
+                    </div>
+                    <div class="contact-cta-action">
+                        <a asp-controller="Donation"
+                           asp-action="Index"
+                           class="contact-cta-button">
+                            Donate Now
+                            <span>→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =====================================================
+         BOTTOM NOTE
+         ===================================================== -->
+    <section class="contact-bottom-note">
+        <div class="contact-container">
+            <div class="contact-bottom-note-inner">
+                @if (!string.IsNullOrWhiteSpace(logoPath))
+                {
+                    <img src="@logoPath"
+                         alt="@foundationName"
+                         class="contact-bottom-logo" />
+                }
+                else
+                {
+                    <div class="contact-bottom-logo-fallback">
+                        @foundationName.Substring(0, 1).ToUpper()
+                    </div>
+                }
+                <p>
+                    We appreciate your interest and look forward to
+                    connecting with you.
+                </p>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,440 @@
+﻿@model FoundationDonationSystem.ViewModels.PostEditViewModel
+@{
+    var galleryImages = new List<(string Path, int Number)>();
+    if (!string.IsNullOrWhiteSpace(Model.GalleryImage1Path))
+    {
+        galleryImages.Add((Model.GalleryImage1Path, 1));
+    }
+    if (!string.IsNullOrWhiteSpace(Model.GalleryImage2Path))
+    {
+        galleryImages.Add((Model.GalleryImage2Path, 2));
+    }
+    if (!string.IsNullOrWhiteSpace(Model.GalleryImage3Path))
+    {
+        galleryImages.Add((Model.GalleryImage3Path, 3));
+    }
+}
+<div class="post-details-popup-content">
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+    <div class="post-details-popup-header">
+        <div class="post-details-popup-heading">
+            <span class="post-details-popup-eyebrow">
+                Foundation Update
+            </span>
+            <h2>
+                @Model.Title
+            </h2>
+            @if (Model.IsPublished)
+            {
+                <span class="status-badge status-verified">
+                    <i class="bi bi-check-circle"></i>
+                    Published
+                </span>
+            }
+            else
+            {
+                <span class="status-badge status-pending">
+                    <i class="bi bi-file-earmark"></i>
+                    Draft
+                </span>
+            }
+        </div>
+    </div>
+    <!-- =========================================================
+         FEATURED IMAGE
+    ========================================================== -->
+    @if (!string.IsNullOrWhiteSpace(Model.CurrentFeaturedImagePath))
+    {
+        <div class="post-details-featured-image">
+            <button type="button"
+                    class="post-details-image-button"
+                    onclick="openAdminPostImage(
+                '@Model.CurrentFeaturedImagePath',
+                'Featured Image'
+                )">
+                <img src="@Model.CurrentFeaturedImagePath"
+                     alt="@Model.Title"
+                     loading="lazy" />
+                <span class="post-details-image-overlay">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                    View Image
+                </span>
+            </button>
+        </div>
+    }
+    <!-- =========================================================
+         GALLERY
+    ========================================================== -->
+    @if (galleryImages.Count > 0)
+    {
+        <div class="post-details-gallery-section">
+            <div class="post-details-section-heading">
+                <div>
+                    <span class="post-details-section-eyebrow">
+                        Gallery
+                    </span>
+                    <h3>
+                        Post Photos
+                    </h3>
+                </div>
+                <span class="post-details-gallery-count">
+                    @galleryImages.Count
+                    @(galleryImages.Count == 1 ? "Photo" : "Photos")
+                </span>
+            </div>
+            <div class="post-details-gallery">
+                @foreach (var image in galleryImages)
+                {
+                    <button type="button"
+                            class="post-details-gallery-item"
+                            onclick="openAdminPostImage(
+                        '@image.Path',
+                        'Gallery Photo @image.Number'
+                        )">
+                        <img src="@image.Path"
+                             alt="Gallery Photo @image.Number"
+                             loading="lazy" />
+                        <span class="post-details-gallery-overlay">
+                            <i class="bi bi-arrows-fullscreen"></i>
+                        </span>
+                        <span class="post-details-gallery-number">
+                            @image.Number
+                        </span>
+                    </button>
+                }
+            </div>
+        </div>
+    }
+    <!-- =========================================================
+         POST INFORMATION
+    ========================================================== -->
+    <div class="post-details-information">
+        <div class="post-details-information-heading">
+            <div class="post-details-section-icon">
+                <i class="bi bi-info-circle"></i>
+            </div>
+            <div>
+                <span class="post-details-section-eyebrow">
+                    Information
+                </span>
+                <h3>
+                    Post Details
+                </h3>
+            </div>
+        </div>
+        <div class="payment-detail-grid">
+            <!-- TITLE -->
+            <div class="payment-detail-item payment-detail-item-full">
+                <span class="payment-detail-label">
+                    Title
+                </span>
+                <strong class="payment-detail-value">
+                    @Model.Title
+                </strong>
+            </div>
+            <!-- SHORT DESCRIPTION -->
+            @if (!string.IsNullOrWhiteSpace(
+                            Model.ShortDescription))
+            {
+                <div class="payment-detail-item payment-detail-item-full">
+                    <span class="payment-detail-label">
+                        Short Description
+                    </span>
+                    <div class="payment-detail-value post-details-description">
+                        @Model.ShortDescription
+                    </div>
+                </div>
+            }
+            <!-- CATEGORY -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Category
+                </span>
+                <strong class="payment-detail-value">
+                    @(Model.CategoryName?? "—")
+                </strong>
+            </div>
+            <!-- SUBCATEGORY -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Subcategory
+                </span>
+                <strong class="payment-detail-value">
+                    @(Model.SubCategoryName?? "—")
+                </strong>
+            </div>
+            <!-- POST DATE -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Post Date
+                </span>
+                <strong class="payment-detail-value">
+                    @Model.PostDate.ToString("dd MMM yyyy")
+                </strong>
+            </div>
+            <!-- DISPLAY ORDER -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Display Order
+                </span>
+                <strong class="payment-detail-value">
+                    @Model.DisplayOrder
+                </strong>
+            </div>
+            <!-- STATUS -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Status
+                </span>
+                <span class="payment-detail-value">
+                    @if (Model.IsPublished)
+                    {
+                        <span class="status-badge status-verified">
+                            <i class="bi bi-check-circle"></i>
+                            Published
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="status-badge status-pending">
+                            <i class="bi bi-pencil"></i>
+                            Draft
+                        </span>
+                    }
+                </span>
+            </div>
+            <!-- CREATED BY -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Created By
+                </span>
+                <strong class="payment-detail-value">
+                    @(string.IsNullOrWhiteSpace(Model.CreatedBy)
+                        ? "—"
+                        : Model.CreatedBy)
+                </strong>
+            </div>
+            <!-- CREATED -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Created At
+                </span>
+                <strong class="payment-detail-value">
+                    @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                </strong>
+            </div>
+            <!-- UPDATED -->
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">
+                    Last Updated
+                </span>
+                <strong class="payment-detail-value">
+                    @(Model.UpdatedAt.HasValue
+                        ? Model.UpdatedAt.Value
+                            .ToLocalTime()
+                            .ToString("dd MMM yyyy, hh:mm tt")
+                        : "Never")
+                </strong>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         CONTENT
+    ========================================================== -->
+    @if (!string.IsNullOrWhiteSpace(Model.Content))
+    {
+        <div class="post-details-content-section">
+            <div class="post-details-information-heading">
+                <div class="post-details-section-icon">
+                    <i class="bi bi-file-richtext"></i>
+                </div>
+                <div>
+                    <span class="post-details-section-eyebrow">
+                        Article
+                    </span>
+                    <h3>
+                        Content
+                    </h3>
+                </div>
+            </div>
+            <div class="post-details-article-content">
+                @Html.Raw(Model.Content)
+            </div>
+        </div>
+    }
+    <!-- =========================================================
+         MEDIA SUMMARY
+    ========================================================== -->
+    <div class="post-details-media-summary">
+        <div class="post-details-media-summary-item">
+            <div class="post-details-media-summary-icon">
+                <i class="bi bi-image"></i>
+            </div>
+            <div>
+                <strong>
+                    Featured Image
+                </strong>
+                <span>
+                    @(string.IsNullOrWhiteSpace(
+                        Model.CurrentFeaturedImagePath)
+                        ? "Not uploaded"
+                        : "Available")
+                </span>
+            </div>
+        </div>
+        <div class="post-details-media-summary-item">
+            <div class="post-details-media-summary-icon">
+                <i class="bi bi-images"></i>
+            </div>
+            <div>
+                <strong>
+                    Gallery
+                </strong>
+                <span>
+                    @galleryImages.Count / 3 photos
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         ACTIONS
+    ========================================================== -->
+    <div class="payment-popup-actions post-details-popup-actions">
+        <button type="button"
+                class="admin-btn admin-btn-secondary"
+                onclick="closePostModal()">
+            <i class="bi bi-x-lg"></i>
+            Close
+        </button>
+        <button type="button"
+                class="admin-btn admin-btn-primary"
+                onclick="openPostModal(
+            '/admin/posts/edit/@Model.Id',
+            'Edit Post'
+            )">
+            <i class="bi bi-pencil-square"></i>
+            Edit Post
+        </button>
+    </div>
+</div>
+<!-- =============================================================
+     ADMIN IMAGE LIGHTBOX
+============================================================== -->
+<div id="adminPostImageLightbox"
+     class="admin-post-image-lightbox"
+     aria-hidden="true">
+    <div class="admin-post-image-lightbox-overlay"
+         onclick="closeAdminPostImage()">
+    </div>
+    <div class="admin-post-image-lightbox-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="adminPostImageLightboxTitle">
+        <div class="admin-post-image-lightbox-header">
+            <span id="adminPostImageLightboxTitle">
+                Image
+            </span>
+            <button type="button"
+                    class="admin-post-image-lightbox-close"
+                    onclick="closeAdminPostImage()"
+                    aria-label="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="admin-post-image-lightbox-body">
+            <img id="adminPostImageLightboxImage"
+                 src=""
+                 alt="Post image" />
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        window.openAdminPostImage =
+            function(imageUrl, title) {
+                const lightbox =
+                    document.getElementById(
+                        'adminPostImageLightbox'
+                    );
+                const image =
+                    document.getElementById(
+                        'adminPostImageLightboxImage'
+                    );
+                const titleElement =
+                    document.getElementById(
+                        'adminPostImageLightboxTitle'
+                    );
+                if (!lightbox || !image) {
+                    return;
+                }
+                image.src =
+                    imageUrl;
+                image.alt =
+                    title || 'Post image';
+                if (titleElement) {
+                    titleElement.textContent =
+                        title || 'Image';
+                }
+                lightbox.classList.add(
+                    'show'
+                );
+                lightbox.setAttribute(
+                    'aria-hidden',
+                    'false'
+                );
+                document.body.classList.add(
+                    'admin-post-image-lightbox-open'
+                );
+            };
+        window.closeAdminPostImage =
+            function() {
+                const lightbox =
+                    document.getElementById(
+                        'adminPostImageLightbox'
+                    );
+                const image =
+                    document.getElementById(
+                        'adminPostImageLightboxImage'
+                    );
+                if (!lightbox) {
+                    return;
+                }
+                lightbox.classList.remove(
+                    'show'
+                );
+                lightbox.setAttribute(
+                    'aria-hidden',
+                    'true'
+                );
+                document.body.classList.remove(
+                    'admin-post-image-lightbox-open'
+                );
+                if (image) {
+                    image.src = '';
+                }
+            };
+        document.addEventListener(
+            'keydown',
+            function(event) {
+                if (
+                    event.key === 'Escape'
+                ) {
+                    const lightbox =
+                        document.getElementById(
+                            'adminPostImageLightbox'
+                        );
+                    if (
+                        lightbox &&
+                        lightbox.classList.contains(
+                            'show'
+                        )
+                    ) {
+                        closeAdminPostImage();
+                    }
+                }
+            }
+        );
+    })();
+</script>

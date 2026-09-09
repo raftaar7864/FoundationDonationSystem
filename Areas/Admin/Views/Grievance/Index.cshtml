@@ -1,0 +1,666 @@
+@model IEnumerable<FoundationDonationSystem.Models.Grievance>
+@{
+    ViewData["Title"] = "Grievances";
+    var search = ViewBag.Search as string ?? string.Empty;
+    var selectedStatus = ViewBag.Status as string ?? "All";
+    var currentPage = ViewBag.CurrentPage is int cp ? cp : 1;
+    var pageSize = ViewBag.PageSize is int ps ? ps : 10;
+    var totalItems = ViewBag.TotalItems is int ti ? ti : 0;
+    var totalPages = ViewBag.TotalPages is int tp ? tp : 0;
+    var startItem = ViewBag.StartItem is int si ? si : 0;
+    var endItem = ViewBag.EndItem is int ei ? ei : 0;
+    var pendingCount = ViewBag.PendingCount is int pc ? pc : 0;
+    var reviewCount = ViewBag.ReviewCount is int rc ? rc : 0;
+    var resolvedCount = ViewBag.ResolvedCount is int resc ? resc : 0;
+    var pageSizes = ViewBag.PageSizes as int[] ?? new[] { 10, 20, 50 };
+    var pageStart = Math.Max(1, currentPage - 2);
+    var pageEnd = Math.Min(totalPages, currentPage + 2);
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/grievance-admin.css"
+          asp-append-version="true" />
+}
+<div class="grievance-admin-page">
+    <!-- =========================================================
+         PAGE HEADER
+         ========================================================= -->
+    <div class="grievance-page-header">
+        <div class="grievance-header-content">
+            <div class="grievance-header-icon">
+                <i class="bi bi-chat-left-text"></i>
+            </div>
+            <div>
+                <span class="grievance-eyebrow">PUBLIC SERVICES</span>
+                <h1>Grievances</h1>
+                <p>Review, track and manage grievances submitted by the public.</p>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         GRIEVANCE ALERTS
+         These keys are grievance-specific and will not appear
+         on unrelated admin pages such as Posts.
+         ========================================================= -->
+    @if (TempData["GrievanceSuccessMessage"] != null)
+    {
+        <div class="grievance-alert grievance-alert-success" role="alert">
+            <span class="grievance-alert-icon">
+                <i class="bi bi-check2-circle"></i>
+            </span>
+            <span class="grievance-alert-message">
+                @TempData["GrievanceSuccessMessage"]
+            </span>
+            <button type="button"
+                    class="grievance-alert-close"
+                    aria-label="Close"
+                    onclick="this.closest('.grievance-alert').remove();">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    }
+    @if (TempData["GrievanceErrorMessage"] != null)
+    {
+        <div class="grievance-alert grievance-alert-error" role="alert">
+            <span class="grievance-alert-icon">
+                <i class="bi bi-exclamation-circle"></i>
+            </span>
+            <span class="grievance-alert-message">
+                @TempData["GrievanceErrorMessage"]
+            </span>
+            <button type="button"
+                    class="grievance-alert-close"
+                    aria-label="Close"
+                    onclick="this.closest('.grievance-alert').remove();">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    }
+    <!-- =========================================================
+         SUMMARY CARDS
+         ========================================================= -->
+    <div class="grievance-summary-grid">
+        <div class="grievance-summary-card">
+            <div class="grievance-summary-icon total">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <div>
+                <span>Total Results</span>
+                <strong>@totalItems</strong>
+            </div>
+        </div>
+        <div class="grievance-summary-card">
+            <div class="grievance-summary-icon pending">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div>
+                <span>Pending</span>
+                <strong>@pendingCount</strong>
+            </div>
+        </div>
+        <div class="grievance-summary-card">
+            <div class="grievance-summary-icon review">
+                <i class="bi bi-search"></i>
+            </div>
+            <div>
+                <span>In Review</span>
+                <strong>@reviewCount</strong>
+            </div>
+        </div>
+        <div class="grievance-summary-card">
+            <div class="grievance-summary-icon resolved">
+                <i class="bi bi-check2-circle"></i>
+            </div>
+            <div>
+                <span>Resolved</span>
+                <strong>@resolvedCount</strong>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         FILTER
+         ========================================================= -->
+    <section class="grievance-filter-card">
+        <div class="grievance-filter-heading">
+            <div class="grievance-filter-title">
+                <span class="grievance-filter-icon">
+                    <i class="bi bi-funnel"></i>
+                </span>
+                <div>
+                    <strong>Search & Filter</strong>
+                    <small>Find a grievance quickly</small>
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(search) || selectedStatus != "All")
+            {
+                <span class="grievance-filter-active">
+                    <i class="bi bi-sliders"></i>
+                    Filter applied
+                </span>
+            }
+        </div>
+        <form method="get" class="grievance-filter-form">
+            <div class="grievance-field grievance-search-field">
+                <label for="grievanceSearch">Search</label>
+                <div class="grievance-input-wrap">
+                    <i class="bi bi-search"></i>
+                    <input id="grievanceSearch"
+                           type="text"
+                           name="search"
+                           value="@search"
+                           placeholder="Name, mobile, grievance number..." />
+                </div>
+            </div>
+            <div class="grievance-field">
+                <label for="grievanceStatus">Status</label>
+                <select id="grievanceStatus" name="status">
+                    @if (selectedStatus == "All")
+                    {
+                        <option value="All" selected>All Status</option>
+                    }
+                    else
+                    {
+                        <option value="All">All Status</option>
+                    }
+                    @if (selectedStatus == "Pending")
+                    {
+                        <option value="Pending" selected>Pending</option>
+                    }
+                    else
+                    {
+                        <option value="Pending">Pending</option>
+                    }
+                    @if (selectedStatus == "In Review")
+                    {
+                        <option value="In Review" selected>In Review</option>
+                    }
+                    else
+                    {
+                        <option value="In Review">In Review</option>
+                    }
+                    @if (selectedStatus == "Resolved")
+                    {
+                        <option value="Resolved" selected>Resolved</option>
+                    }
+                    else
+                    {
+                        <option value="Resolved">Resolved</option>
+                    }
+                    @if (selectedStatus == "Rejected")
+                    {
+                        <option value="Rejected" selected>Rejected</option>
+                    }
+                    else
+                    {
+                        <option value="Rejected">Rejected</option>
+                    }
+                </select>
+            </div>
+            <div class="grievance-field grievance-page-size-field">
+                <label for="grievancePageSize">Rows</label>
+                <select id="grievancePageSize" name="pageSize">
+                    @foreach (var size in pageSizes)
+                    {
+                        if (pageSize == size)
+                        {
+                            <option value="@size" selected>@size</option>
+                        }
+                        else
+                        {
+                            <option value="@size">@size</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="grievance-filter-actions">
+                <button type="submit" class="grievance-btn grievance-btn-primary">
+                    <i class="bi bi-funnel"></i>
+                    Apply Filter
+                </button>
+                <a asp-area="Admin"
+                   asp-controller="Grievance"
+                   asp-action="Index"
+                   class="grievance-btn grievance-btn-secondary">
+                    <i class="bi bi-x-lg"></i>
+                    Clear
+                </a>
+            </div>
+        </form>
+    </section>
+    <!-- =========================================================
+         RESULT BAR
+         ========================================================= -->
+    <div class="grievance-result-bar">
+        <div>
+            @if (totalItems > 0)
+            {
+                <strong>@startItem–@endItem</strong>
+                <span>of @totalItems grievances</span>
+            }
+            else
+            {
+                <strong>0</strong>
+                <span>grievances found</span>
+            }
+        </div>
+        <div class="grievance-result-status">
+            <span>Showing:</span>
+            <strong>@selectedStatus</strong>
+        </div>
+    </div>
+    <!-- =========================================================
+         TABLE
+         ========================================================= -->
+    <section class="grievance-table-card">
+        <div class="grievance-table-scroll">
+            <table class="grievance-table">
+                <thead>
+                    <tr>
+                        <th>Grievance</th>
+                        <th>Applicant</th>
+                        <th>Category</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th class="grievance-action-col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var statusClass = (item.Status ?? "Pending")
+                                .ToLowerInvariant()
+                                .Replace(" ", "-");
+                            var applicantName = string.IsNullOrWhiteSpace(item.FullName)
+                                ? "Unknown"
+                                : item.FullName.Trim();
+                            var initial = applicantName.Length > 0
+                                ? applicantName[0].ToString().ToUpperInvariant()
+                                : "?";
+                            <tr>
+                                <td data-label="Grievance">
+                                    <div class="grievance-number">
+                                        <span class="grievance-number-icon">
+                                            <i class="bi bi-hash"></i>
+                                        </span>
+                                        <strong>@item.GrievanceNumber</strong>
+                                    </div>
+                                </td>
+                                <td data-label="Applicant">
+                                    <div class="grievance-applicant">
+                                        <span class="grievance-avatar">@initial</span>
+                                        <div>
+                                            <strong>@applicantName</strong>
+                                            @if (!string.IsNullOrWhiteSpace(item.Mobile))
+                                            {
+                                                <small>@item.Mobile</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Category">
+                                    <span class="grievance-category">
+                                        <i class="bi bi-folder2"></i>
+                                        @(string.IsNullOrWhiteSpace(item.Category) ? "General" : item.Category)
+                                    </span>
+                                </td>
+                                <td data-label="Subject">
+                                    <div class="grievance-subject"
+                                         title="@item.Subject">
+                                        @(string.IsNullOrWhiteSpace(item.Subject) ? "—" : item.Subject)
+                                    </div>
+                                </td>
+                                <td data-label="Status">
+                                    <span class="grievance-status @statusClass">
+                                        <span class="grievance-status-dot"></span>
+                                        @(item.Status ?? "Pending")
+                                    </span>
+                                </td>
+                                <td data-label="Submitted">
+                                    <div class="grievance-date">
+                                        <strong>
+                                            @item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                                        </strong>
+                                        <small>
+                                            @item.CreatedAt.ToLocalTime().ToString("hh:mm tt")
+                                        </small>
+                                    </div>
+                                </td>
+                                <td data-label="Action" class="grievance-action-col">
+                                    <button type="button"
+                                            class="grievance-view-btn js-grievance-details"
+                                            data-details-url="@Url.Action("Details", "Grievance", new { area = "Admin", id = item.Id })"
+                                            aria-label="View grievance @item.GrievanceNumber">
+                                        <i class="bi bi-eye"></i>
+                                        <span>View</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="grievance-empty">
+                                    <div class="grievance-empty-icon">
+                                        <i class="bi bi-inbox"></i>
+                                    </div>
+                                    <h3>No grievances found</h3>
+                                    <p>
+                                        No grievance matches the current search or status filter.
+                                    </p>
+                                    @if (!string.IsNullOrWhiteSpace(search) || selectedStatus != "All")
+                                    {
+                                        <a asp-area="Admin"
+                                           asp-controller="Grievance"
+                                           asp-action="Index"
+                                           class="grievance-btn grievance-btn-secondary">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                            Reset Filter
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- =====================================================
+             PAGINATION
+             ===================================================== -->
+        @if (totalPages > 1)
+        {
+            <div class="grievance-pagination">
+                <div class="grievance-pagination-info">
+                    Page <strong>@currentPage</strong> of <strong>@totalPages</strong>
+                </div>
+                <nav aria-label="Grievance pagination">
+                    <ul class="grievance-pagination-list">
+                        <li class="@(currentPage <= 1 ? "disabled" : "")">
+                            @if (currentPage > 1)
+                            {
+                                <a class="grievance-page-link"
+                                   asp-area="Admin"
+                                   asp-controller="Grievance"
+                                   asp-action="Index"
+                                   asp-route-search="@search"
+                                   asp-route-status="@selectedStatus"
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-page="1"
+                                   aria-label="First page">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="grievance-page-link">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </span>
+                            }
+                        </li>
+                        <li class="@(currentPage <= 1 ? "disabled" : "")">
+                            @if (currentPage > 1)
+                            {
+                                <a class="grievance-page-link"
+                                   asp-area="Admin"
+                                   asp-controller="Grievance"
+                                   asp-action="Index"
+                                   asp-route-search="@search"
+                                   asp-route-status="@selectedStatus"
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-page="@(currentPage - 1)"
+                                   aria-label="Previous page">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="grievance-page-link">
+                                    <i class="bi bi-chevron-left"></i>
+                                </span>
+                            }
+                        </li>
+                        @if (pageStart > 1)
+                        {
+                            <li>
+                                <span class="grievance-page-ellipsis">...</span>
+                            </li>
+                        }
+                        @for (var pageNumber = pageStart; pageNumber <= pageEnd; pageNumber++)
+                        {
+                            <li>
+                                @if (pageNumber == currentPage)
+                                {
+                                    <span class="grievance-page-link active"
+                                          aria-current="page">
+                                        @pageNumber
+                                    </span>
+                                }
+                                else
+                                {
+                                    <a class="grievance-page-link"
+                                       asp-area="Admin"
+                                       asp-controller="Grievance"
+                                       asp-action="Index"
+                                       asp-route-search="@search"
+                                       asp-route-status="@selectedStatus"
+                                       asp-route-pageSize="@pageSize"
+                                       asp-route-page="@pageNumber">
+                                        @pageNumber
+                                    </a>
+                                }
+                            </li>
+                        }
+                        @if (pageEnd < totalPages)
+                        {
+                            <li>
+                                <span class="grievance-page-ellipsis">...</span>
+                            </li>
+                        }
+                        <li class="@(currentPage >= totalPages ? "disabled" : "")">
+                            @if (currentPage < totalPages)
+                            {
+                                <a class="grievance-page-link"
+                                   asp-area="Admin"
+                                   asp-controller="Grievance"
+                                   asp-action="Index"
+                                   asp-route-search="@search"
+                                   asp-route-status="@selectedStatus"
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-page="@(currentPage + 1)"
+                                   aria-label="Next page">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="grievance-page-link">
+                                    <i class="bi bi-chevron-right"></i>
+                                </span>
+                            }
+                        </li>
+                        <li class="@(currentPage >= totalPages ? "disabled" : "")">
+                            @if (currentPage < totalPages)
+                            {
+                                <a class="grievance-page-link"
+                                   asp-area="Admin"
+                                   asp-controller="Grievance"
+                                   asp-action="Index"
+                                   asp-route-search="@search"
+                                   asp-route-status="@selectedStatus"
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-page="@totalPages"
+                                   aria-label="Last page">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="grievance-page-link">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </span>
+                            }
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </section>
+</div>
+<!-- =============================================================
+     DETAILS MODAL
+     ============================================================= -->
+<div class="grievance-modal"
+     id="grievanceDetailsModal"
+     aria-hidden="true">
+    <div class="grievance-modal-backdrop js-grievance-close"></div>
+    <div class="grievance-modal-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="grievanceModalTitle">
+        <div class="grievance-modal-header">
+            <div>
+                <span class="grievance-modal-eyebrow">GRIEVANCE DETAILS</span>
+                <h2 id="grievanceModalTitle">View Grievance</h2>
+            </div>
+            <button type="button"
+                    class="grievance-modal-close js-grievance-close"
+                    aria-label="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="grievance-modal-body"
+             id="grievanceDetailsContainer">
+            <div class="grievance-loading">
+                <div class="grievance-spinner"></div>
+                <span>Loading grievance details...</span>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        (function() {
+            "use strict";
+            const modal = document.getElementById("grievanceDetailsModal");
+            const container = document.getElementById("grievanceDetailsContainer");
+            if (!modal || !container) {
+                return;
+            }
+            const loadingHtml = `
+                        <div class="grievance-loading">
+                            <div class="grievance-spinner"></div>
+                            <span>Loading grievance details...</span>
+                        </div>`;
+            const openModal = () => {
+                modal.classList.add("is-open");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.classList.add("grievance-modal-open");
+            };
+            const closeModal = () => {
+                modal.classList.remove("is-open");
+                modal.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("grievance-modal-open");
+                container.innerHTML = loadingHtml;
+            };
+            const showError = () => {
+                container.innerHTML = `
+                            <div class="grievance-load-error">
+                                <div class="grievance-load-error-icon">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </div>
+                                <h3>Unable to load details</h3>
+                                <p>Please refresh the page and try again.</p>
+                                <button type="button"
+                                        class="grievance-btn grievance-btn-secondary js-grievance-close">
+                                    Close
+                                </button>
+                            </div>`;
+                container.querySelectorAll(".js-grievance-close")
+                    .forEach(el => el.addEventListener("click", closeModal));
+            };
+            const bindPartialEvents = () => {
+                container.querySelectorAll(".js-grievance-close")
+                    .forEach(el => el.addEventListener("click", closeModal));
+                const form = container.querySelector(".js-grievance-update-form");
+                if (form) {
+                    form.addEventListener("submit", async function(event) {
+                        event.preventDefault();
+                        const submitButton = form.querySelector("button[type='submit']");
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                            submitButton.classList.add("is-loading");
+                            submitButton.innerHTML =
+                                '<i class="bi bi-arrow-repeat"></i> Updating...';
+                        }
+                        try {
+                            const response = await fetch(form.action, {
+                                method: "POST",
+                                body: new FormData(form),
+                                headers: {
+                                    "X-Requested-With": "XMLHttpRequest"
+                                }
+                            });
+                            if (!response.ok) {
+                                throw new Error("Update failed.");
+                            }
+                            // Controller redirects after a successful update.
+                            // Refresh the list so the new status appears immediately.
+                            window.location.reload();
+                        }
+                        catch (error) {
+                            if (submitButton) {
+                                submitButton.disabled = false;
+                                submitButton.classList.remove("is-loading");
+                                submitButton.innerHTML =
+                                    '<i class="bi bi-check2-circle"></i> Update Grievance';
+                            }
+                            const errorBox = document.createElement("div");
+                            errorBox.className = "grievance-inline-error";
+                            errorBox.innerHTML =
+                                '<i class="bi bi-exclamation-circle"></i> Unable to update grievance. Please try again.';
+                            form.prepend(errorBox);
+                        }
+                    });
+                }
+            };
+            document.querySelectorAll(".js-grievance-details")
+                .forEach(button => {
+                    button.addEventListener("click", async function() {
+                        const url = this.dataset.detailsUrl;
+                        if (!url) {
+                            return;
+                        }
+                        openModal();
+                        container.innerHTML = loadingHtml;
+                        try {
+                            const response = await fetch(url, {
+                                headers: {
+                                    "X-Requested-With": "XMLHttpRequest"
+                                }
+                            });
+                            if (!response.ok) {
+                                throw new Error("Unable to load grievance.");
+                            }
+                            container.innerHTML = await response.text();
+                            bindPartialEvents();
+                        } catch (error) {
+                            showError();
+                        }
+                    });
+                });
+            document.querySelectorAll(".js-grievance-close")
+                .forEach(el => el.addEventListener("click", closeModal));
+            document.addEventListener("keydown", function(event) {
+                if (event.key === "Escape" &&
+                    modal.classList.contains("is-open")) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+}

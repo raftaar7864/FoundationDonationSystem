@@ -1,0 +1,501 @@
+@model FoundationDonationSystem.ViewModels.SupportRequestViewModel
+@{
+    ViewData["Title"] = "Request Support";
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/public-support.css"
+          asp-append-version="true" />
+}
+<div class="support-page">
+    <div class="support-wrap">
+        <div class="support-head">
+            <span class="support-kicker">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+                We're here to help
+            </span>
+            <h1>Request Support</h1>
+            <p>
+                Tell us what support you need. Share the details below and
+                our team will review your request and get in touch with you.
+            </p>
+        </div>
+        <div class="support-card">
+            <div class="support-card-top">
+                <strong>
+                    <i class="fa-solid fa-circle-info"></i>
+                    Support Request Form
+                </strong>
+                <span>
+                    Please provide accurate contact information.
+                </span>
+            </div>
+            <div id="support-form-container">
+                <form asp-action="Index"
+                      method="post"
+                      class="support-form"
+                      id="support-form">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly"
+                         class="field-validation-error">
+                    </div>
+                    <div class="form-grid">
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label asp-for="FullName"></label>
+                            <input asp-for="FullName"
+                                   autocomplete="name" />
+                            <span asp-validation-for="FullName"></span>
+                        </div>
+                        <!-- Mobile -->
+                        <div class="form-group">
+                            <label asp-for="Mobile"></label>
+                            <input asp-for="Mobile"
+                                   inputmode="tel"
+                                   autocomplete="tel" />
+                            <span asp-validation-for="Mobile"></span>
+                        </div>
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email"
+                                   type="email"
+                                   autocomplete="email" />
+                            <span asp-validation-for="Email"></span>
+                        </div>
+                        <!-- Support Category -->
+                        <div class="form-group">
+                            <label asp-for="SupportCategory"></label>
+                            <select asp-for="SupportCategory">
+                                <option value="">
+                                    Select support category
+                                </option>
+                                <option>Education</option>
+                                <option>Medical Assistance</option>
+                                <option>Food &amp; Essentials</option>
+                                <option>Financial Assistance</option>
+                                <option>Community Support</option>
+                                <option>Other</option>
+                            </select>
+                            <span asp-validation-for="SupportCategory"></span>
+                        </div>
+                        <!-- Address -->
+                        <div class="form-group full">
+                            <label asp-for="Address"></label>
+                            <input asp-for="Address"
+                                   autocomplete="street-address" />
+                            <span asp-validation-for="Address"></span>
+                        </div>
+                        <!-- Subject -->
+                        <div class="form-group full">
+                            <label asp-for="Subject"></label>
+                            <input asp-for="Subject" />
+                            <span asp-validation-for="Subject"></span>
+                        </div>
+                        <!-- Preferred Contact -->
+                        <div class="form-group">
+                            <label asp-for="PreferredContactMethod"></label>
+                            <select asp-for="PreferredContactMethod">
+                                <option>Phone</option>
+                                <option>Email</option>
+                                <option>Either</option>
+                            </select>
+                            <span asp-validation-for="PreferredContactMethod"></span>
+                        </div>
+                        <!-- Description -->
+                        <div class="form-group full">
+                            <label asp-for="Description">
+                                Describe the support you need
+                            </label>
+                            <textarea asp-for="Description"></textarea>
+                            <span asp-validation-for="Description"></span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="form-btn form-btn-secondary">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="form-btn form-btn-primary"
+                                id="support-submit-btn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>
+                                Submit Support Request
+                            </span>
+                        </button>
+                    </div>
+                    <p class="form-note">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>
+                            Please do not include passwords, banking PINs,
+                            OTPs or other highly sensitive information in this form.
+                        </span>
+                    </p>
+                    <div id="support-submit-error"
+                         class="support-submit-error"
+                         style="display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>
+                            Something went wrong while submitting your request.
+                            Please try again.
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        /*
+         * ----------------------------------------------------
+         * INITIAL FORM HANDLER
+         * ----------------------------------------------------
+         */
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("support-form");
+            if (!form) {
+                return;
+            }
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                /*
+                 * Client-side validation
+                 */
+                if (typeof $ !== "undefined" &&
+                    $.validator &&
+                    !$(form).valid()) {
+                    return;
+                }
+                const submitButton =
+                    document.getElementById("support-submit-btn");
+                const errorBox =
+                    document.getElementById("support-submit-error");
+                if (!submitButton) {
+                    return;
+                }
+                const originalButtonHtml =
+                    submitButton.innerHTML;
+                /*
+                 * Hide previous error
+                 */
+                if (errorBox) {
+                    errorBox.style.display = "none";
+                }
+                /*
+                 * Loading state
+                 */
+                submitButton.disabled = true;
+                submitButton.innerHTML =
+                    '<i class="fa-solid fa-spinner fa-spin"></i>' +
+                    '<span>Submitting...</span>';
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(
+                        form.action,
+                        {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest"
+                            }
+                        }
+                    );
+                    if (!response.ok) {
+                        throw new Error(
+                            "Request failed: " + response.status
+                        );
+                    }
+                    const html = await response.text();
+                    /*
+                     * ------------------------------------------------
+                     * SUCCESS
+                     * ------------------------------------------------
+                     */
+                    if (html.includes("support-success-overlay")) {
+                        document.body.insertAdjacentHTML(
+                            "beforeend",
+                            html
+                        );
+                        /*
+                         * Prevent background scrolling
+                         */
+                        document.body.style.overflow = "hidden";
+                        return;
+                    }
+                    /*
+                     * ------------------------------------------------
+                     * VALIDATION ERROR
+                     * ------------------------------------------------
+                     */
+                    const parser = new DOMParser();
+                    const doc =
+                        parser.parseFromString(
+                            html,
+                            "text/html"
+                        );
+                    const returnedContainer =
+                        doc.querySelector(
+                            "#support-form-container"
+                        );
+                    const currentContainer =
+                        document.getElementById(
+                            "support-form-container"
+                        );
+                    if (returnedContainer &&
+                        currentContainer) {
+                        currentContainer.innerHTML =
+                            returnedContainer.innerHTML;
+                        /*
+                         * Reinitialize validation
+                         */
+                        if (typeof $ !== "undefined" &&
+                            $.validator &&
+                            $.validator.unobtrusive) {
+                            $.validator.unobtrusive.parse(
+                                currentContainer
+                            );
+                        }
+                        /*
+                         * Reattach AJAX handler
+                         */
+                        attachSupportFormHandler();
+                    }
+                    else {
+                        throw new Error(
+                            "Unable to process server response."
+                        );
+                    }
+                }
+                catch (error) {
+                    console.error(
+                        "Support submission error:",
+                        error
+                    );
+                    if (errorBox) {
+                        errorBox.style.display = "flex";
+                    }
+                    submitButton.disabled = false;
+                    submitButton.innerHTML =
+                        originalButtonHtml;
+                }
+            });
+        });
+        /*
+         * ----------------------------------------------------
+         * FORM HANDLER
+         * ----------------------------------------------------
+         *
+         * Used after the form is replaced following
+         * server-side validation.
+         */
+        function attachSupportFormHandler() {
+            const form =
+                document.getElementById("support-form");
+            if (!form) {
+                return;
+            }
+            /*
+             * Prevent duplicate event handlers
+             */
+            if (form.dataset.ajaxAttached === "true") {
+                return;
+            }
+            form.dataset.ajaxAttached = "true";
+            form.addEventListener(
+                "submit",
+                async function (event) {
+                    event.preventDefault();
+                    /*
+                     * Client-side validation
+                     */
+                    if (typeof $ !== "undefined" &&
+                        $.validator &&
+                        !$(form).valid()) {
+                        return;
+                    }
+                    const submitButton =
+                        document.getElementById(
+                            "support-submit-btn"
+                        );
+                    const errorBox =
+                        document.getElementById(
+                            "support-submit-error"
+                        );
+                    if (!submitButton) {
+                        return;
+                    }
+                    if (errorBox) {
+                        errorBox.style.display = "none";
+                    }
+                    const originalButtonHtml =
+                        submitButton.innerHTML;
+                    /*
+                     * Loading state
+                     */
+                    submitButton.disabled = true;
+                    submitButton.innerHTML =
+                        '<i class="fa-solid fa-spinner fa-spin"></i>' +
+                        '<span>Submitting...</span>';
+                    try {
+                        const formData =
+                            new FormData(form);
+                        const response =
+                            await fetch(
+                                form.action,
+                                {
+                                    method: "POST",
+                                    body: formData,
+                                    headers: {
+                                        "X-Requested-With":
+                                            "XMLHttpRequest"
+                                    }
+                                }
+                            );
+                        if (!response.ok) {
+                            throw new Error(
+                                "Request failed: " +
+                                response.status
+                            );
+                        }
+                        const html =
+                            await response.text();
+                        /*
+                         * ------------------------------------------------
+                         * SUCCESS POPUP
+                         * ------------------------------------------------
+                         */
+                        if (
+                            html.includes(
+                                "support-success-overlay"
+                            )
+                        ) {
+                            document.body.insertAdjacentHTML(
+                                "beforeend",
+                                html
+                            );
+                            document.body.style.overflow =
+                                "hidden";
+                            return;
+                        }
+                        /*
+                         * ------------------------------------------------
+                         * VALIDATION RESPONSE
+                         * ------------------------------------------------
+                         */
+                        const parser =
+                            new DOMParser();
+                        const doc =
+                            parser.parseFromString(
+                                html,
+                                "text/html"
+                            );
+                        const returnedContainer =
+                            doc.querySelector(
+                                "#support-form-container"
+                            );
+                        const currentContainer =
+                            document.getElementById(
+                                "support-form-container"
+                            );
+                        if (
+                            returnedContainer &&
+                            currentContainer
+                        ) {
+                            currentContainer.innerHTML =
+                                returnedContainer.innerHTML;
+                            if (
+                                typeof $ !== "undefined" &&
+                                $.validator &&
+                                $.validator.unobtrusive
+                            ) {
+                                $.validator.unobtrusive.parse(
+                                    currentContainer
+                                );
+                            }
+                            attachSupportFormHandler();
+                        }
+                        else {
+                            throw new Error(
+                                "Invalid server response."
+                            );
+                        }
+                    }
+                    catch (error) {
+                        console.error(
+                            "Support submission error:",
+                            error
+                        );
+                        if (errorBox) {
+                            errorBox.style.display = "flex";
+                        }
+                        submitButton.disabled = false;
+                        submitButton.innerHTML =
+                            originalButtonHtml;
+                    }
+                }
+            );
+        }
+        /*
+         * ----------------------------------------------------
+         * CLOSE SUCCESS POPUP
+         * ----------------------------------------------------
+         *
+         * After closing the popup, reload the Support page
+         * as a fresh page.
+         */
+        function closeSupportSuccess() {
+            const popup =
+                document.getElementById(
+                    "support-success"
+                );
+            if (!popup) {
+                document.body.style.overflow = "";
+                window.location.reload();
+                return;
+            }
+            /*
+             * Start closing animation
+             */
+            popup.classList.add(
+                "support-success-closing"
+            );
+            /*
+             * Restore page scrolling
+             */
+            document.body.style.overflow = "";
+            /*
+             * Reload the page after the closing animation.
+             *
+             * This gives a fresh Support form and removes
+             * the submitted data from the current page.
+             */
+            setTimeout(function () {
+                window.location.reload();
+            }, 180);
+        }
+        /*
+         * ----------------------------------------------------
+         * ESC KEY
+         * ----------------------------------------------------
+         */
+        document.addEventListener(
+            "keydown",
+            function (event) {
+                if (event.key === "Escape") {
+                    const popup =
+                        document.getElementById(
+                            "support-success"
+                        );
+                    if (popup) {
+                        closeSupportSuccess();
+                    }
+                }
+            }
+        );
+    </script>
+}

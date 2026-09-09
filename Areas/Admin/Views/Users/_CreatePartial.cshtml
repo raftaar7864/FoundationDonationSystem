@@ -1,0 +1,417 @@
+@model FoundationDonationSystem.ViewModels.UserCreateViewModel
+<div class="payment-popup-content">
+    <!-- =========================================================
+         VALIDATION SUMMARY
+         ========================================================= -->
+    @if (ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="admin-validation-summary">
+            @Html.ValidationSummary(
+                false,
+                "",
+                new
+                {
+                    @class = "admin-validation-list"
+                })
+        </div>
+    }
+    <!-- =========================================================
+         CREATE USER FORM
+         ========================================================= -->
+    <form id="userCreateForm"
+          method="post"
+          action="/admin/users/create">
+        @Html.AntiForgeryToken()
+        <!-- =====================================================
+             USER INFORMATION
+             ===================================================== -->
+        <div class="payment-form-grid">
+            <!-- FULL NAME -->
+            <div class="admin-form-group">
+                <label for="FullName"
+                       class="admin-form-label">
+                    Full Name
+                    <span>*</span>
+                </label>
+                <input asp-for="FullName"
+                       id="FullName"
+                       class="admin-form-control"
+                       placeholder="Enter full name"
+                       autocomplete="name"
+                       maxlength="150" />
+                <span asp-validation-for="FullName"
+                      class="field-validation">
+                </span>
+            </div>
+            <!-- DESIGNATION -->
+            <div class="admin-form-group">
+                <label for="Designation"
+                       class="admin-form-label">
+                    Designation
+                </label>
+                <input asp-for="Designation"
+                       id="Designation"
+                       class="admin-form-control"
+                       placeholder="Enter designation"
+                       maxlength="150"
+                       autocomplete="organization-title" />
+                <span asp-validation-for="Designation"
+                      class="field-validation">
+                </span>
+            </div>
+            <!-- USERNAME -->
+            <div class="admin-form-group">
+                <label for="UserName"
+                       class="admin-form-label">
+                    Username
+                    <span>*</span>
+                </label>
+                <input asp-for="UserName"
+                       id="UserName"
+                       class="admin-form-control"
+                       placeholder="Enter username"
+                       autocomplete="username"
+                       maxlength="50" />
+                <span asp-validation-for="UserName"
+                      class="field-validation">
+                </span>
+            </div>
+            <!-- EMAIL -->
+            <div class="admin-form-group">
+                <label for="Email"
+                       class="admin-form-label">
+                    Email
+                </label>
+                <input asp-for="Email"
+                       id="Email"
+                       type="email"
+                       class="admin-form-control"
+                       placeholder="Enter email address"
+                       autocomplete="email"
+                       maxlength="200" />
+                <span asp-validation-for="Email"
+                      class="field-validation">
+                </span>
+            </div>
+            <!-- PHONE -->
+            <div class="admin-form-group">
+                <label for="PhoneNumber"
+                       class="admin-form-label">
+                    Phone Number
+                </label>
+                <input asp-for="PhoneNumber"
+                       id="PhoneNumber"
+                       type="tel"
+                       class="admin-form-control"
+                       placeholder="Enter phone number"
+                       autocomplete="tel"
+                       maxlength="30" />
+                <span asp-validation-for="PhoneNumber"
+                      class="field-validation">
+                </span>
+            </div>
+            <!-- ROLE -->
+            <div class="admin-form-group">
+                <label for="Role"
+                       class="admin-form-label">
+                    Role
+                    <span>*</span>
+                </label>
+                <select asp-for="Role"
+                        id="Role"
+                        class="admin-form-control">
+                    <option value="@FoundationDonationSystem.Models.Enums.UserRole.PostManager">
+                        Post Manager
+                    </option>
+                    <option value="@FoundationDonationSystem.Models.Enums.UserRole.DonationVerifier">
+                        Donation Verifier
+                    </option>
+                    <option value="@FoundationDonationSystem.Models.Enums.UserRole.Administrator">
+                        Administrator
+                    </option>
+                </select>
+                <span asp-validation-for="Role"
+                      class="field-validation">
+                </span>
+            </div>
+            <!-- PASSWORD -->
+            <div class="admin-form-group">
+                <label for="Password"
+                       class="admin-form-label">
+                    Password
+                    <span>*</span>
+                </label>
+                <input asp-for="Password"
+                       id="Password"
+                       type="password"
+                       class="admin-form-control"
+                       placeholder="Enter password"
+                       autocomplete="new-password" />
+                <span asp-validation-for="Password"
+                      class="field-validation">
+                </span>
+            </div>
+            <!-- CONFIRM PASSWORD -->
+            <div class="admin-form-group">
+                <label for="ConfirmPassword"
+                       class="admin-form-label">
+                    Confirm Password
+                    <span>*</span>
+                </label>
+                <input asp-for="ConfirmPassword"
+                       id="ConfirmPassword"
+                       type="password"
+                       class="admin-form-control"
+                       placeholder="Confirm password"
+                       autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword"
+                      class="field-validation">
+                </span>
+            </div>
+        </div>
+        <!-- =====================================================
+             ACCOUNT STATUS
+             ===================================================== -->
+        <div class="payment-active-box"
+             style="margin-top:15px;">
+            <label class="admin-switch">
+                <input asp-for="IsActive"
+                       id="IsActive"
+                       type="checkbox" />
+                <span></span>
+            </label>
+            <div>
+                <div class="payment-active-label"
+                     id="userActiveLabel">
+                    @(Model.IsActive
+                        ? "Active"
+                        : "Inactive")
+                </div>
+                <div style="
+                    margin-top:2px;
+                    color:#6b7280;
+                    font-size:10px;
+                    line-height:1.4;">
+                    Active users can access the administration system.
+                </div>
+            </div>
+        </div>
+        <!-- =====================================================
+             ACTIONS
+             ===================================================== -->
+        <div class="payment-popup-actions">
+            <button type="button"
+                    class="admin-btn admin-btn-secondary"
+                    onclick="closeUserModal()">
+                Cancel
+            </button>
+            <button type="submit"
+                    id="userCreateSubmit"
+                    class="admin-btn admin-btn-primary">
+                <span id="userCreateSubmitText">
+                    Create User
+                </span>
+                <span id="userCreateSubmitLoading"
+                      style="display:none;">
+                    Creating...
+                </span>
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    (function() {
+        const form =
+            document.getElementById(
+                "userCreateForm"
+            );
+        if (!form) {
+            return;
+        }
+        /* =========================================================
+           PREVENT DUPLICATE INITIALIZATION
+           ========================================================= */
+        if (
+            form.dataset.initialized ===
+            "true"
+        ) {
+            return;
+        }
+        form.dataset.initialized =
+            "true";
+        /* =========================================================
+           ACTIVE STATUS LABEL
+           ========================================================= */
+        const checkbox =
+            document.getElementById(
+                "IsActive"
+            );
+        const label =
+            document.getElementById(
+                "userActiveLabel"
+            );
+        if (
+            checkbox &&
+            label
+        ) {
+            checkbox.addEventListener(
+                "change",
+                function() {
+                    label.textContent =
+                        this.checked
+                            ? "Active"
+                            : "Inactive";
+                }
+            );
+        }
+        /* =========================================================
+           SUBMIT
+           ========================================================= */
+        form.addEventListener(
+            "submit",
+            function(event) {
+                event.preventDefault();
+                submitUserCreate(
+                    form
+                );
+            }
+        );
+    })();
+    /* =============================================================
+       AJAX CREATE
+       ============================================================= */
+    async function submitUserCreate(
+        form
+    ) {
+        const button =
+            document.getElementById(
+                "userCreateSubmit"
+            );
+        const normalText =
+            document.getElementById(
+                "userCreateSubmitText"
+            );
+        const loadingText =
+            document.getElementById(
+                "userCreateSubmitLoading"
+            );
+        if (!button) {
+            return;
+        }
+        button.disabled = true;
+        if (normalText) {
+            normalText.style.display =
+                "none";
+        }
+        if (loadingText) {
+            loadingText.style.display =
+                "inline";
+        }
+        try {
+            const response =
+                await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+                        body:
+                            new FormData(form),
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+                            "Accept":
+                                "text/html, application/json"
+                        }
+                    }
+                );
+            const contentType =
+                response.headers.get(
+                    "content-type"
+                ) || "";
+            /* -----------------------------------------------------
+               SUCCESS JSON
+               ----------------------------------------------------- */
+            if (
+                contentType.includes(
+                    "application/json"
+                )
+            ) {
+                const result =
+                    await response.json();
+                if (result.success) {
+                    closeUserModal();
+                    window.location.href =
+                        "/admin/users";
+                    return;
+                }
+                throw new Error(
+                    result.message ||
+                    "Unable to create user."
+                );
+            }
+            /* -----------------------------------------------------
+               VALIDATION RESPONSE
+               ----------------------------------------------------- */
+            const html =
+                await response.text();
+            const body =
+                document.getElementById(
+                    "userModalBody"
+                );
+            if (body) {
+                body.innerHTML =
+                    html;
+                executeUserModalScripts(
+                    body
+                );
+            }
+        }
+        catch (error) {
+            console.error(
+                "Create user error:",
+                error
+            );
+            const body =
+                document.getElementById(
+                    "userModalBody"
+                );
+            if (body) {
+                body.innerHTML = `
+                    <div class="payment-account-modal-error">
+                        <strong>
+                            Unable to create user
+                        </strong>
+                        <p>
+                            ${escapeHtml(
+                    error.message ||
+                    "Something went wrong."
+                )}
+                        </p>
+                        <button type="button"
+                                class="admin-btn admin-btn-secondary"
+                                onclick="closeUserModal()">
+                            Close
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        finally {
+            if (
+                document.body.classList.contains(
+                    "user-modal-open"
+                )
+            ) {
+                button.disabled =
+                    false;
+                if (normalText) {
+                    normalText.style.display =
+                        "inline";
+                }
+                if (loadingText) {
+                    loadingText.style.display =
+                        "none";
+                }
+            }
+        }
+    }
+</script>

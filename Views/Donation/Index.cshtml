@@ -1,0 +1,934 @@
+﻿@model FoundationDonationSystem.ViewModels.DonationCreateViewModel
+@using FoundationDonationSystem.Models.Enums
+@using FoundationDonationSystem.Models
+@inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
+@{
+    ViewData["Title"] = "Donate";
+    var paymentAccounts =
+        ViewBag.PaymentAccounts
+        as List<PaymentAccount>
+        ?? new List<PaymentAccount>();
+    var foundationSettings =
+        await FoundationSettingsService.GetAsync();
+    var foundationName =
+        string.IsNullOrWhiteSpace(foundationSettings.FoundationName)
+            ? "Our Foundation"
+            : foundationSettings.FoundationName;
+    var foundationTagline =
+        string.IsNullOrWhiteSpace(foundationSettings.Tagline)
+            ? "Serving with compassion • Supporting with purpose"
+            : foundationSettings.Tagline;
+    // Keep the donation details step open when the server returns
+    // validation errors or a duplicate transaction result.
+    var hasServerValidationErrors = !ViewData.ModelState.IsValid;
+    var hasDuplicateTransaction = ViewBag.DuplicateTransaction == true;
+    var openDonationDetails =
+        hasServerValidationErrors || hasDuplicateTransaction;
+}
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/donation.css"
+          asp-append-version="true" />
+}
+<div class="donation-page">
+    <div class="donation-container">
+        <!-- =====================================================
+             PAGE HEADER
+             ===================================================== -->
+        <div class="donation-header">
+            <div class="donation-header-badge">
+                <span class="donation-header-badge-icon">
+                    ♥
+                </span>
+                Make a Difference
+            </div>
+            <h1>
+                Support @foundationName
+            </h1>
+            <p>
+                Your contribution helps @foundationName
+                continue its work, support its mission,
+                and create a meaningful difference in
+                the community.
+            </p>
+        </div>
+        <!-- =====================================================
+             PAYMENT INFORMATION
+             ===================================================== -->
+        <section class="payment-information donation-step-panel" id="paymentInformationStep">
+            <div class="donation-section-heading">
+                <div class="donation-section-icon">
+                    ₹
+                </div>
+                <div>
+                    <div class="section-title">
+                        Donation Payment Details
+                    </div>
+                    <div class="donation-section-description">
+                        Please complete your payment using any
+                        of the available payment methods below.
+                    </div>
+                </div>
+            </div>
+            @if (!paymentAccounts.Any())
+            {
+                <div class="donation-alert">
+                    <div class="donation-alert-icon">
+                        !
+                    </div>
+                    <div>
+                        <strong>
+                            Payment details unavailable
+                        </strong>
+                        <span>
+                            Donation payment details are
+                            currently unavailable.
+                            Please try again later.
+                        </span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="payment-accounts-list">
+                    @foreach (var account in paymentAccounts)
+                    {
+                        <div class="payment-account">
+                            <!-- =================================
+                                 BANK DETAILS
+                                 ================================= -->
+                            <div class="payment-account-details">
+                                <div class="payment-account-heading">
+                                    <div class="payment-account-icon">
+                                        <svg viewBox="0 0 24 24"
+                                             aria-hidden="true">
+                                            <path d="M12 3 2 8v2h20V8L12 3Zm-7 9v7H3v2h18v-2h-2v-7h-2v7h-3v-7h-2v7H9v-7H7v7H5v-7H5Z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3>
+                                            Bank / UPI Details
+                                        </h3>
+                                        <span>
+                                            Use these details to
+                                            complete your donation.
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="payment-detail">
+                                    <span>
+                                        Account Name
+                                    </span>
+                                    <strong>
+                                        @account.AccountName
+                                    </strong>
+                                </div>
+                                <div class="payment-detail">
+                                    <span>
+                                        Bank Name
+                                    </span>
+                                    <strong>
+                                        @account.BankName
+                                    </strong>
+                                </div>
+                                <div class="payment-detail">
+                                    <span>
+                                        Account Number
+                                    </span>
+                                    <strong class="payment-detail-copy">
+                                        @account.AccountNumber
+                                    </strong>
+                                </div>
+                                <div class="payment-detail">
+                                    <span>
+                                        IFSC
+                                    </span>
+                                    <strong>
+                                        @account.IFSC
+                                    </strong>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(account.Branch))
+                                {
+                                    <div class="payment-detail">
+                                        <span>
+                                            Branch
+                                        </span>
+                                        <strong>
+                                            @account.Branch
+                                        </strong>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(account.UpiId))
+                                {
+                                    <div class="payment-detail payment-detail-upi">
+                                        <span>
+                                            UPI ID
+                                        </span>
+                                        <strong>
+                                            @account.UpiId
+                                        </strong>
+                                    </div>
+                                }
+                            </div>
+                            <!-- =================================
+                                 QR CODE
+                                 ================================= -->
+                            @if (!string.IsNullOrWhiteSpace(account.QrCodePath))
+                            {
+                                <div class="payment-qr">
+                                    <div class="qr-title">
+                                        Scan &amp; Pay
+                                    </div>
+                                    <div class="qr-subtitle">
+                                        Scan this QR code using
+                                        your UPI app.
+                                    </div>
+                                    <div class="qr-image-wrapper">
+                                        <img src="@account.QrCodePath"
+                                             alt="Donation QR Code"
+                                             loading="lazy" />
+                                    </div>
+                                    <div class="qr-secure-note">
+                                        <span>
+                                            ✓
+                                        </span>
+                                        Secure UPI payment
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+        <!-- =====================================================
+             STEP NAVIGATION
+             ===================================================== -->
+        <div class="donation-step-navigation"
+             id="donationStepNavigation">
+            <button type="button"
+                    class="donation-next-step-button @(openDonationDetails ? "is-open" : "")"
+                    id="showDonationDetails"
+                    aria-controls="donationDetailsStep"
+                    aria-expanded="@openDonationDetails.ToString().ToLowerInvariant()">
+                <span class="donation-next-step-button-icon"
+                      aria-hidden="true">
+                    ↓
+                </span>
+                <span class="donation-next-step-button-content">
+                    <strong>Submit Donation Details</strong>
+                    <small>
+                        Click here to fill in your donation information
+                    </small>
+                </span>
+                <span class="donation-next-step-button-chevron"
+                      aria-hidden="true">
+                    ↓
+                </span>
+            </button>
+        </div>
+        <!-- =====================================================
+             DONATION FORM
+             ===================================================== -->
+        <section class="donation-details-step @(openDonationDetails ? "is-open" : "")"
+                 id="donationDetailsStep"
+                 aria-hidden="@(!openDonationDetails).ToString().ToLowerInvariant()">
+            <section class="donation-form-card">
+                <div class="donation-section-heading">
+                    <div class="donation-section-icon">
+                        ✎
+                    </div>
+                    <div>
+                        <div class="section-title">
+                            Submit Your Donation Details
+                        </div>
+                        <div class="donation-section-description">
+                            Enter your payment information carefully
+                            so that we can verify your donation.
+                            <span class="required-field-note">
+                                <span class="required-mark" aria-hidden="true">*</span>
+                                Required field
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- INFORMATION NOTE -->
+                <div class="donation-note">
+                    <div class="donation-note-icon">
+                        i
+                    </div>
+                    <div>
+                        <strong>
+                            Before submitting
+                        </strong>
+                        <span>
+                            Please make the payment first and then
+                            submit the transaction details below.
+                        </span>
+                    </div>
+                </div>
+                <form asp-controller="Donation"
+                      asp-action="Index"
+                      method="post"
+                      enctype="multipart/form-data"
+                      novalidate
+                      id="donationForm">
+                    @Html.AntiForgeryToken()
+                    <!-- =================================================
+                     VALIDATION
+                     ================================================= -->
+                    @if (ViewBag.DuplicateTransaction == true)
+                    {
+                        <div class="donation-duplicate-alert"
+                             role="alert"
+                             tabindex="-1"
+                             id="duplicateTransactionAlert">
+                            <div class="donation-duplicate-alert-icon">
+                                !
+                            </div>
+                            <div class="donation-duplicate-alert-content">
+                                <strong>
+                                    Transaction Already Submitted
+                                </strong>
+                                <span>
+                                    This transaction number has already been submitted.
+                                    Please do not submit the same transaction again.
+                                </span>
+                                @if (!string.IsNullOrWhiteSpace(
+                                    ViewBag.DuplicateDonationNumber as string))
+                                {
+                                    <div class="donation-duplicate-number">
+                                        <span>Existing Donation No.</span>
+                                        <a asp-controller="DonationStatus"
+                                           asp-action="Index"
+                                           asp-route-donationNumber="@ViewBag.DuplicateDonationNumber"
+                                           class="donation-duplicate-number-link"
+                                           title="View donation status">
+                                            <strong>
+                                                @ViewBag.DuplicateDonationNumber
+                                            </strong>
+                                            <span class="donation-duplicate-number-arrow"
+                                                  aria-hidden="true">
+                                                →
+                                            </span>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if (ViewBag.DuplicateTransaction != true)
+                    {
+                        <div asp-validation-summary="ModelOnly"
+                             class="validation-summary"
+                             role="alert">
+                        </div>
+                    }
+                    else
+                    {
+                        <div asp-validation-summary="ModelOnly"
+                             class="validation-summary"
+                             role="alert">
+                        </div>
+                    }
+                    <!-- =================================================
+                     DONOR INFORMATION
+                     ================================================= -->
+                    <div class="donation-form-section">
+                        <div class="donation-form-section-title">
+                            Donor Information
+                        </div>
+                        <div class="donation-form-section-line">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <!-- FULL NAME -->
+                        <div class="form-group">
+                            <label asp-for="DonorName">
+                                Full Name
+                                <span class="required-mark" aria-hidden="true">*</span>
+                            </label>
+                            <div class="donation-input-wrapper">
+                                <span class="donation-input-icon">
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+                                        <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v2h16v-2c0-2.76-3.58-5-8-5Z" />
+                                    </svg>
+                                </span>
+                                <input asp-for="DonorName"
+                                       class="form-control donation-input-with-icon"
+                                       autocomplete="name"
+                                       placeholder="Enter your full name"
+                                       maxlength="150"
+                                       minlength="2"
+                                       pattern="[A-Za-z]+(?:[ ][A-Za-z]+)*"
+                                       title="Name must contain only letters and spaces."
+                                       required />
+                            </div>
+                            <span asp-validation-for="DonorName"
+                                  class="field-validation">
+                            </span>
+                        </div>
+                        <!-- MOBILE -->
+                        <div class="form-group">
+                            <label asp-for="Mobile">
+                                Mobile Number
+                                <span class="required-mark" aria-hidden="true">*</span>
+                            </label>
+                            <div class="donation-input-wrapper">
+                                <span class="donation-input-icon">
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+                                        <path d="M6.6 2h2.1c.5 0 .9.3 1 .8l.7 3.1c.1.4 0 .8-.3 1.1L8.8 8.3a15.4 15.4 0 0 0 6.9 6.9l1.3-1.3c.3-.3.7-.4 1.1-.3l3.1.7c.5.1.8.5.8 1V18c0 .6-.4 1-1 1C11.5 19 5 12.5 5 4c0-.6.4-1 1-1h.6Z" />
+                                    </svg>
+                                </span>
+                                <input asp-for="Mobile"
+                                       class="form-control donation-input-with-icon"
+                                       autocomplete="tel"
+                                       placeholder="Enter 10 digit mobile number"
+                                       maxlength="10"
+                                       minlength="10"
+                                       pattern="[6-9][0-9]{9}"
+                                       inputmode="numeric"
+                                       title="Enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9."
+                                       required />
+                            </div>
+                            <span asp-validation-for="Mobile"
+                                  class="field-validation">
+                            </span>
+                        </div>
+                        <!-- EMAIL -->
+                        <div class="form-group">
+                            <label asp-for="Email">
+                            </label>
+                            <div class="donation-input-wrapper">
+                                <span class="donation-input-icon">
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+                                        <path d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 3 9 5 9-5V7l-9 5-9-5v1Z" />
+                                    </svg>
+                                </span>
+                                <input asp-for="Email"
+                                       class="form-control donation-input-with-icon"
+                                       type="email"
+                                       autocomplete="email"
+                                       placeholder="Enter email address" />
+                            </div>
+                            <span asp-validation-for="Email"
+                                  class="field-validation">
+                            </span>
+                        </div>
+                        <!-- AMOUNT -->
+                        <div class="form-group">
+                            <label asp-for="Amount">
+                                Donation Amount
+                                <span class="required-mark" aria-hidden="true">*</span>
+                            </label>
+                            <div class="donation-input-wrapper">
+                                <span class="donation-input-icon donation-amount-icon">
+                                    ₹
+                                </span>
+                                <input asp-for="Amount"
+                                       class="form-control donation-input-with-icon"
+                                       type="number"
+                                       min="1"
+                                       step="0.01"
+                                       placeholder="Enter donation amount" />
+                            </div>
+                            <span asp-validation-for="Amount"
+                                  class="field-validation">
+                            </span>
+                        </div>
+                    </div>
+                    <!-- =================================================
+                     ADDRESS
+                     ================================================= -->
+                    <div class="form-group">
+                        <label asp-for="Address">
+                        </label>
+                        <textarea asp-for="Address"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Enter your address">
+                    </textarea>
+                        <span asp-validation-for="Address"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- =================================================
+                     TRANSACTION INFORMATION
+                     ================================================= -->
+                    <div class="donation-form-section donation-form-section-spaced">
+                        <div class="donation-form-section-title">
+                            Transaction Information
+                        </div>
+                        <div class="donation-form-section-line">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <!-- PAYMENT METHOD -->
+                        <div class="form-group">
+                            <label asp-for="PaymentMethod">
+                                Payment Method
+                                <span class="required-mark" aria-hidden="true">*</span>
+                            </label>
+                            <select asp-for="PaymentMethod"
+                                    class="form-control">
+                                <option value="">
+                                    Select Payment Method
+                                </option>
+                                <option value="@((int)PaymentMethod.UPI)">
+                                    UPI
+                                </option>
+                                <option value="@((int)PaymentMethod.BankTransfer)">
+                                    Bank Transfer
+                                </option>
+                            </select>
+                            <span asp-validation-for="PaymentMethod"
+                                  class="field-validation">
+                            </span>
+                        </div>
+                        <!-- TRANSACTION DATE -->
+                        <div class="form-group">
+                            <label asp-for="TransactionDate">
+                                Transaction Date
+                                <span class="required-mark" aria-hidden="true">*</span>
+                            </label>
+                            <input asp-for="TransactionDate"
+                                   class="form-control"
+                                   type="date"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="TransactionDate"
+                                  class="field-validation">
+                            </span>
+                        </div>
+                    </div>
+                    <!-- TRANSACTION ID -->
+                    <div class="form-group">
+                        <label asp-for="TransactionId">
+                        </label>
+                        <div class="donation-input-wrapper">
+                            <span class="donation-input-icon">
+                                #
+                            </span>
+                            <input asp-for="TransactionId"
+                                   class="form-control donation-input-with-icon"
+                                   placeholder="Enter UTR / Transaction ID"
+                                   maxlength="100"
+                                   minlength="3"
+                                   pattern="[A-Za-z0-9]+"
+                                   autocomplete="off"
+                                   inputmode="text"
+                                   title="Transaction ID / UTR must contain only letters and numbers. No spaces or special characters are allowed."
+                                   required />
+                        </div>
+                        <span asp-validation-for="TransactionId"
+                              class="field-validation">
+                        </span>
+                        <small class="form-help">
+                            Only letters and numbers are allowed. No spaces or special characters.
+                        </small>
+                    </div>
+                    <!-- =================================================
+                     PAYMENT PROOF
+                     ================================================= -->
+                    <div class="form-group">
+                        <label asp-for="PaymentProof">
+                            Payment Proof
+                            <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        <div class="donation-upload-box">
+                            <div class="donation-upload-icon">
+                                <svg viewBox="0 0 24 24"
+                                     aria-hidden="true">
+                                    <path d="M12 3 5 10h4v6h6v-6h4l-7-7Zm-7 15h14v2H5v-2Z" />
+                                </svg>
+                            </div>
+                            <div class="donation-upload-content">
+                                <input asp-for="PaymentProof"
+                                       class="form-control"
+                                       type="file"
+                                       accept=".jpg,.jpeg,.png,.webp,.pdf" />
+                                <small class="form-help">
+                                    JPG, PNG, WEBP or PDF.
+                                    Maximum file size 1 MB.
+                                </small>
+                            </div>
+                        </div>
+                        <span asp-validation-for="PaymentProof"
+                              class="field-validation">
+                        </span>
+                    </div>
+                    <!-- =================================================
+                     CONFIRMATION
+                     ================================================= -->
+                    <div class="confirmation-box">
+                        <div class="confirmation-content">
+                            <input id="ConfirmDetails"
+                                   name="ConfirmDetails"
+                                   type="checkbox"
+                                   value="true"
+                                   class="confirmation-checkbox" />
+                            <label for="ConfirmDetails"
+                                   class="confirmation-label">
+                                <strong>*</strong>
+                                I confirm that the payment details provided above
+                                are correct and that the information submitted by me
+                                is accurate.
+                            </label>
+                        </div>
+                        <span class="field-validation"
+                              data-confirmation-validation>
+                        </span>
+                    </div>
+                    <!-- =================================================
+                     SUBMIT
+                     ================================================= -->
+                    <div class="donation-submit-area">
+                        <button type="submit"
+                                class="donation-submit-button">
+                            <span class="donation-submit-icon">
+                                ✓
+                            </span>
+                            <span>
+                                Submit Donation
+                            </span>
+                        </button>
+                        <div class="donation-submit-security">
+                            <span>
+                                🔒
+                            </span>
+                            Your information is securely submitted
+                            for verification.
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // =================================================
+                // DONATION DETAILS STEP / ACCORDION
+                // =================================================
+                const showDonationDetails =
+                    document.getElementById("showDonationDetails");
+                const donationDetailsStep =
+                    document.getElementById("donationDetailsStep");
+                if (showDonationDetails && donationDetailsStep) {
+                    showDonationDetails.addEventListener("click", function() {
+                        const isOpen =
+                            donationDetailsStep.classList.contains("is-open");
+                        if (!isOpen) {
+                            donationDetailsStep.classList.add("is-open");
+                            donationDetailsStep.setAttribute(
+                                "aria-hidden",
+                                "false"
+                            );
+                            showDonationDetails.classList.add("is-open");
+                            showDonationDetails.setAttribute(
+                                "aria-expanded",
+                                "true"
+                            );
+                            setTimeout(function() {
+                                donationDetailsStep.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "start"
+                                });
+                            }, 120);
+                        } else {
+                            donationDetailsStep.classList.remove("is-open");
+                            donationDetailsStep.setAttribute(
+                                "aria-hidden",
+                                "true"
+                            );
+                            showDonationDetails.classList.remove("is-open");
+                            showDonationDetails.setAttribute(
+                                "aria-expanded",
+                                "false"
+                            );
+                        }
+                    });
+                }
+                // =================================================
+                // ELEMENTS
+                // =================================================
+                const form =
+                    document.getElementById("donationForm");
+                const transactionInput =
+                    document.getElementById("TransactionId");
+                // =================================================
+                // TRANSACTION ID SANITIZATION
+                // =================================================
+                if (transactionInput) {
+                    transactionInput.addEventListener("input", function() {
+                        this.value =
+                            this.value.replace(/[^A-Za-z0-9]/g, "");
+                        validateField(this);
+                    });
+                    transactionInput.addEventListener("paste", function() {
+                        setTimeout(() => {
+                            this.value =
+                                this.value.replace(/[^A-Za-z0-9]/g, "");
+                            validateField(this);
+                        }, 0);
+                    });
+                }
+                // =================================================
+                // FIELD VALIDATION ALERT / ERROR STATE
+                // =================================================
+                function getValidationMessage(field) {
+                    if (!field) {
+                        return "";
+                    }
+                    if (field.validity && field.validity.valid) {
+                        return "";
+                    }
+                    if (field.validity) {
+                        if (field.validity.valueMissing) {
+                            return field.dataset.requiredMessage
+                                || "This field is required.";
+                        }
+                        if (field.validity.typeMismatch) {
+                            return "Please enter a valid value.";
+                        }
+                        if (field.validity.patternMismatch) {
+                            return field.title
+                                || "Please enter a valid value.";
+                        }
+                        if (field.validity.rangeUnderflow) {
+                            return "Please enter a valid amount.";
+                        }
+                        if (field.validity.rangeOverflow) {
+                            return "The entered value is too large.";
+                        }
+                        if (field.validity.tooShort) {
+                            return "The entered value is too short.";
+                        }
+                        if (field.validity.tooLong) {
+                            return "The entered value is too long.";
+                        }
+                    }
+                    return "Please check this field.";
+                }
+                function getFieldValidationElement(field) {
+                    if (!field || !field.id) {
+                        return null;
+                    }
+                    const byFor =
+                        document.querySelector(
+                            '[data-valmsg-for="' + field.name + '"]'
+                        );
+                    if (byFor) {
+                        return byFor;
+                    }
+                    return field
+                        .closest(".form-group")
+                        ?.querySelector(".field-validation");
+                }
+                function validateField(field) {
+                    if (!field) {
+                        return true;
+                    }
+                    const message =
+                        getValidationMessage(field);
+                    const validationElement =
+                        getFieldValidationElement(field);
+                    const group =
+                        field.closest(".form-group");
+                    if (message) {
+                        field.classList.add("input-validation-error");
+                        if (group) {
+                            group.classList.add("has-validation-error");
+                        }
+                        if (validationElement) {
+                            validationElement.textContent = message;
+                            validationElement.classList.add("field-validation-error");
+                        }
+                        return false;
+                    }
+                    field.classList.remove("input-validation-error");
+                    if (group) {
+                        group.classList.remove("has-validation-error");
+                    }
+                    if (validationElement) {
+                        validationElement.textContent = "";
+                        validationElement.classList.remove("field-validation-error");
+                    }
+                    return true;
+                }
+                function validateConfirmation() {
+                    const checkbox =
+                        document.getElementById("ConfirmDetails");
+                    const messageElement =
+                        document.querySelector(
+                            "[data-confirmation-validation]"
+                        );
+                    if (!checkbox) {
+                        return true;
+                    }
+                    if (!checkbox.checked) {
+                        checkbox.classList.add("input-validation-error");
+                        if (messageElement) {
+                            messageElement.textContent =
+                                "Please confirm that the submitted details are correct.";
+                            messageElement.classList.add(
+                                "field-validation-error"
+                            );
+                        }
+                        return false;
+                    }
+                    checkbox.classList.remove("input-validation-error");
+                    if (messageElement) {
+                        messageElement.textContent = "";
+                        messageElement.classList.remove(
+                            "field-validation-error"
+                        );
+                    }
+                    return true;
+                }
+                // =================================================
+                // LIVE VALIDATION
+                // =================================================
+                if (form) {
+                    const fields =
+                        form.querySelectorAll(
+                            "input, select, textarea"
+                        );
+                    fields.forEach(function(field) {
+                        field.addEventListener("blur", function() {
+                            if (field.id === "ConfirmDetails") {
+                                validateConfirmation();
+                            } else {
+                                validateField(field);
+                            }
+                        });
+                        field.addEventListener("change", function() {
+                            if (field.id === "ConfirmDetails") {
+                                validateConfirmation();
+                            } else {
+                                validateField(field);
+                            }
+                        });
+                    });
+                    // =================================================
+                    // SUBMIT VALIDATION
+                    // =================================================
+                    form.addEventListener("submit", function(event) {
+                        let firstInvalidField = null;
+                        let formIsValid = true;
+                        fields.forEach(function(field) {
+                            if (field.type === "hidden") {
+                                return;
+                            }
+                            if (field.id === "ConfirmDetails") {
+                                if (!validateConfirmation()) {
+                                    formIsValid = false;
+                                    if (!firstInvalidField) {
+                                        firstInvalidField = field;
+                                    }
+                                }
+                                return;
+                            }
+                            if (!validateField(field)) {
+                                formIsValid = false;
+                                if (!firstInvalidField) {
+                                    firstInvalidField = field;
+                                }
+                            }
+                        });
+                        if (!formIsValid) {
+                            event.preventDefault();
+                            // Always open the donation details section
+                            // when validation fails.
+                            if (donationDetailsStep) {
+                                donationDetailsStep.classList.add("is-open");
+                                donationDetailsStep.setAttribute(
+                                    "aria-hidden",
+                                    "false"
+                                );
+                            }
+                            if (showDonationDetails) {
+                                showDonationDetails.classList.add("is-open");
+                                showDonationDetails.setAttribute(
+                                    "aria-expanded",
+                                    "true"
+                                );
+                            }
+                            if (firstInvalidField) {
+                                setTimeout(function() {
+                                    firstInvalidField.scrollIntoView({
+                                        behavior: "smooth",
+                                        block: "center"
+                                    });
+                                    firstInvalidField.focus({
+                                        preventScroll: true
+                                    });
+                                }, 80);
+                            }
+                        }
+                    });
+                }
+                // =================================================
+                // CONFIRMATION CHECKBOX
+                // =================================================
+                const confirmation =
+                    document.getElementById("ConfirmDetails");
+                if (confirmation) {
+                    confirmation.addEventListener(
+                        "change",
+                        validateConfirmation
+                    );
+                }
+                // =================================================
+                // SERVER-SIDE VALIDATION RESULT
+                // =================================================
+                const duplicateAlert =
+                    document.getElementById(
+                        "duplicateTransactionAlert"
+                    );
+                const serverValidationSummary =
+                    document.querySelector(
+                        ".validation-summary"
+                    );
+                const serverHasErrors =
+                    document.querySelectorAll(
+                        ".field-validation-error"
+                    ).length > 0
+                    || (
+                        serverValidationSummary &&
+                        serverValidationSummary.textContent.trim() !== ""
+                    )
+                    || duplicateAlert !== null;
+                if (serverHasErrors) {
+                    if (donationDetailsStep) {
+                        donationDetailsStep.classList.add("is-open");
+                        donationDetailsStep.setAttribute(
+                            "aria-hidden",
+                            "false"
+                        );
+                    }
+                    if (showDonationDetails) {
+                        showDonationDetails.classList.add("is-open");
+                        showDonationDetails.setAttribute(
+                            "aria-expanded",
+                            "true"
+                        );
+                    }
+                    if (duplicateAlert) {
+                        setTimeout(function() {
+                            duplicateAlert.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center"
+                            });
+                            duplicateAlert.focus({
+                                preventScroll: true
+                            });
+                        }, 150);
+                    }
+                }
+            });
+        </script>
+    }

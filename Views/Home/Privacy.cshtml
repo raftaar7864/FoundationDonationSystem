@@ -1,0 +1,256 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<main class="privacy-page">
+    <div class="privacy-container">
+        <div class="privacy-header">
+            <span class="privacy-eyebrow">
+                <i class="bi bi-shield-check"></i>
+                Your Privacy Matters
+            </span>
+            <h1>@ViewData["Title"]</h1>
+            <p>
+                We respect your privacy and are committed to protecting
+                the information you share with us.
+            </p>
+        </div>
+        <div class="privacy-card">
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-info-circle"></i>
+                    Introduction
+                </h2>
+                <p>
+                    This Privacy Policy explains how our foundation collects,
+                    uses, protects and handles information provided by visitors,
+                    donors and users of this website.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-database"></i>
+                    Information We Collect
+                </h2>
+                <p>
+                    We may collect information that you voluntarily provide
+                    through this website, including information submitted when
+                    making a donation, checking donation status, contacting us,
+                    or submitting an inquiry.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-gear"></i>
+                    How We Use Your Information
+                </h2>
+                <p>
+                    Information provided to us may be used to process donations,
+                    respond to inquiries, provide requested services, maintain
+                    records, improve our website and communicate with you when
+                    necessary.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-shield-lock"></i>
+                    Data Protection
+                </h2>
+                <p>
+                    We take reasonable administrative and technical measures
+                    to protect information against unauthorized access,
+                    alteration, disclosure or misuse.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-credit-card"></i>
+                    Payment Information
+                </h2>
+                <p>
+                    Payment-related information is handled through the
+                    applicable payment processing systems. We do not intend
+                    to store sensitive payment credentials such as card
+                    passwords, PINs or authentication credentials on this
+                    website.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-cookie"></i>
+                    Cookies
+                </h2>
+                <p>
+                    This website may use cookies or similar technologies to
+                    maintain functionality, remember preferences and improve
+                    the user experience.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-link-45deg"></i>
+                    Third-Party Services
+                </h2>
+                <p>
+                    Certain features of this website may use third-party
+                    services. Those services may have their own privacy
+                    policies and terms governing the information they process.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-person-check"></i>
+                    Your Rights
+                </h2>
+                <p>
+                    If you have questions about information you have provided
+                    to us, or wish to request clarification regarding its use,
+                    you may contact the foundation through the available
+                    contact channels on this website.
+                </p>
+            </section>
+            <section class="privacy-section">
+                <h2>
+                    <i class="bi bi-arrow-repeat"></i>
+                    Changes to This Policy
+                </h2>
+                <p>
+                    We may update this Privacy Policy from time to time.
+                    Any changes will be reflected on this page.
+                </p>
+            </section>
+            <section class="privacy-contact">
+                <div class="privacy-contact-icon">
+                    <i class="bi bi-envelope"></i>
+                </div>
+                <div>
+                    <h3>Questions About Privacy?</h3>
+                    <p>
+                        If you have any questions regarding this Privacy Policy,
+                        please contact us through our website.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+<style>
+    .privacy-page {
+        padding: 42px 20px 60px;
+        background: #f8fafc;
+        min-height: 100%;
+    }
+    .privacy-container {
+        width: min(980px, 100%);
+        margin: 0 auto;
+    }
+    .privacy-header {
+        margin-bottom: 24px;
+    }
+    .privacy-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #ea580c;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+    .privacy-header h1 {
+        margin: 7px 0 8px;
+        color: #1e293b;
+        font-size: 32px;
+        font-weight: 750;
+    }
+    .privacy-header p {
+        max-width: 700px;
+        margin: 0;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+    .privacy-card {
+        padding: 28px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 5px 24px rgba(15, 23, 42, .05);
+    }
+    .privacy-section {
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eef2f7;
+    }
+        .privacy-section:last-of-type {
+            margin-bottom: 24px;
+        }
+        .privacy-section h2 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 8px;
+            color: #334155;
+            font-size: 16px;
+            font-weight: 700;
+        }
+            .privacy-section h2 i {
+                color: #f97316;
+                font-size: 15px;
+            }
+        .privacy-section p {
+            margin: 0;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.75;
+        }
+    .privacy-contact {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 15px;
+        border: 1px solid #fed7aa;
+        border-radius: 10px;
+        background: #fff7ed;
+    }
+    .privacy-contact-icon {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        background: #f97316;
+        color: #ffffff;
+    }
+    .privacy-contact h3 {
+        margin: 0 0 3px;
+        color: #9a3412;
+        font-size: 13px;
+        font-weight: 700;
+    }
+    .privacy-contact p {
+        margin: 0;
+        color: #7c2d12;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+    @@media (max-width: 600px) {
+        .privacy-page {
+            padding: 28px 14px 42px;
+        }
+        .privacy-header h1 {
+            font-size: 26px;
+        }
+        .privacy-card {
+            padding: 20px 16px;
+        }
+        .privacy-section {
+            padding-bottom: 17px;
+            margin-bottom: 17px;
+        }
+        .privacy-contact {
+            align-items: flex-start;
+        }
+    }
+</style>
