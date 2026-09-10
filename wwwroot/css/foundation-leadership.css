@@ -1,25 +1,31 @@
 ﻿/* =========================================================
    FOUNDATION LEADERSHIP PAGE
-   Premium / Clean Foundation Design
+   EDITORIAL / PREMIUM TEXT-WRAP DESIGN
    ========================================================= */
+
 .foundation-leadership-page {
     width: 100%;
-    padding: 78px 24px 90px;
+    padding: 78px 24px 100px;
     background: radial-gradient( circle at top left, rgba(234, 88, 12, 0.045), transparent 32% ), #fffaf5;
 }
+
 .foundation-leadership-container {
     width: 100%;
-    max-width: 1240px;
+    max-width: 1180px;
     margin: 0 auto;
 }
+
+
 /* =========================================================
    HEADER
    ========================================================= */
+
 .foundation-leadership-header {
     max-width: 820px;
-    margin: 0 auto 62px;
+    margin: 0 auto 58px;
     text-align: center;
 }
+
 .foundation-leadership-eyebrow {
     position: relative;
     display: inline-flex;
@@ -34,21 +40,24 @@
     letter-spacing: 1.8px;
     text-transform: uppercase;
 }
+
     .foundation-leadership-eyebrow::before,
     .foundation-leadership-eyebrow::after {
         content: "";
-        width: 24px;
+        width: 25px;
         height: 1px;
         background: #fdba74;
     }
+
 .foundation-leadership-header h1 {
-    margin: 0 0 18px;
+    margin: 0 0 17px;
     color: #17202a;
     font-size: 44px;
     line-height: 1.15;
     font-weight: 800;
     letter-spacing: -0.8px;
 }
+
 .foundation-leadership-header p {
     max-width: 700px;
     margin: 0 auto;
@@ -56,9 +65,7 @@
     font-size: 16px;
     line-height: 1.85;
 }
-/* =========================================================
-   HEADER DECORATION
-   ========================================================= */
+
 .foundation-leadership-header::after {
     content: "";
     display: block;
@@ -68,85 +75,107 @@
     border-radius: 999px;
     background: #ea580c;
 }
+
+
 /* =========================================================
-   MEMBERS GRID
+   EDITORIAL LEADERSHIP LIST
    ========================================================= */
+
 .foundation-leadership-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 30px;
-    align-items: stretch;
+    width: 100%;
+    display: block;
 }
+
+
 /* =========================================================
-   MEMBER CARD
+   EDITORIAL MEMBER ARTICLE
    ========================================================= */
+
 .foundation-leader-card {
     position: relative;
-    display: flex;
-    flex-direction: column;
+    display: block;
+    width: 100%;
+    padding: 42px 0;
+    border-top: 1px solid #eadfd4;
+    background: transparent;
+    box-shadow: none;
     overflow: hidden;
-    min-width: 0;
-    border: 1px solid #f1dfcd;
-    border-radius: 22px;
-    background: #ffffff;
-    box-shadow: 0 8px 24px rgba(23, 32, 42, 0.055), 0 2px 6px rgba(23, 32, 42, 0.025);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
-    .foundation-leader-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 2;
-        height: 3px;
-        background: #ea580c;
-        opacity: 0;
-        transition: opacity 0.3s ease;
+
+    .foundation-leader-card:last-child {
+        border-bottom: 1px solid #eadfd4;
     }
-    .foundation-leader-card:hover {
-        transform: translateY(-7px);
-        border-color: #fdba74;
-        box-shadow: 0 20px 45px rgba(23, 32, 42, 0.10), 0 5px 12px rgba(23, 32, 42, 0.04);
-    }
-        .foundation-leader-card:hover::before {
-            opacity: 1;
-        }
+
+
 /* =========================================================
    IMAGE AREA
+   SMALLER EDITORIAL IMAGE + BORDER
    ========================================================= */
+
 .foundation-leader-image-wrapper {
     position: relative;
-    width: 100%;
-    height: 350px;
+    float: left;
+    width: 270px;
+    height: 325px;
+    margin: 0 36px 16px 0;
     overflow: hidden;
+    border: 1px solid #d9c2ad;
+    border-radius: 8px;
     background: linear-gradient( 145deg, #fff7ed, #ffedd5 );
+    box-shadow: 0 3px 12px rgba(23, 32, 42, 0.07);
 }
-    .foundation-leader-image-wrapper::after {
+
+
+    /* =========================================================
+   INNER IMAGE FRAME
+   ========================================================= */
+
+    .foundation-leader-image-wrapper::before {
         content: "";
         position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 35%;
+        inset: 5px;
+        z-index: 2;
         pointer-events: none;
-        background: linear-gradient( to top, rgba(23, 32, 42, 0.10), transparent );
-        opacity: 0.35;
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        border-radius: 5px;
     }
+
+
+/* =========================================================
+   MEMBER IMAGE
+   ========================================================= */
+
 .foundation-leader-image {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center top;
-    transition: transform 0.5s ease;
 }
-.foundation-leader-card:hover .foundation-leader-image {
-    transform: scale(1.035);
+
+
+/* =========================================================
+   IMAGE OVERLAY
+   ========================================================= */
+
+.foundation-leader-image-wrapper::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 30%;
+    pointer-events: none;
+    background: linear-gradient( to top, rgba(23, 32, 42, 0.18), transparent );
+    opacity: 0.5;
 }
+
+
 /* =========================================================
    FALLBACK AVATAR
    ========================================================= */
+
 .foundation-leader-avatar {
     position: relative;
     display: flex;
@@ -157,104 +186,171 @@
     overflow: hidden;
     background: radial-gradient( circle at center, #fff7ed 0, #ffedd5 55%, #fed7aa 100% );
     color: #c2410c;
-    font-size: 68px;
+    font-size: 58px;
     font-weight: 800;
 }
+
     .foundation-leader-avatar::before {
         content: "";
         position: absolute;
-        width: 170px;
-        height: 170px;
+        width: 145px;
+        height: 145px;
         border: 1px solid rgba(194, 65, 12, 0.12);
         border-radius: 50%;
     }
+
     .foundation-leader-avatar::after {
         content: "";
         position: absolute;
-        width: 230px;
-        height: 230px;
+        width: 200px;
+        height: 200px;
         border: 1px solid rgba(194, 65, 12, 0.08);
         border-radius: 50%;
     }
+
+
 /* =========================================================
-   MEMBER CONTENT
+   CONTENT AREA
+   TRUE TEXT WRAP
    ========================================================= */
+
 .foundation-leader-content {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    padding: 27px 27px 29px;
+    display: block;
+    min-width: 0;
+    padding: 7px 12px 7px 0;
+    overflow: visible;
 }
+
+
 /* =========================================================
    MEMBER NAME
    ========================================================= */
+
 .foundation-leader-name {
-    margin: 0 0 11px;
+    margin: 0 0 12px;
     color: #17202a;
-    font-size: 22px;
-    line-height: 1.3;
-    font-weight: 800;
-    letter-spacing: -0.2px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.4px;
 }
+
+
 /* =========================================================
    DESIGNATION
    ========================================================= */
+
 .foundation-leader-designation {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 18px;
+    margin: 0 0 22px;
     color: #ea580c;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
-    font-weight: 700;
+    font-weight: 750;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
 }
+
 .foundation-leader-designation-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 31px;
+    height: 31px;
     flex: 0 0 auto;
-    width: 30px;
-    height: 30px;
     border: 1px solid #fed7aa;
-    border-radius: 9px;
+    border-radius: 8px;
     background: #fff7ed;
     color: #ea580c;
-    font-size: 14px;
+    font-size: 13px;
 }
+
+
 /* =========================================================
-   BIO
+   EDITORIAL DESIGNATION LINE
    ========================================================= */
+
+.foundation-leader-designation::after {
+    content: "";
+    width: 45px;
+    height: 1px;
+    margin-left: 2px;
+    background: #fdba74;
+}
+
+
+/* =========================================================
+   BIOGRAPHY
+   ========================================================= */
+
 .foundation-leader-bio {
+    max-width: none;
     margin: 0;
     color: #64748b;
-    font-size: 14px;
-    line-height: 1.8;
+    font-size: 15px;
+    line-height: 1.95;
+    text-align: left;
 }
+
+
+    /* =========================================================
+   EDITORIAL DROP CAP
+   ========================================================= */
+
+    .foundation-leader-bio::first-letter {
+        float: left;
+        margin: 5px 9px 0 0;
+        color: #ea580c;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 48px;
+        line-height: 0.75;
+        font-weight: 700;
+    }
+
+
 /* =========================================================
    CONTENT BOTTOM ACCENT
    ========================================================= */
+
 .foundation-leader-content::after {
     content: "";
-    width: 34px;
+    display: block;
+    width: 48px;
     height: 2px;
-    margin-top: auto;
-    padding-top: 20px;
+    margin-top: 30px;
     border-bottom: 2px solid #fed7aa;
 }
+
+
+/* =========================================================
+   CLEAR FLOAT
+   ========================================================= */
+
+.foundation-leader-card::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
 /* =========================================================
    EMPTY STATE
    ========================================================= */
+
 .foundation-leadership-empty {
     max-width: 680px;
     margin: 0 auto;
     padding: 65px 35px;
     border: 1px solid #f1dfcd;
-    border-radius: 22px;
+    border-radius: 18px;
     background: #ffffff;
     text-align: center;
     box-shadow: 0 10px 30px rgba(23, 32, 42, 0.06);
 }
+
 .foundation-leadership-empty-icon {
     display: flex;
     align-items: center;
@@ -268,6 +364,7 @@
     color: #ea580c;
     font-size: 30px;
 }
+
 .foundation-leadership-empty h2 {
     margin: 0 0 11px;
     color: #17202a;
@@ -275,6 +372,7 @@
     line-height: 1.3;
     font-weight: 800;
 }
+
 .foundation-leadership-empty p {
     max-width: 500px;
     margin: 0 auto;
@@ -282,166 +380,383 @@
     font-size: 15px;
     line-height: 1.75;
 }
+
+
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (min-width: 1300px) {
+
+    .foundation-leadership-container {
+        max-width: 1220px;
+    }
+
+    .foundation-leader-image-wrapper {
+        width: 295px;
+        height: 350px;
+        margin-right: 42px;
+    }
+
+    .foundation-leader-content {
+        padding-right: 20px;
+    }
+}
+
+
 /* =========================================================
    TABLET
    ========================================================= */
+
 @media (max-width: 1100px) {
+
     .foundation-leadership-page {
-        padding: 65px 20px 75px;
+        padding: 65px 20px 80px;
     }
-    .foundation-leadership-grid {
-        gap: 24px;
+
+    .foundation-leadership-header {
+        margin-bottom: 48px;
     }
+
+    .foundation-leader-card {
+        padding: 38px 0;
+    }
+
     .foundation-leader-image-wrapper {
-        height: 320px;
+        width: 235px;
+        height: 295px;
+        margin-right: 28px;
     }
+
     .foundation-leader-content {
-        padding: 24px 23px 26px;
+        padding: 4px 8px 6px 0;
+    }
+
+    .foundation-leader-name {
+        font-size: 30px;
+    }
+
+    .foundation-leader-bio {
+        font-size: 14px;
+        line-height: 1.8;
     }
 }
+
+
 /* =========================================================
    SMALL TABLET
    ========================================================= */
-@media (max-width: 991px) {
+
+@media (max-width: 850px) {
+
     .foundation-leadership-page {
         padding: 58px 18px 70px;
     }
+
     .foundation-leadership-header {
-        margin-bottom: 45px;
+        margin-bottom: 42px;
     }
+
         .foundation-leadership-header h1 {
             font-size: 38px;
         }
-    .foundation-leadership-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px;
+
+    .foundation-leader-card {
+        padding: 34px 0;
     }
+
     .foundation-leader-image-wrapper {
-        height: 310px;
+        width: 205px;
+        height: 265px;
+        margin-right: 24px;
     }
+
+    .foundation-leader-content {
+        padding: 2px 5px 4px 0;
+    }
+
     .foundation-leader-name {
-        font-size: 21px;
+        font-size: 27px;
+    }
+
+    .foundation-leader-designation {
+        margin-bottom: 18px;
+        font-size: 12px;
+    }
+
+    .foundation-leader-designation-icon {
+        width: 29px;
+        height: 29px;
+        border-radius: 8px;
+        font-size: 12px;
+    }
+
+    .foundation-leader-bio {
+        font-size: 13.5px;
+        line-height: 1.75;
     }
 }
+
+
 /* =========================================================
    MOBILE
    ========================================================= */
+
 @media (max-width: 640px) {
+
     .foundation-leadership-page {
         padding: 45px 15px 55px;
     }
+
     .foundation-leadership-container {
         max-width: 100%;
     }
+
     .foundation-leadership-header {
-        margin-bottom: 35px;
+        margin-bottom: 34px;
     }
+
     .foundation-leadership-eyebrow {
         gap: 7px;
         margin-bottom: 12px;
         font-size: 10px;
         letter-spacing: 1.35px;
     }
+
         .foundation-leadership-eyebrow::before,
         .foundation-leadership-eyebrow::after {
             width: 18px;
         }
+
     .foundation-leadership-header h1 {
         margin-bottom: 14px;
         font-size: 30px;
         line-height: 1.2;
         letter-spacing: -0.4px;
     }
+
     .foundation-leadership-header p {
         font-size: 14px;
         line-height: 1.75;
     }
+
     .foundation-leadership-header::after {
         width: 45px;
         margin-top: 20px;
     }
-    .foundation-leadership-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
+
+
+    /* =====================================================
+       MOBILE EDITORIAL ARTICLE
+       ===================================================== */
+
     .foundation-leader-card {
-        border-radius: 19px;
+        padding: 28px 0;
+        display: block;
     }
+
+
+    /* =====================================================
+       MOBILE IMAGE
+       ===================================================== */
+
     .foundation-leader-image-wrapper {
-        height: 330px;
+        float: left;
+        width: 115px;
+        height: 155px;
+        margin: 0 17px 10px 0;
+        border: 1px solid #d9c2ad;
+        border-radius: 7px;
+        box-shadow: 0 2px 8px rgba(23, 32, 42, 0.06);
     }
+
+        .foundation-leader-image-wrapper::before {
+            inset: 4px;
+            border-radius: 4px;
+        }
+
+
+    /* =====================================================
+       MOBILE CONTENT
+       ===================================================== */
+
     .foundation-leader-content {
-        padding: 22px 20px 25px;
+        display: block;
+        min-width: 0;
+        padding: 0;
     }
+
     .foundation-leader-name {
-        margin-bottom: 9px;
-        font-size: 20px;
+        margin-bottom: 8px;
+        font-size: 23px;
+        line-height: 1.25;
     }
+
     .foundation-leader-designation {
-        margin-bottom: 15px;
-        font-size: 13px;
+        align-items: flex-start;
+        gap: 7px;
+        margin-bottom: 13px;
+        font-size: 10px;
+        line-height: 1.35;
     }
+
     .foundation-leader-designation-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
+        width: 25px;
+        height: 25px;
+        min-width: 25px;
+        border-radius: 7px;
+        font-size: 10px;
     }
+
+    .foundation-leader-designation::after {
+        display: none;
+    }
+
     .foundation-leader-bio {
-        font-size: 13px;
+        font-size: 11.5px;
         line-height: 1.75;
     }
+
+        .foundation-leader-bio::first-letter {
+            margin-right: 6px;
+            font-size: 38px;
+        }
+
+    .foundation-leader-content::after {
+        width: 30px;
+        margin-top: 18px;
+    }
+
+
+    /* =====================================================
+       EMPTY STATE
+       ===================================================== */
+
     .foundation-leadership-empty {
         padding: 50px 22px;
         border-radius: 18px;
     }
+
     .foundation-leadership-empty-icon {
         width: 68px;
         height: 68px;
         font-size: 26px;
     }
+
     .foundation-leadership-empty h2 {
         font-size: 22px;
     }
+
     .foundation-leadership-empty p {
         font-size: 14px;
     }
 }
+
+
 /* =========================================================
    VERY SMALL MOBILE
    ========================================================= */
-@media (max-width: 380px) {
+
+@media (max-width: 480px) {
+
     .foundation-leadership-page {
         padding: 38px 12px 48px;
     }
+
     .foundation-leadership-header h1 {
         font-size: 27px;
     }
+
     .foundation-leadership-header p {
         font-size: 13px;
     }
+
+    .foundation-leader-card {
+        padding: 24px 0;
+    }
+
     .foundation-leader-image-wrapper {
-        height: 300px;
+        width: 98px;
+        height: 135px;
+        margin-right: 14px;
     }
+
+        .foundation-leader-image-wrapper::before {
+            inset: 3px;
+        }
+
     .foundation-leader-content {
-        padding: 20px 18px 23px;
+        padding: 0;
     }
+
     .foundation-leader-name {
-        font-size: 19px;
+        font-size: 20px;
     }
+
+    .foundation-leader-designation {
+        font-size: 9px;
+    }
+
+    .foundation-leader-designation-icon {
+        width: 23px;
+        height: 23px;
+        min-width: 23px;
+    }
+
+    .foundation-leader-bio {
+        font-size: 10.5px;
+        line-height: 1.7;
+    }
+
+        .foundation-leader-bio::first-letter {
+            font-size: 34px;
+        }
 }
+
+
+/* =========================================================
+   EXTRA SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+    .foundation-leadership-page {
+        padding: 34px 10px 44px;
+    }
+
+    .foundation-leader-image-wrapper {
+        width: 86px;
+        height: 120px;
+        margin-right: 12px;
+    }
+
+    .foundation-leader-name {
+        font-size: 18px;
+    }
+
+    .foundation-leader-designation {
+        font-size: 8.5px;
+    }
+
+    .foundation-leader-bio {
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+        .foundation-leader-bio::first-letter {
+            font-size: 32px;
+        }
+}
+
+
 /* =========================================================
    REDUCED MOTION
    ========================================================= */
+
 @media (prefers-reduced-motion: reduce) {
+
     .foundation-leader-card,
-    .foundation-leader-image,
-    .foundation-leader-card::before {
+    .foundation-leader-image {
         transition: none;
     }
-        .foundation-leader-card:hover {
-            transform: none;
-        }
-            .foundation-leader-card:hover .foundation-leader-image {
-                transform: none;
-            }
 }
