@@ -1,0 +1,183 @@
+﻿@model FoundationDonationSystem.Models.FoundationMember
+<div class="foundation-member-details">
+    <!-- =====================================================
+         PROFILE HEADER
+         ===================================================== -->
+    <div class="foundation-member-details-header">
+        <div class="foundation-member-details-photo">
+            @if (!string.IsNullOrWhiteSpace(Model.ProfileImage))
+            {
+                <img src="@Model.ProfileImage"
+                     alt="@Model.FullName"
+                     loading="lazy" />
+            }
+            else
+            {
+                <span>
+                    @(string.IsNullOrWhiteSpace(Model.FullName)
+                        ? "?"
+                        : Model.FullName.Substring(0, 1).ToUpper())
+                </span>
+            }
+        </div>
+        <div class="foundation-member-details-heading">
+            <span class="foundation-member-details-designation">
+                @Model.Designation
+            </span>
+            <h3>
+                @Model.FullName
+            </h3>
+            @if (Model.IsActive)
+            {
+                <span class="admin-badge admin-badge-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Active
+                </span>
+            }
+            else
+            {
+                <span class="admin-badge admin-badge-danger">
+                    <i class="bi bi-x-circle-fill"></i>
+                    Inactive
+                </span>
+            }
+        </div>
+    </div>
+    <!-- =====================================================
+         DIVIDER
+         ===================================================== -->
+    <div class="foundation-member-details-divider"></div>
+    <!-- =====================================================
+         BIOGRAPHY
+         ===================================================== -->
+    <div class="foundation-member-details-section">
+        <div class="foundation-member-details-label">
+            <i class="bi bi-person-vcard-fill"></i>
+            Biography
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.ShortBio))
+        {
+            <div class="foundation-member-details-bio">
+                @Model.ShortBio
+            </div>
+        }
+        else
+        {
+            <div class="foundation-member-details-empty">
+                <i class="bi bi-info-circle"></i>
+                No biography has been added.
+            </div>
+        }
+    </div>
+    <!-- =====================================================
+         MEMBER INFORMATION
+         ===================================================== -->
+    <div class="foundation-member-details-grid">
+        <!-- DESIGNATION -->
+        <div class="foundation-member-detail-item">
+            <span class="foundation-member-detail-label">
+                Designation
+            </span>
+            <strong>
+                @Model.Designation
+            </strong>
+        </div>
+        <!-- DISPLAY ORDER -->
+        <div class="foundation-member-detail-item">
+            <span class="foundation-member-detail-label">
+                Display Order
+            </span>
+            <strong>
+                @Model.DisplayOrder
+            </strong>
+        </div>
+        <!-- STATUS -->
+        <div class="foundation-member-detail-item">
+            <span class="foundation-member-detail-label">
+                Status
+            </span>
+            <strong>
+                @if (Model.IsActive)
+                {
+                    <span class="foundation-detail-status-active">
+                        Active
+                    </span>
+                }
+                else
+                {
+                    <span class="foundation-detail-status-inactive">
+                        Inactive
+                    </span>
+                }
+            </strong>
+        </div>
+        <!-- MEMBER ID -->
+        <div class="foundation-member-detail-item">
+            <span class="foundation-member-detail-label">
+                Member ID
+            </span>
+            <strong>
+                #@Model.Id
+            </strong>
+        </div>
+        <!-- CREATED -->
+        <div class="foundation-member-detail-item">
+            <span class="foundation-member-detail-label">
+                Created
+            </span>
+            <strong>
+                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+            </strong>
+        </div>
+        <!-- UPDATED -->
+        <div class="foundation-member-detail-item">
+            <span class="foundation-member-detail-label">
+                Last Updated
+            </span>
+            <strong>
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    @Model.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                }
+                else
+                {
+                    <span>
+                        Not updated
+                    </span>
+                }
+            </strong>
+        </div>
+    </div>
+    <!-- =====================================================
+         PROFILE IMAGE PATH
+         ===================================================== -->
+    @if (!string.IsNullOrWhiteSpace(Model.ProfileImage))
+    {
+        <div class="foundation-member-image-info">
+            <div class="foundation-member-details-label">
+                <i class="bi bi-image-fill"></i>
+                Profile Image
+            </div>
+            <div class="foundation-member-image-path">
+                @Model.ProfileImage
+            </div>
+        </div>
+    }
+    <!-- =====================================================
+         ACTIONS
+         ===================================================== -->
+    <div class="admin-form-actions">
+        <button type="button"
+                class="admin-btn-secondary"
+                onclick="closeFoundationMemberModal()">
+            <i class="bi bi-x-lg"></i>
+            Close
+        </button>
+        <button type="button"
+                class="admin-btn-primary"
+                onclick="openFoundationMemberEdit(@Model.Id)">
+            <i class="bi bi-pencil-fill"></i>
+            Edit Member
+        </button>
+    </div>
+</div>

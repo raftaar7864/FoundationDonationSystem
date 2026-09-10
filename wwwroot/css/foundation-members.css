@@ -1,0 +1,1667 @@
+﻿/* =========================================================
+   FOUNDATION MEMBERS
+   ADMIN LEADERSHIP MANAGEMENT
+   COMPACT CARD DESIGN
+   USERS-STYLE UI
+   ========================================================= */
+
+.foundation-members-page {
+    width: 100%;
+    min-width: 0;
+}
+
+
+    /* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+    .foundation-members-page .admin-page-header {
+        margin-bottom: 10px;
+    }
+
+    .foundation-members-page .admin-page-header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .foundation-members-page .admin-page-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .foundation-members-page .admin-page-title-icon {
+        width: 33px;
+        height: 33px;
+        min-width: 33px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #fed7aa;
+        border-radius: 8px;
+        background: #fff7ed;
+        color: #ea580c;
+        font-size: 15px;
+    }
+
+    .foundation-members-page .admin-page-title {
+        margin: 0;
+        color: #1f2937;
+        font-size: 20px;
+        font-weight: 750;
+        line-height: 1.2;
+    }
+
+    .foundation-members-page .admin-page-subtitle {
+        margin: 2px 0 0;
+        color: #94a3b8;
+        font-size: 11.5px;
+        line-height: 1.3;
+    }
+
+
+/* =========================================================
+   ADD BUTTON — RIGHT SIDE
+   ========================================================= */
+
+.foundation-add-btn {
+    margin-left: auto;
+    min-height: 33px;
+    height: 33px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.foundation-members-card {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.045);
+}
+
+
+    /* =========================================================
+   CARD HEADER
+   ========================================================= */
+
+    .foundation-members-card .admin-card-header {
+        min-height: 46px;
+        padding: 7px 10px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e5e7eb;
+        background: linear-gradient( 180deg, #fffaf5 0%, #ffffff 100% );
+    }
+
+    .foundation-members-card .admin-card-header-left {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .foundation-members-card .admin-card-icon {
+        width: 29px;
+        height: 29px;
+        min-width: 29px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #fed7aa;
+        border-radius: 7px;
+        background: #fff7ed;
+        color: #ea580c;
+        font-size: 14px;
+    }
+
+    .foundation-members-card .admin-card-title {
+        margin: 0;
+        color: #1f2937;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .foundation-members-card .admin-card-subtitle {
+        margin: 2px 0 0;
+        color: #94a3b8;
+        font-size: 10.5px;
+        line-height: 1.2;
+    }
+
+
+/* =========================================================
+   MEMBER CARD GRID
+   ========================================================= */
+
+.foundation-members-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat( 3, minmax(0, 1fr) );
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MEMBER CARD
+   ========================================================= */
+
+.foundation-member-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 11px;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 1px 5px rgba(15, 23, 42, 0.035);
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .foundation-member-card:hover {
+        transform: translateY(-1px);
+        border-color: #fed7aa;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.075);
+    }
+
+
+/* =========================================================
+   CARD TOP
+   ========================================================= */
+
+.foundation-member-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 7px;
+    min-width: 0;
+}
+
+.foundation-member-card-person {
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* =========================================================
+   CARD AVATAR
+   ========================================================= */
+
+.foundation-member-card-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    flex: 0 0 34px;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #ea580c;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+    .foundation-member-card-avatar img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+
+/* =========================================================
+   CARD NAME
+   ========================================================= */
+
+.foundation-member-card-heading {
+    min-width: 0;
+}
+
+    .foundation-member-card-heading h3 {
+        margin: 0;
+        overflow: hidden;
+        color: #1f2937;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.3;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.foundation-member-card-id {
+    display: block;
+    margin-top: 1px;
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   ORDER
+   ========================================================= */
+
+.foundation-card-order {
+    min-width: 24px;
+    height: 22px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.foundation-member-card-divider {
+    width: 100%;
+    height: 1px;
+    margin: 9px 0;
+    background: #f1f5f9;
+}
+
+
+/* =========================================================
+   DESIGNATION + STATUS
+   ========================================================= */
+
+.foundation-member-card-designation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   DESIGNATION
+   ========================================================= */
+
+.foundation-designation {
+    min-width: 0;
+    min-height: 21px;
+    padding: 0 7px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #c2410c;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+    .foundation-designation i {
+        color: #ea580c;
+        font-size: 10px;
+    }
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.foundation-status-form {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.foundation-status-badge {
+    min-height: 21px;
+    height: 21px;
+    padding: 0 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.14s ease;
+}
+
+    .foundation-status-badge:hover {
+        transform: translateY(-1px);
+    }
+
+    .foundation-status-badge.active {
+        border: 1px solid #bbf7d0;
+        background: #ecfdf5;
+        color: #15803d;
+    }
+
+    .foundation-status-badge.inactive {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+
+/* =========================================================
+   CARD DETAILS
+   ========================================================= */
+
+.foundation-member-card-details {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 105px;
+    gap: 9px;
+    margin-top: 10px;
+}
+
+.foundation-member-card-detail {
+    min-width: 0;
+}
+
+.foundation-card-detail-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+    color: #94a3b8;
+    font-size: 9.5px;
+    font-weight: 750;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+    .foundation-card-detail-label i {
+        color: #ea580c;
+        font-size: 10px;
+    }
+
+.foundation-member-card-bio {
+    margin: 0;
+    color: #475569;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.foundation-card-muted {
+    color: #a1aab5;
+    font-style: italic;
+}
+
+.foundation-card-date {
+    display: block;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   CARD ACTIONS
+   ========================================================= */
+
+.foundation-member-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.foundation-card-action {
+    min-width: 0;
+    min-height: 29px;
+    height: 29px;
+    flex: 1 1 0;
+    padding: 0 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: 6px;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.14s ease, background 0.14s ease, border-color 0.14s ease;
+}
+
+    .foundation-card-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .foundation-card-action i {
+        font-size: 11px;
+    }
+
+
+/* VIEW */
+
+.foundation-card-action-view {
+    border: 1px solid #dbe1e8;
+    color: #64748b;
+}
+
+    .foundation-card-action-view:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #334155;
+    }
+
+
+/* EDIT */
+
+.foundation-card-action-edit {
+    border: 1px solid #fed7aa;
+    color: #ea580c;
+}
+
+    .foundation-card-action-edit:hover {
+        background: #fff7ed;
+        border-color: #fdba74;
+        color: #c2410c;
+    }
+
+
+/* DELETE */
+
+.foundation-card-action-delete {
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+    .foundation-card-action-delete:hover {
+        background: #fef2f2;
+        border-color: #fca5a5;
+        color: #b91c1c;
+    }
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.foundation-members-empty {
+    min-height: 230px;
+    padding: 25px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.foundation-empty-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fed7aa;
+    border-radius: 11px;
+    background: #fff7ed;
+    color: #ea580c;
+    font-size: 22px;
+}
+
+.foundation-members-empty h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.foundation-members-empty p {
+    max-width: 350px;
+    margin: 5px 0 12px;
+    color: #94a3b8;
+    font-size: 11.5px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   ALERT
+   ========================================================= */
+
+.foundation-members-page .admin-alert {
+    margin-bottom: 9px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-radius: 7px;
+}
+
+.foundation-members-page .admin-alert-content {
+    flex: 1;
+    font-size: 11.5px;
+    font-weight: 650;
+}
+
+.foundation-members-page .admin-alert-icon {
+    font-size: 13px;
+}
+
+.foundation-members-page .admin-alert-close {
+    width: 23px;
+    height: 23px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MAIN MODAL
+   ========================================================= */
+
+.foundation-member-modal,
+.foundation-delete-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+    .foundation-member-modal.show,
+    .foundation-delete-modal.show {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+
+/* =========================================================
+   BACKDROP
+   ========================================================= */
+
+.foundation-member-modal-backdrop,
+.foundation-delete-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+
+/* =========================================================
+   MODAL DIALOG
+   ========================================================= */
+
+.foundation-member-modal-dialog {
+    position: relative;
+    z-index: 2;
+    width: min(720px, 100%);
+    max-height: calc(100vh - 20px);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+    transform: translateY(8px) scale(0.99);
+    transition: transform 0.18s ease;
+}
+
+.foundation-member-modal.show
+.foundation-member-modal-dialog {
+    transform: translateY(0) scale(1);
+}
+
+.foundation-member-modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 20px);
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.foundation-member-modal-header {
+    min-height: 46px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient( 180deg, #fff8ef, #ffffff );
+}
+
+.foundation-member-modal-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.foundation-member-modal-icon {
+    width: 29px;
+    height: 29px;
+    min-width: 29px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fed7aa;
+    border-radius: 7px;
+    background: #fff7ed;
+    color: #ea580c;
+    font-size: 14px;
+}
+
+.foundation-member-modal-header h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.foundation-member-modal-header p {
+    margin: 2px 0 0;
+    color: #94a3b8;
+    font-size: 10.5px;
+}
+
+.foundation-member-modal-close {
+    width: 29px;
+    height: 29px;
+    min-width: 29px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #64748b;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+    .foundation-member-modal-close:hover {
+        background: #fff1e6;
+        color: #ea580c;
+    }
+
+
+/* =========================================================
+   MODAL BODY
+   ========================================================= */
+
+.foundation-member-modal-body {
+    max-height: calc(100vh - 66px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 11px;
+    scrollbar-width: thin;
+}
+
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    gap: 9px 11px;
+}
+
+.admin-form-group {
+    min-width: 0;
+}
+
+.admin-form-group-full {
+    grid-column: 1 / -1;
+}
+
+
+/* =========================================================
+   FORM LABEL
+   ========================================================= */
+
+.admin-form-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FORM CONTROL
+   ========================================================= */
+
+.admin-form-control {
+    width: 100%;
+    min-height: 35px;
+    padding: 7px 8px;
+    box-sizing: border-box;
+    border: 1px solid #dbe1e8;
+    border-radius: 7px;
+    outline: none;
+    background: #ffffff;
+    color: #1f2937;
+    font-family: inherit;
+    font-size: 12.5px;
+    line-height: 1.4;
+    transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+    .admin-form-control:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.09);
+    }
+
+textarea.admin-form-control {
+    min-height: 82px;
+    resize: vertical;
+}
+
+.admin-form-help {
+    display: block;
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.field-validation-error,
+.field-validation {
+    display: block;
+    margin-top: 3px;
+    color: #dc2626;
+    font-size: 10.5px;
+}
+
+
+/* =========================================================
+   VALIDATION SUMMARY
+   ========================================================= */
+
+.validation-summary-errors,
+.admin-validation-summary {
+    margin-bottom: 9px;
+    padding: 7px 9px;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 11px;
+}
+
+    .validation-summary-errors ul,
+    .admin-validation-summary ul {
+        margin: 0;
+        padding-left: 15px;
+    }
+
+
+/* =========================================================
+   FORM ACTIONS
+   ========================================================= */
+
+.admin-form-actions {
+    margin-top: 12px;
+    padding-top: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.admin-btn-primary,
+.admin-btn-secondary,
+.admin-btn-danger {
+    min-height: 32px;
+    height: 32px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.admin-btn-primary {
+    border: 1px solid #ea580c;
+    background: #ea580c;
+    color: #ffffff;
+}
+
+    .admin-btn-primary:hover {
+        border-color: #c2410c;
+        background: #c2410c;
+    }
+
+.admin-btn-secondary {
+    border: 1px solid #dbe1e8;
+    background: #ffffff;
+    color: #475569;
+}
+
+    .admin-btn-secondary:hover {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+    }
+
+.admin-btn-danger {
+    border: 1px solid #dc2626;
+    background: #dc2626;
+    color: #ffffff;
+}
+
+    .admin-btn-danger:hover {
+        border-color: #b91c1c;
+        background: #b91c1c;
+    }
+
+
+/* =========================================================
+   IMAGE UPLOAD
+   ========================================================= */
+
+.foundation-image-upload {
+    width: 100%;
+}
+
+.foundation-image-preview {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fed7aa;
+    border-radius: 9px;
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+    .foundation-image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.foundation-image-preview-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+.foundation-image-file-error {
+    display: block;
+    margin-top: 3px;
+    color: #dc2626;
+    font-size: 10.5px;
+}
+
+.foundation-remove-image-option {
+    margin-top: 6px;
+    padding: 7px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 10.5px;
+    cursor: pointer;
+}
+
+    .foundation-remove-image-option.selected {
+        background: #fff1f2;
+        border-color: #fda4af;
+    }
+
+.foundation-remove-image-check {
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    accent-color: #dc2626;
+}
+
+.foundation-image-remove-preview {
+    margin-top: 5px;
+    padding: 7px 8px;
+    border: 1px dashed #fca5a5;
+    border-radius: 7px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 10.5px;
+}
+
+
+/* =========================================================
+   DETAILS
+   ========================================================= */
+
+.foundation-member-details-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.foundation-member-details-photo {
+    width: 65px;
+    height: 65px;
+    min-width: 65px;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fed7aa;
+    border-radius: 9px;
+    background: #fff7ed;
+    color: #ea580c;
+    font-size: 23px;
+    font-weight: 750;
+}
+
+    .foundation-member-details-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.foundation-member-details-heading {
+    min-width: 0;
+}
+
+    .foundation-member-details-heading h3 {
+        margin: 0 0 3px;
+        overflow: hidden;
+        color: #1f2937;
+        font-size: 17px;
+        font-weight: 750;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.foundation-member-details-designation {
+    color: #ea580c;
+    font-size: 10.5px;
+    font-weight: 750;
+    text-transform: uppercase;
+}
+
+.foundation-member-details-divider {
+    height: 1px;
+    margin: 11px 0;
+    background: #e5e7eb;
+}
+
+.foundation-member-details-section {
+    margin-bottom: 10px;
+}
+
+.foundation-member-details-label {
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #475569;
+    font-size: 10.5px;
+    font-weight: 750;
+    text-transform: uppercase;
+}
+
+    .foundation-member-details-label i {
+        color: #ea580c;
+    }
+
+.foundation-member-details-bio {
+    padding: 8px 9px;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 11.5px;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.foundation-member-details-empty {
+    padding: 8px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 7px;
+    color: #94a3b8;
+    font-size: 10.5px;
+    text-align: center;
+}
+
+.foundation-member-details-grid {
+    display: grid;
+    grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    gap: 7px 9px;
+}
+
+.foundation-member-detail-item {
+    padding: 8px 9px;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+}
+
+.foundation-member-detail-label {
+    display: block;
+    margin-bottom: 2px;
+    color: #94a3b8;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.foundation-member-detail-item strong {
+    display: block;
+    overflow: hidden;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.foundation-detail-status-active {
+    color: #15803d;
+}
+
+.foundation-detail-status-inactive {
+    color: #b91c1c;
+}
+
+.foundation-member-image-info {
+    margin-top: 11px;
+}
+
+.foundation-member-image-path {
+    padding: 7px 8px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    background: #f8fafc;
+    color: #94a3b8;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.foundation-member-loading {
+    min-height: 170px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.foundation-loading-spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #f97316;
+    border-radius: 50%;
+    animation: foundationSpin .7s linear infinite;
+}
+
+.foundation-button-spinner {
+    width: 11px;
+    height: 11px;
+    display: inline-block;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: foundationSpin .65s linear infinite;
+}
+
+@keyframes foundationSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.foundation-member-load-error {
+    min-height: 170px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.foundation-error-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 19px;
+}
+
+.foundation-member-load-error h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 15px;
+}
+
+.foundation-member-load-error p {
+    max-width: 310px;
+    margin: 5px 0 11px;
+    color: #94a3b8;
+    font-size: 10.5px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   DELETE MODAL
+   ========================================================= */
+
+.foundation-delete-dialog {
+    position: relative;
+    z-index: 2;
+    width: min(390px,100%);
+}
+
+.foundation-delete-content {
+    padding: 21px 18px 17px;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 24px 70px rgba(15,23,42,.22);
+    text-align: center;
+}
+
+.foundation-delete-icon {
+    width: 46px;
+    height: 46px;
+    margin: 0 auto 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fecaca;
+    border-radius: 11px;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 21px;
+}
+
+.foundation-delete-content h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 17px;
+}
+
+.foundation-delete-content p {
+    max-width: 310px;
+    margin: 5px auto 0;
+    color: #64748b;
+    font-size: 11.5px;
+    line-height: 1.5;
+}
+
+.foundation-delete-warning {
+    color: #b91c1c !important;
+    font-size: 10.5px !important;
+}
+
+.foundation-delete-actions {
+    margin-top: 13px;
+    padding-top: 9px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* =========================================================
+   BODY LOCK
+   ========================================================= */
+
+body.foundation-member-modal-open,
+body.foundation-delete-modal-open {
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+.foundation-card-action:focus-visible,
+.foundation-status-badge:focus-visible,
+.foundation-add-btn:focus-visible,
+.foundation-member-modal-close:focus-visible,
+.admin-form-control:focus-visible,
+.admin-btn-primary:focus-visible,
+.admin-btn-secondary:focus-visible,
+.admin-btn-danger:focus-visible {
+    outline: 2px solid #f97316;
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .foundation-members-grid {
+        grid-template-columns: repeat( 2, minmax(0,1fr) );
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .foundation-members-page
+    .admin-page-header-content {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .foundation-add-btn {
+        width: 100%;
+    }
+
+    .foundation-members-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .foundation-member-card {
+        padding: 10px;
+    }
+
+    .foundation-member-modal {
+        padding: 7px;
+    }
+
+    .foundation-member-modal-dialog {
+        width: 100%;
+        max-height: calc(100vh - 14px);
+        border-radius: 9px;
+    }
+
+    .foundation-member-modal-content {
+        max-height: calc(100vh - 14px);
+    }
+
+    .foundation-member-modal-body {
+        max-height: calc(100vh - 66px);
+    }
+
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-form-group-full {
+        grid-column: auto;
+    }
+
+    .foundation-member-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .foundation-members-page
+    .admin-page-title {
+        font-size: 18px;
+    }
+
+    .foundation-members-page
+    .admin-page-subtitle {
+        font-size: 10.5px;
+    }
+
+    .foundation-members-grid {
+        gap: 7px;
+        padding: 7px;
+    }
+
+    .foundation-member-card {
+        padding: 9px;
+        border-radius: 8px;
+    }
+
+    .foundation-member-card-avatar {
+        width: 31px;
+        height: 31px;
+        min-width: 31px;
+        flex-basis: 31px;
+    }
+
+    .foundation-member-card-heading h3 {
+        font-size: 12px;
+    }
+
+    .foundation-member-card-details {
+        grid-template-columns: 1fr 90px;
+        gap: 7px;
+    }
+
+    .foundation-card-action {
+        min-height: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+        .foundation-card-action span {
+            display: none;
+        }
+
+    .foundation-member-details-photo {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+    }
+
+    .foundation-member-details-heading h3 {
+        font-size: 16px;
+    }
+
+    .admin-form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+        .admin-form-actions
+        .admin-btn-primary,
+        .admin-form-actions
+        .admin-btn-secondary,
+        .admin-form-actions
+        .admin-btn-danger {
+            width: 100%;
+        }
+
+    .foundation-delete-actions {
+        flex-direction: column-reverse;
+    }
+
+        .foundation-delete-actions
+        .admin-btn-primary,
+        .foundation-delete-actions
+        .admin-btn-secondary,
+        .foundation-delete-actions
+        .admin-btn-danger {
+            width: 100%;
+        }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .foundation-member-card,
+    .foundation-card-action,
+    .foundation-status-badge,
+    .foundation-member-modal,
+    .foundation-member-modal-dialog {
+        transition: none;
+    }
+
+    .foundation-loading-spinner,
+    .foundation-button-spinner {
+        animation: none;
+    }
+}
+
+.foundation-members-card .admin-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.foundation-members-card .admin-card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.foundation-add-btn {
+    margin-left: auto;
+}
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.foundation-members-page .admin-page-header {
+    margin-bottom: 10px;
+}
+
+.foundation-members-page .admin-page-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.foundation-members-page .admin-page-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   ADD MEMBER BUTTON — RIGHT SIDE
+   ========================================================= */
+
+.foundation-add-btn {
+    min-height: 33px;
+    height: 33px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-left: auto;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+/* =========================================================
+   FOUNDATION MEMBERS — PAGE HEADER
+   ========================================================= */
+
+.foundation-members-page .admin-page-header {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.foundation-members-page .admin-page-header-content {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start !important;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   PAGE TITLE — LEFT SIDE
+   ========================================================= */
+
+.foundation-members-page .admin-page-title-wrapper {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+
+/* =========================================================
+   ADD MEMBER — FAR RIGHT
+   ========================================================= */
+
+.foundation-members-page .foundation-add-btn {
+    position: absolute !important;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    margin: 0 !important;
+    min-height: 33px;
+    height: 33px;
+    padding: 0 10px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    z-index: 5;
+}
+
+
+    /* =========================================================
+   ADD MEMBER ICON
+   ========================================================= */
+
+    .foundation-members-page .foundation-add-btn i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .foundation-members-page .admin-page-header-content {
+        padding-right: 0;
+    }
+
+    .foundation-members-page .foundation-add-btn {
+        position: static !important;
+        transform: none;
+        margin-left: auto !important;
+        min-height: 32px;
+        height: 32px;
+        padding: 0 9px;
+    }
+
+    .foundation-members-page .admin-page-title-wrapper {
+        flex: 1 1 auto;
+    }
+}

@@ -25,6 +25,7 @@ namespace FoundationDonationSystem.Data
         public DbSet<PostSubCategory> PostSubCategories { get; set; }
         public DbSet<SupportRequest> SupportRequests { get; set; } = null!;
         public DbSet<Grievance> Grievances { get; set; } = null!;
+        public DbSet<FoundationMember> FoundationMembers { get; set; }
         // =========================================================
         // MODEL CONFIGURATION
         // =========================================================

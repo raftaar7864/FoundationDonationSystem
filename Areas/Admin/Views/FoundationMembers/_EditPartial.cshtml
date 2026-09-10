@@ -1,0 +1,415 @@
+﻿@model FoundationDonationSystem.Models.FoundationMember
+<form asp-area="Admin"
+      asp-controller="FoundationMembers"
+      asp-action="Edit"
+      method="post"
+      enctype="multipart/form-data"
+      id="foundationMemberEditForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden"
+           asp-for="Id" />
+    <div asp-validation-summary="ModelOnly"
+         class="validation-summary-errors"></div>
+    <div class="admin-form-grid">
+        <!-- =====================================================
+             FULL NAME
+             ===================================================== -->
+        <div class="admin-form-group">
+            <label asp-for="FullName"
+                   class="admin-form-label">
+                Full Name
+            </label>
+            <input asp-for="FullName"
+                   class="admin-form-control"
+                   placeholder="Enter full name"
+                   autocomplete="off" />
+            <span asp-validation-for="FullName"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- =====================================================
+             DESIGNATION
+             ===================================================== -->
+        <div class="admin-form-group">
+            <label asp-for="Designation"
+                   class="admin-form-label">
+                Designation
+            </label>
+            <select asp-for="Designation"
+                    class="admin-form-control">
+                <option value="">
+                    Select designation
+                </option>
+                <option value="Founder">
+                    Founder
+                </option>
+                <option value="President">
+                    President
+                </option>
+                <option value="Vice President">
+                    Vice President
+                </option>
+                <option value="General Secretary">
+                    General Secretary
+                </option>
+                <option value="Joint Secretary">
+                    Joint Secretary
+                </option>
+                <option value="Treasurer">
+                    Treasurer
+                </option>
+                <option value="Executive Member">
+                    Executive Member
+                </option>
+                <option value="Advisory Member">
+                    Advisory Member
+                </option>
+            </select>
+            <span asp-validation-for="Designation"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- =====================================================
+             PROFILE IMAGE
+             ===================================================== -->
+        <div class="admin-form-group admin-form-group-full">
+            <label asp-for="ProfileImageFile"
+                   class="admin-form-label">
+                Profile Image
+            </label>
+            <div class="foundation-image-upload">
+                <!-- =================================================
+                     IMAGE PREVIEW
+                     ================================================= -->
+                <div class="foundation-image-preview"
+                     id="foundationEditImagePreview">
+                    @if (!string.IsNullOrWhiteSpace(Model.ProfileImage))
+                    {
+                        <img src="@Model.ProfileImage"
+                             alt="@Model.FullName"
+                             class="foundation-image-preview-img"
+                             id="foundationEditPreviewImage" />
+                    }
+                    else
+                    {
+                        <div class="foundation-image-placeholder">
+                            <i class="bi bi-person-bounding-box"></i>
+                            <span>
+                                No image
+                            </span>
+                        </div>
+                    }
+                </div>
+                <!-- =================================================
+                     UPLOAD CONTENT
+                     ================================================= -->
+                <div class="foundation-image-upload-content">
+                    <label for="ProfileImageFile"
+                           class="foundation-image-upload-button">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        <span>
+                            @(string.IsNullOrWhiteSpace(Model.ProfileImage)
+                                ? "Choose Image"
+                                : "Change Image")
+                        </span>
+                    </label>
+                    <input asp-for="ProfileImageFile"
+                           type="file"
+                           accept="image/jpeg,image/png,image/webp"
+                           class="foundation-image-file-input"
+                           id="ProfileImageFile" />
+                    <div class="foundation-image-upload-info">
+                        <strong>
+                            JPG, PNG or WEBP
+                        </strong>
+                        <span>
+                            Maximum size: 2 MB
+                        </span>
+                    </div>
+                    <!-- =================================================
+                         CURRENT IMAGE STATUS
+                         ================================================= -->
+                    <div class="foundation-image-file-name"
+                         id="foundationEditImageFileName">
+                        @if (!string.IsNullOrWhiteSpace(Model.ProfileImage))
+                        {
+                            <span>
+                                Current image is being used
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                No image selected
+                            </span>
+                        }
+                    </div>
+                    <!-- =================================================
+                         REMOVE IMAGE
+                         ================================================= -->
+                    @if (!string.IsNullOrWhiteSpace(Model.ProfileImage))
+                    {
+                        <label class="foundation-remove-image-option"
+                               id="foundationRemoveImageOption">
+                            <input asp-for="RemoveProfileImage"
+                                   type="checkbox"
+                                   id="RemoveProfileImage" />
+                            <span class="foundation-remove-image-check">
+                                <i class="bi bi-trash3-fill"></i>
+                            </span>
+                            <span>
+                                Remove current image
+                            </span>
+                        </label>
+                    }
+                </div>
+            </div>
+            <span asp-validation-for="ProfileImageFile"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- =====================================================
+             BIOGRAPHY
+             ===================================================== -->
+        <div class="admin-form-group admin-form-group-full">
+            <label asp-for="ShortBio"
+                   class="admin-form-label">
+                Biography
+            </label>
+            <textarea asp-for="ShortBio"
+                      class="admin-form-control"
+                      rows="6"
+                      placeholder="Write a short biography..."></textarea>
+            <span asp-validation-for="ShortBio"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- =====================================================
+             DISPLAY ORDER
+             ===================================================== -->
+        <div class="admin-form-group">
+            <label asp-for="DisplayOrder"
+                   class="admin-form-label">
+                Display Order
+            </label>
+            <input asp-for="DisplayOrder"
+                   type="number"
+                   min="0"
+                   class="admin-form-control" />
+            <span asp-validation-for="DisplayOrder"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- =====================================================
+             STATUS
+             ===================================================== -->
+        <div class="admin-form-group">
+            <label class="admin-form-label">
+                Status
+            </label>
+            <label class="admin-form-checkbox">
+                <input asp-for="IsActive"
+                       type="checkbox" />
+                <span>
+                    Show this member publicly
+                </span>
+            </label>
+        </div>
+    </div>
+    <!-- =========================================================
+         ACTIONS
+         ========================================================= -->
+    <div class="admin-form-actions">
+        <button type="button"
+                class="admin-btn-secondary"
+                onclick="closeFoundationMemberModal()">
+            <i class="bi bi-x-lg"></i>
+            Cancel
+        </button>
+        <button type="submit"
+                class="admin-btn-primary"
+                id="foundationMemberEditSubmit">
+            <i class="bi bi-save"></i>
+            Update Member
+        </button>
+    </div>
+</form>
+<script>
+    (function() {
+        const input =
+            document.getElementById(
+                "ProfileImageFile"
+            );
+        const preview =
+            document.getElementById(
+                "foundationEditImagePreview"
+            );
+        const fileName =
+            document.getElementById(
+                "foundationEditImageFileName"
+            );
+        const removeCheckbox =
+            document.getElementById(
+                "RemoveProfileImage"
+            );
+        const removeOption =
+            document.getElementById(
+                "foundationRemoveImageOption"
+            );
+        if (!input || !preview || !fileName) {
+            return;
+        }
+        /* =========================================================
+           FILE SELECT
+           ========================================================= */
+        input.addEventListener(
+            "change",
+            function() {
+                const file =
+                    this.files &&
+                        this.files.length
+                        ? this.files[0]
+                        : null;
+                if (!file) {
+                    return;
+                }
+                /*
+                 * If a new image is selected,
+                 * automatically cancel Remove Image.
+                 */
+                if (removeCheckbox) {
+                    removeCheckbox.checked = false;
+                    if (removeOption) {
+                        removeOption.classList.remove(
+                            "selected"
+                        );
+                    }
+                }
+                /* =================================================
+                   FILE SIZE
+                   ================================================= */
+                if (
+                    file.size >
+                    2 * 1024 * 1024
+                ) {
+                    fileName.innerHTML = `
+                            <span class="foundation-image-file-error">
+                                Image is larger than 2 MB
+                            </span>
+                        `;
+                    input.value = "";
+                    return;
+                }
+                /* =================================================
+                   FILE TYPE
+                   ================================================= */
+                const allowedTypes = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp"
+                ];
+                if (
+                    !allowedTypes.includes(
+                        file.type
+                    )
+                ) {
+                    fileName.innerHTML = `
+                            <span class="foundation-image-file-error">
+                                JPG, PNG or WEBP only
+                            </span>
+                        `;
+                    input.value = "";
+                    return;
+                }
+                /* =================================================
+                   FILE NAME
+                   ================================================= */
+                fileName.innerHTML = `
+                        <span>
+                            New image: ${escapeHtml(file.name)}
+                        </span>
+                    `;
+                /* =================================================
+                   PREVIEW
+                   ================================================= */
+                const reader =
+                    new FileReader();
+                reader.onload =
+                    function(event) {
+                        preview.innerHTML = `
+                                <img src="${event.target.result}"
+                                     alt="New profile image preview"
+                                     class="foundation-image-preview-img" />
+                            `;
+                    };
+                reader.readAsDataURL(file);
+            }
+        );
+        /* =========================================================
+           REMOVE IMAGE CHECKBOX
+           ========================================================= */
+        if (removeCheckbox) {
+            removeCheckbox.addEventListener(
+                "change",
+                function() {
+                    if (this.checked) {
+                        /*
+                         * Remove selected new file.
+                         */
+                        input.value = "";
+                        /*
+                         * Update preview.
+                         */
+                        preview.innerHTML = `
+                                <div class="foundation-image-placeholder foundation-image-remove-preview">
+                                    <i class="bi bi-trash3-fill"></i>
+                                    <span>
+                                        Image will be removed
+                                    </span>
+                                </div>
+                            `;
+                        /*
+                         * Update text.
+                         */
+                        fileName.innerHTML = `
+                                <span class="foundation-image-file-error">
+                                    Current image will be removed
+                                </span>
+                            `;
+                        if (removeOption) {
+                            removeOption.classList.add(
+                                "selected"
+                            );
+                        }
+                    }
+                    else {
+                        /*
+                         * Restore existing image preview.
+                         */
+                        preview.innerHTML = `
+                                <img src="@Model.ProfileImage"
+                                     alt="@Model.FullName"
+                                     class="foundation-image-preview-img" />
+                            `;
+                        fileName.innerHTML = `
+                                <span>
+                                    Current image is being used
+                                </span>
+                            `;
+                        if (removeOption) {
+                            removeOption.classList.remove(
+                                "selected"
+                            );
+                        }
+                    }
+                }
+            );
+        }
+        /* =========================================================
+           ESCAPE HTML
+           ========================================================= */
+        function escapeHtml(value) {
+            const div =
+                document.createElement(
+                    "div"
+                );
+            div.textContent = value;
+            return div.innerHTML;
+        }
+    })();
+</script>

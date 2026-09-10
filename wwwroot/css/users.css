@@ -13,6 +13,7 @@
         width: 100%;
         margin-bottom: 14px;
     }
+
     .users-page .users-header-actions {
         display: flex;
         align-items: center;
@@ -34,6 +35,7 @@
     justify-content: space-between;
     gap: 12px;
 }
+
     .users-card-header .settings-card-title {
         min-width: 0;
     }
@@ -44,9 +46,11 @@
     width: 100%;
     min-width: 1050px;
 }
+
     .users-table th {
         white-space: nowrap;
     }
+
     .users-table td {
         vertical-align: middle;
     }
@@ -59,6 +63,7 @@
     gap: 9px;
     min-width: 190px;
 }
+
 .users-user-avatar {
     width: 34px;
     height: 34px;
@@ -74,12 +79,14 @@
     font-weight: 700;
     text-transform: uppercase;
 }
+
 .users-user-info {
     min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
+
     .users-user-info strong,
     .users-username {
         display: block;
@@ -88,6 +95,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
 .users-username {
     color: #6b7280;
     font-size: 11px;
@@ -110,6 +118,7 @@
     gap: 5px;
     white-space: nowrap;
 }
+
     .users-table .admin-table-actions .admin-btn {
         min-width: 0;
     }
@@ -138,6 +147,7 @@
     padding: 15px;
     box-sizing: border-box;
 }
+
     .payment-account-modal.show {
         display: flex;
     }
@@ -176,6 +186,7 @@
         opacity: 0;
         transform: translateY(15px) scale(0.98);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -195,6 +206,7 @@
     border-bottom: 1px solid #e5e7eb;
     box-sizing: border-box;
 }
+
     .payment-account-modal-header h2 {
         margin: 0;
         color: #111827;
@@ -220,10 +232,12 @@
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
 }
+
     .payment-account-modal-close:hover {
         background: #f3f4f6;
         color: #111827;
     }
+
     .payment-account-modal-close:focus-visible {
         outline: 2px solid #f97316;
         outline-offset: 2px;
@@ -291,15 +305,18 @@
     transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     box-sizing: border-box;
 }
+
     .admin-form-control:focus {
         border-color: #f97316;
         box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.10);
     }
+
     .admin-form-control[readonly] {
         background: #f9fafb;
         color: #374151;
         cursor: default;
     }
+
 select.admin-form-control {
     cursor: pointer;
 }
@@ -309,10 +326,12 @@ select.admin-form-control {
 .admin-validation-summary {
     margin-bottom: 13px;
 }
+
     .admin-validation-summary ul {
         margin: 0;
         padding-left: 18px;
     }
+
 .field-validation {
     display: block;
     margin-top: 4px;
@@ -334,6 +353,7 @@ select.admin-form-control {
     background: #f9fafb;
     box-sizing: border-box;
 }
+
 .payment-active-label {
     color: #374151;
     font-size: 12px;
@@ -349,12 +369,14 @@ select.admin-form-control {
     height: 21px;
     flex: 0 0 auto;
 }
+
     .admin-switch input {
         position: absolute;
         opacity: 0;
         width: 0;
         height: 0;
     }
+
     .admin-switch span {
         position: absolute;
         inset: 0;
@@ -363,6 +385,7 @@ select.admin-form-control {
         cursor: pointer;
         transition: background 0.15s ease;
     }
+
         .admin-switch span::before {
             content: "";
             position: absolute;
@@ -375,9 +398,11 @@ select.admin-form-control {
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.20);
             transition: transform 0.15s ease;
         }
+
     .admin-switch input:checked + span {
         background: #16a34a;
     }
+
         .admin-switch input:checked + span::before {
             transform: translateX(17px);
         }
@@ -390,9 +415,11 @@ select.admin-form-control {
     gap: 12px 15px;
     margin-top: 14px;
 }
+
 .payment-detail-item {
     min-width: 0;
 }
+
     .payment-detail-item label {
         display: block;
         margin-bottom: 4px;
@@ -400,6 +427,7 @@ select.admin-form-control {
         font-size: 10px;
         font-weight: 600;
     }
+
     .payment-detail-item strong {
         display: block;
         color: #1f2937;
@@ -419,6 +447,7 @@ select.admin-form-control {
     padding-top: 13px;
     border-top: 1px solid #e5e7eb;
 }
+
     .payment-popup-actions .admin-btn {
         min-height: 36px;
     }
@@ -446,6 +475,7 @@ select.admin-form-control {
     border-radius: 50%;
     animation: usersSpinner 0.7s linear infinite;
 }
+
 @keyframes usersSpinner {
     to {
         transform: rotate(360deg);
@@ -458,12 +488,14 @@ select.admin-form-control {
     padding: 25px 20px;
     text-align: center;
 }
+
     .payment-account-modal-error strong {
         display: block;
         margin-bottom: 5px;
         color: #b91c1c;
         font-size: 14px;
     }
+
     .payment-account-modal-error p {
         margin: 0 0 15px;
         color: #6b7280;
@@ -476,13 +508,16 @@ select.admin-form-control {
 .payment-account-modal-body::-webkit-scrollbar {
     width: 6px;
 }
+
 .payment-account-modal-body::-webkit-scrollbar-track {
     background: #f9fafb;
 }
+
 .payment-account-modal-body::-webkit-scrollbar-thumb {
     background: #d1d5db;
     border-radius: 999px;
 }
+
     .payment-account-modal-body::-webkit-scrollbar-thumb:hover {
         background: #9ca3af;
     }
@@ -499,10 +534,12 @@ body.user-modal-open {
     .users-table {
         min-width: 950px;
     }
+
     .payment-form-grid,
     .payment-detail-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
     .payment-account-modal-dialog {
         width: calc(100% - 24px);
         max-height: calc(100vh - 30px);
@@ -517,42 +554,53 @@ body.user-modal-open {
         flex-direction: column;
         gap: 8px;
     }
+
     .users-page .users-header-actions {
         width: 100%;
     }
+
         .users-page .users-header-actions .admin-btn {
             width: 100%;
             justify-content: center;
         }
+
     .payment-form-grid,
     .payment-detail-grid {
         grid-template-columns: 1fr;
     }
+
     .payment-account-modal {
         padding: 8px;
     }
+
     .payment-account-modal-dialog {
         width: 100%;
         max-height: calc(100vh - 16px);
         border-radius: 8px;
     }
+
     .payment-account-modal-header {
         min-height: 46px;
         padding: 10px 12px;
     }
+
         .payment-account-modal-header h2 {
             font-size: 15px;
         }
+
     .payment-account-modal-body {
         max-height: calc(100vh - 75px);
     }
+
     .payment-popup-content {
         padding: 12px;
     }
+
     .payment-popup-actions {
         flex-direction: column-reverse;
         align-items: stretch;
     }
+
         .payment-popup-actions .admin-btn {
             width: 100%;
             justify-content: center;
@@ -565,28 +613,35 @@ body.user-modal-open {
     .payment-account-modal {
         padding: 5px;
     }
+
     .payment-account-modal-dialog {
         width: 100%;
         border-radius: 7px;
     }
+
     .payment-account-modal-header {
         padding: 9px 10px;
     }
+
     .payment-account-modal-close {
         width: 30px;
         height: 30px;
         font-size: 23px;
     }
+
     .payment-popup-content {
         padding: 10px;
     }
+
     .payment-form-grid {
         gap: 10px;
     }
+
     .admin-form-control {
         min-height: 36px;
         padding: 7px 9px;
     }
+
     .payment-active-box {
         min-height: 36px;
     }
@@ -605,12 +660,14 @@ body.user-modal-open {
         width: 100%;
         margin-bottom: 12px;
     }
+
     .users-page .users-header-actions {
         display: flex;
         align-items: center;
         justify-content: flex-end;
         gap: 6px;
     }
+
         .users-page .users-header-actions .admin-btn {
             min-height: 34px;
             height: 34px;
@@ -639,11 +696,13 @@ body.user-modal-open {
     border-bottom: 1px solid #e5e7eb;
     background: linear-gradient(180deg, #fffaf5 0%, #ffffff 100%);
 }
+
     .users-card-header .settings-card-title {
         font-size: 13px;
         font-weight: 700;
         color: #1f2937;
     }
+
     .users-card-header .settings-card-subtitle {
         margin-top: 2px;
         font-size: 10px;
@@ -664,6 +723,7 @@ body.user-modal-open {
     border-collapse: separate;
     border-spacing: 0;
 }
+
     .users-table thead th {
         height: 38px;
         padding: 7px 10px;
@@ -677,6 +737,7 @@ body.user-modal-open {
         text-transform: uppercase;
         white-space: nowrap;
     }
+
     .users-table tbody td {
         height: 49px;
         padding: 7px 10px;
@@ -687,12 +748,15 @@ body.user-modal-open {
         vertical-align: middle;
         background: #ffffff;
     }
+
     .users-table tbody tr:last-child td {
         border-bottom: 0;
     }
+
     .users-table tbody tr {
         transition: background .14s ease;
     }
+
         .users-table tbody tr:hover td {
             background: #fffaf5;
         }
@@ -703,6 +767,7 @@ body.user-modal-open {
     gap: 8px;
     min-width: 185px;
 }
+
 .users-user-avatar {
     width: 32px;
     height: 32px;
@@ -719,12 +784,14 @@ body.user-modal-open {
     line-height: 1;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.6);
 }
+
 .users-user-info {
     min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 1px;
 }
+
     .users-user-info strong,
     .users-username {
         display: block;
@@ -733,11 +800,13 @@ body.user-modal-open {
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
     .users-user-info strong {
         color: #1f2937;
         font-size: 11px;
         font-weight: 700;
     }
+
 .users-username {
     color: #94a3b8;
     font-size: 10px;
@@ -756,16 +825,19 @@ body.user-modal-open {
     line-height: 1;
     white-space: nowrap;
 }
+
 .users-table .status-verified {
     background: #ecfdf5;
     color: #15803d;
     border: 1px solid #bbf7d0;
 }
+
 .users-table .status-pending {
     background: #fff7ed;
     color: #c2410c;
     border: 1px solid #fed7aa;
 }
+
 .users-table .status-rejected {
     background: #fef2f2;
     color: #b91c1c;
@@ -779,6 +851,7 @@ body.user-modal-open {
     gap: 4px;
     white-space: nowrap;
 }
+
     .users-table .admin-table-actions .admin-btn,
     .users-table .admin-table-actions button,
     .users-table .admin-table-actions a {
@@ -795,6 +868,7 @@ body.user-modal-open {
         border-radius: 7px;
         line-height: 1;
     }
+
         .users-table .admin-table-actions svg,
         .users-table .admin-table-actions .admin-btn svg {
             width: 14px;
@@ -805,6 +879,7 @@ body.user-modal-open {
             margin: 0;
             pointer-events: none;
         }
+
         .users-table .admin-table-actions .admin-btn:hover,
         .users-table .admin-table-actions button:hover,
         .users-table .admin-table-actions a:hover {
@@ -825,11 +900,13 @@ body.user-modal-open {
     padding: 16px;
     background: rgba(15, 23, 42, .18);
 }
+
 .payment-account-modal-overlay {
     background: rgba(15, 23, 42, .58);
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
 }
+
 .payment-account-modal-dialog {
     width: 100%;
     max-width: 720px;
@@ -840,6 +917,7 @@ body.user-modal-open {
     background: #ffffff;
     box-shadow: 0 24px 70px rgba(15, 23, 42, .22);
 }
+
 .payment-account-modal-header {
     min-height: 50px;
     padding: 9px 13px;
@@ -847,12 +925,14 @@ body.user-modal-open {
     background: linear-gradient(180deg, #fff8ef 0%, #ffffff 100%);
     border-bottom: 1px solid #e5e7eb;
 }
+
     .payment-account-modal-header h2 {
         color: #1f2937;
         font-size: 15px;
         font-weight: 750;
         line-height: 1.25;
     }
+
 .payment-account-modal-close {
     width: 31px;
     height: 31px;
@@ -861,14 +941,17 @@ body.user-modal-open {
     color: #64748b;
     font-size: 22px;
 }
+
     .payment-account-modal-close:hover {
         background: #fff1e6;
         color: #ea580c;
     }
+
 .payment-account-modal-body {
     max-height: calc(100vh - 82px);
     overflow-y: auto;
 }
+
 .payment-popup-content {
     padding: 14px;
 }
@@ -877,15 +960,18 @@ body.user-modal-open {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px 12px;
 }
+
 .admin-form-group {
     min-width: 0;
 }
+
 .admin-form-label {
     margin-bottom: 4px;
     color: #475569;
     font-size: 10px;
     font-weight: 700;
 }
+
 .admin-form-control {
     min-height: 36px;
     padding: 7px 9px;
@@ -896,21 +982,26 @@ body.user-modal-open {
     font-size: 11px;
     box-shadow: 0 1px 1px rgba(15,23,42,.02);
 }
+
     .admin-form-control:hover {
         border-color: #cbd5e1;
     }
+
     .admin-form-control:focus {
         border-color: #f97316;
         box-shadow: 0 0 0 3px rgba(249,115,22,.09);
     }
+
     .admin-form-control[readonly] {
         background: #f8fafc;
         color: #475569;
     }
+
 .field-validation {
     margin-top: 3px;
     font-size: 9px;
 }
+
 .admin-validation-summary {
     margin-bottom: 10px;
 }
@@ -923,6 +1014,7 @@ body.user-modal-open {
     background: #f8fafc;
     border-color: #e2e8f0;
 }
+
 .payment-active-label {
     color: #475569;
     font-size: 11px;
@@ -933,10 +1025,12 @@ body.user-modal-open {
     width: 36px;
     height: 20px;
 }
+
     .admin-switch span::before {
         width: 16px;
         height: 16px;
     }
+
     .admin-switch input:checked + span::before {
         transform: translateX(16px);
     }
@@ -946,6 +1040,7 @@ body.user-modal-open {
     gap: 9px 12px;
     margin-top: 12px;
 }
+
 .payment-detail-item label {
     margin-bottom: 3px;
     color: #94a3b8;
@@ -954,6 +1049,7 @@ body.user-modal-open {
     text-transform: uppercase;
     letter-spacing: .02em;
 }
+
 .payment-detail-item strong {
     color: #334155;
     font-size: 11px;
@@ -969,6 +1065,7 @@ body.user-modal-open {
     padding-top: 10px;
     border-top: 1px solid #e5e7eb;
 }
+
     .payment-popup-actions .admin-btn {
         min-height: 33px;
         height: 33px;
@@ -979,6 +1076,7 @@ body.user-modal-open {
         line-height: 1;
         gap: 5px;
     }
+
         .payment-popup-actions .admin-btn svg {
             width: 14px;
             height: 14px;
@@ -993,19 +1091,23 @@ body.user-modal-open {
     color: #64748b;
     font-size: 11px;
 }
+
 .payment-account-spinner {
     width: 23px;
     height: 23px;
     border-width: 3px;
     border-top-color: #f97316;
 }
+
 .payment-account-modal-error {
     padding: 22px 16px;
 }
+
     .payment-account-modal-error strong {
         margin-bottom: 4px;
         font-size: 13px;
     }
+
     .payment-account-modal-error p {
         margin-bottom: 12px;
         font-size: 10px;
@@ -1014,13 +1116,16 @@ body.user-modal-open {
 .payment-account-modal-body::-webkit-scrollbar {
     width: 5px;
 }
+
 .payment-account-modal-body::-webkit-scrollbar-track {
     background: #f8fafc;
 }
+
 .payment-account-modal-body::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 999px;
 }
+
     .payment-account-modal-body::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
     }
@@ -1031,11 +1136,13 @@ body.user-modal-open {
     .users-table {
         min-width: 920px;
     }
+
     .payment-account-modal-dialog {
         width: calc(100% - 20px);
         max-height: calc(100vh - 24px);
     }
 }
+
 @media (max-width: 700px) {
     .users-page .users-header {
         align-items: flex-start;
@@ -1043,71 +1150,88 @@ body.user-modal-open {
         gap: 7px;
         margin-bottom: 9px;
     }
+
     .users-page .users-header-actions {
         width: 100%;
         justify-content: stretch;
     }
+
         .users-page .users-header-actions .admin-btn {
             flex: 1 1 auto;
             width: 100%;
             justify-content: center;
         }
+
     .users-card-header {
         min-height: 44px;
         padding: 7px 10px;
     }
+
     .payment-form-grid,
     .payment-detail-grid {
         grid-template-columns: 1fr;
         gap: 9px;
     }
+
     .payment-account-modal {
         padding: 7px;
     }
+
     .payment-account-modal-dialog {
         width: 100%;
         max-height: calc(100vh - 14px);
         border-radius: 9px;
     }
+
     .payment-account-modal-header {
         min-height: 45px;
         padding: 8px 10px;
     }
+
         .payment-account-modal-header h2 {
             font-size: 14px;
         }
+
     .payment-account-modal-body {
         max-height: calc(100vh - 70px);
     }
+
     .payment-popup-content {
         padding: 11px;
     }
+
     .payment-popup-actions {
         flex-direction: column-reverse;
         align-items: stretch;
     }
+
         .payment-popup-actions .admin-btn {
             width: 100%;
             justify-content: center;
         }
 }
+
 @media (max-width: 480px) {
     .users-table {
         min-width: 850px;
     }
+
         .users-table thead th {
             height: 35px;
             padding: 6px 8px;
             font-size: 9px;
         }
+
         .users-table tbody td {
             height: 46px;
             padding: 6px 8px;
             font-size: 10px;
         }
+
     .users-user-cell {
         gap: 7px;
     }
+
     .users-user-avatar {
         width: 29px;
         height: 29px;
@@ -1115,12 +1239,15 @@ body.user-modal-open {
         border-radius: 7px;
         font-size: 10px;
     }
+
     .users-user-info strong {
         font-size: 10px;
     }
+
     .users-username {
         font-size: 9px;
     }
+
     .users-table .admin-table-actions .admin-btn,
     .users-table .admin-table-actions button,
     .users-table .admin-table-actions a {
@@ -1129,28 +1256,35 @@ body.user-modal-open {
         height: 28px;
         min-height: 28px;
     }
+
     .payment-account-modal {
         padding: 4px;
     }
+
     .payment-account-modal-dialog {
         border-radius: 8px;
     }
+
     .payment-account-modal-header {
         padding: 8px 9px;
     }
+
     .payment-account-modal-close {
         width: 29px;
         height: 29px;
         flex-basis: 29px;
         font-size: 21px;
     }
+
     .payment-popup-content {
         padding: 9px;
     }
+
     .admin-form-control {
         min-height: 35px;
         padding: 7px 8px;
     }
+
     .payment-active-box {
         min-height: 35px;
     }
@@ -1165,6 +1299,7 @@ body.user-modal-open {
     outline: 2px solid #f97316;
     outline-offset: 2px;
 }
+
 @media (prefers-reduced-motion: reduce) {
     .users-table tbody tr,
     .users-table .admin-table-actions .admin-btn,
@@ -1184,6 +1319,7 @@ body.user-modal-open {
     padding: 10px;
     box-sizing: border-box;
 }
+
 .user-card {
     min-width: 0;
     display: flex;
@@ -1195,11 +1331,13 @@ body.user-modal-open {
     box-shadow: 0 1px 5px rgba(15, 23, 42, .035);
     transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
+
     .user-card:hover {
         transform: translateY(-1px);
         border-color: #fed7aa;
         box-shadow: 0 5px 16px rgba(15, 23, 42, .075);
     }
+
 .user-card-top {
     display: flex;
     align-items: center;
@@ -1207,31 +1345,37 @@ body.user-modal-open {
     gap: 8px;
     min-width: 0;
 }
+
     .user-card-top .users-user-cell {
         min-width: 0;
         flex: 1 1 auto;
     }
+
 .user-card-status {
     flex: 0 0 auto;
 }
+
 .user-card-divider {
     width: 100%;
     height: 1px;
     margin: 10px 0;
     background: #f1f5f9;
 }
+
 .user-card-details {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px 12px;
     flex: 1 1 auto;
 }
+
 .user-card-detail {
     min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
+
 .user-card-label {
     color: #94a3b8;
     font-size: 8.5px;
@@ -1240,6 +1384,7 @@ body.user-modal-open {
     text-transform: uppercase;
     letter-spacing: .035em;
 }
+
 .user-card-detail strong {
     min-width: 0;
     overflow: hidden;
@@ -1250,11 +1395,13 @@ body.user-modal-open {
     line-height: 1.35;
     white-space: nowrap;
 }
+
 .user-card-detail .user-card-value-wrap {
     white-space: normal;
     overflow-wrap: anywhere;
     word-break: break-word;
 }
+
 .user-card-actions {
     display: flex;
     align-items: center;
@@ -1264,6 +1411,7 @@ body.user-modal-open {
     padding-top: 9px;
     border-top: 1px solid #f1f5f9;
 }
+
     .user-card-actions .admin-btn {
         min-width: 0;
         min-height: 31px;
@@ -1278,6 +1426,7 @@ body.user-modal-open {
         font-weight: 700;
         line-height: 1;
     }
+
         .user-card-actions .admin-btn svg {
             width: 13px;
             height: 13px;
@@ -1291,9 +1440,11 @@ body.user-modal-open {
             stroke-linejoin: round;
             pointer-events: none;
         }
+
         .user-card-actions .admin-btn:hover {
             transform: translateY(-1px);
         }
+
         .user-card-actions .admin-btn:focus-visible {
             outline: 2px solid #f97316;
             outline-offset: 2px;
@@ -1305,50 +1456,122 @@ body.user-modal-open {
         gap: 9px;
     }
 }
+
 @media (max-width: 700px) {
     .users-grid {
         grid-template-columns: 1fr;
         gap: 8px;
         padding: 8px;
     }
+
     .user-card {
         padding: 11px;
     }
+
     .user-card-details {
         gap: 8px 10px;
     }
 }
+
 @media (max-width: 480px) {
     .users-grid {
         gap: 7px;
         padding: 7px;
     }
+
     .user-card {
         padding: 10px;
         border-radius: 8px;
     }
+
     .user-card-divider {
         margin: 8px 0;
     }
+
     .user-card-details {
         grid-template-columns: 1fr 1fr;
         gap: 7px 9px;
     }
+
     .user-card-detail strong {
         font-size: 10px;
     }
+
     .user-card-actions {
         margin-top: 9px;
         padding-top: 8px;
     }
+
         .user-card-actions .admin-btn {
             flex: 1 1 0;
             min-height: 30px;
             height: 30px;
         }
 }
+
 @media (prefers-reduced-motion: reduce) {
     .user-card {
         transition: none;
     }
+}
+
+
+/* =========================================================
+   USERS PAGE — HEADER RIGHT ALIGNMENT
+   Final override
+   Matches FoundationMembers header layout
+   ========================================================= */
+
+.users-page .users-header.users-page-header,
+.users-page .users-header {
+    width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+    .users-page .users-header > div:first-child {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+.users-page .users-header-actions {
+    margin-left: auto !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px;
+}
+
+    .users-page .users-header-actions .admin-btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+    }
+
+/* Mobile: stack the action below the title */
+@media (max-width: 700px) {
+
+    .users-page .users-header.users-page-header,
+    .users-page .users-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+    }
+
+    .users-page .users-header-actions {
+        width: 100% !important;
+        margin-left: 0 !important;
+        justify-content: stretch !important;
+    }
+
+        .users-page .users-header-actions .admin-btn {
+            width: 100% !important;
+            margin-left: 0 !important;
+            justify-content: center;
+        }
 }

@@ -1,0 +1,1226 @@
+﻿@model IEnumerable<FoundationDonationSystem.Models.FoundationMember>
+
+@{
+    ViewData["Title"] = "Foundation Leadership";
+}
+
+<div class="admin-page-container foundation-members-page">
+
+<div class="admin-page-header">
+
+    <div class="admin-page-header-content">
+
+        <!-- LEFT -->
+        <div class="admin-page-title-wrapper">
+
+            <div class="admin-page-title-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div>
+                <h1 class="admin-page-title">
+                    Foundation Leadership
+                </h1>
+
+                <p class="admin-page-subtitle">
+                    Manage founders, office bearers and foundation leadership members.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <button type="button"
+                class="admin-btn-primary foundation-add-btn"
+                onclick="openFoundationMemberCreate()">
+
+            <i class="bi bi-plus-lg"></i>
+
+            <span>Add Member</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+    <!-- =========================================================
+         SUCCESS MESSAGE
+         ========================================================= -->
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="admin-alert admin-alert-success">
+
+            <div class="admin-alert-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+
+            <div class="admin-alert-content">
+                @TempData["SuccessMessage"]
+            </div>
+
+            <button type="button"
+                    class="admin-alert-close"
+                    onclick="this.closest('.admin-alert').remove()">
+
+                <i class="bi bi-x-lg"></i>
+
+            </button>
+
+        </div>
+    }
+
+
+    <!-- =========================================================
+         MEMBERS CARD
+         ========================================================= -->
+
+    <div class="admin-card foundation-members-card">
+
+        <!-- CARD HEADER -->
+
+        <div class="admin-card-header">
+
+            <div class="admin-card-header-left">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+
+                <div>
+
+                    <h2 class="admin-card-title">
+                        Leadership Members
+                    </h2>
+
+                    <p class="admin-card-subtitle">
+                        @Model.Count() member@(Model.Count() == 1 ? "" : "s") registered
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             MEMBER CARDS
+             ===================================================== -->
+
+        @if (Model.Any())
+        {
+            <div class="foundation-members-grid">
+
+                @foreach (var member in Model)
+                {
+                    <article class="foundation-member-card">
+
+                        <!-- =================================================
+                             CARD TOP
+                             ================================================= -->
+
+                        <div class="foundation-member-card-top">
+
+                            <div class="foundation-member-card-person">
+
+                                <!-- PROFILE IMAGE -->
+
+                                <div class="foundation-member-card-avatar">
+
+                                    @if (!string.IsNullOrWhiteSpace(member.ProfileImage))
+                                    {
+                                        <img src="@member.ProfileImage"
+                                             alt="@member.FullName"
+                                             loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            @(string.IsNullOrWhiteSpace(member.FullName)
+                                                ? "?"
+                                                : member.FullName.Substring(0, 1).ToUpper())
+                                        </span>
+                                    }
+
+                                </div>
+
+
+                                <!-- MEMBER NAME -->
+
+                                <div class="foundation-member-card-heading">
+
+                                    <h3>
+                                        @member.FullName
+                                    </h3>
+
+                                    <span class="foundation-member-card-id">
+                                        Member #@member.Id
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- DISPLAY ORDER -->
+
+                            <span class="foundation-card-order">
+                                #@member.DisplayOrder
+                            </span>
+
+                        </div>
+
+
+                        <!-- DIVIDER -->
+
+                        <div class="foundation-member-card-divider"></div>
+
+
+                        <!-- =================================================
+                             DESIGNATION + STATUS
+                             ================================================= -->
+
+                        <div class="foundation-member-card-designation">
+
+                            <span class="foundation-designation">
+
+                                @if (member.Designation == "Founder")
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else if (member.Designation == "President")
+                                {
+                                    <i class="bi bi-person-fill-check"></i>
+                                }
+                                else if (member.Designation == "Vice President")
+                                {
+                                    <i class="bi bi-person-check-fill"></i>
+                                }
+                                else if (member.Designation == "General Secretary")
+                                {
+                                    <i class="bi bi-file-earmark-person-fill"></i>
+                                }
+                                else if (member.Designation == "Joint Secretary")
+                                {
+                                    <i class="bi bi-people-fill"></i>
+                                }
+                                else if (member.Designation == "Treasurer")
+                                {
+                                    <i class="bi bi-wallet2"></i>
+                                }
+                                else if (member.Designation == "Executive Member")
+                                {
+                                    <i class="bi bi-person-workspace"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person-badge-fill"></i>
+                                }
+
+                                <span>
+                                    @member.Designation
+                                </span>
+
+                            </span>
+
+
+                            <!-- STATUS -->
+
+                            <form asp-area="Admin"
+                                  asp-controller="FoundationMembers"
+                                  asp-action="ToggleStatus"
+                                  asp-route-id="@member.Id"
+                                  method="post"
+                                  class="foundation-status-form">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="foundation-status-badge @(member.IsActive ? "active" : "inactive")"
+                                        title="Click to change status">
+
+                                    @if (member.IsActive)
+                                    {
+                                        <i class="bi bi-check-circle-fill"></i>
+
+                                        <span>
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle-fill"></i>
+
+                                        <span>
+                                            Inactive
+                                        </span>
+                                    }
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             CARD INFORMATION
+                             ================================================= -->
+
+                        <div class="foundation-member-card-details">
+
+                            <!-- BIOGRAPHY -->
+
+                            <div class="foundation-member-card-detail">
+
+                                <span class="foundation-card-detail-label">
+
+                                    <i class="bi bi-card-text"></i>
+
+                                    Biography
+
+                                </span>
+
+                                @if (!string.IsNullOrWhiteSpace(member.ShortBio))
+                                {
+                                    <p class="foundation-member-card-bio">
+
+                                        @(member.ShortBio.Length > 115
+                                            ? member.ShortBio.Substring(0, 115) + "..."
+                                            : member.ShortBio)
+
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="foundation-member-card-bio foundation-card-muted">
+                                        No biography added.
+                                    </p>
+                                }
+
+                            </div>
+
+
+                            <!-- UPDATED -->
+
+                            <div class="foundation-member-card-detail">
+
+                                <span class="foundation-card-detail-label">
+
+                                    <i class="bi bi-calendar3"></i>
+
+                                    Updated
+
+                                </span>
+
+                                <strong class="foundation-card-date">
+
+                                    @if (member.UpdatedAt.HasValue)
+                                    {
+                                        @member.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
+                                    }
+                                    else
+                                    {
+                                        @member.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                                    }
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             ACTIONS
+                             ================================================= -->
+
+                        <div class="foundation-member-card-actions">
+
+                            <!-- DETAILS -->
+
+                            <button type="button"
+                                    class="foundation-card-action foundation-card-action-view"
+                                    title="View Details"
+                                    onclick="openFoundationMemberDetails(@member.Id)">
+
+                                <i class="bi bi-eye-fill"></i>
+
+                                <span>
+                                    Details
+                                </span>
+
+                            </button>
+
+
+                            <!-- EDIT -->
+
+                            <button type="button"
+                                    class="foundation-card-action foundation-card-action-edit"
+                                    title="Edit Member"
+                                    onclick="openFoundationMemberEdit(@member.Id)">
+
+                                <i class="bi bi-pencil-fill"></i>
+
+                                <span>
+                                    Edit
+                                </span>
+
+                            </button>
+
+
+                            <!-- DELETE -->
+
+                            <button type="button"
+                                    class="foundation-card-action foundation-card-action-delete"
+                                    title="Delete Member"
+                                    onclick="confirmFoundationMemberDelete(
+                                        @member.Id,
+                                        '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(member.FullName))'
+                                    )">
+
+                                <i class="bi bi-trash3-fill"></i>
+
+                                <span>
+                                    Delete
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <!-- =================================================
+                 EMPTY STATE
+                 ================================================= -->
+
+            <div class="foundation-members-empty">
+
+                <div class="foundation-empty-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <h3>
+                    No Leadership Members
+                </h3>
+
+                <p>
+                    No foundation leadership members have been added yet.
+                </p>
+
+                <button type="button"
+                        class="admin-btn-primary"
+                        onclick="openFoundationMemberCreate()">
+
+                    <i class="bi bi-plus-lg"></i>
+
+                    Add First Member
+
+                </button>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     FOUNDATION MEMBER MODAL
+     ============================================================= -->
+
+<div class="foundation-member-modal"
+     id="foundationMemberModal"
+     aria-hidden="true">
+
+    <div class="foundation-member-modal-backdrop"
+         onclick="closeFoundationMemberModal">
+    </div>
+
+    <div class="foundation-member-modal-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="foundationMemberModalTitle">
+
+        <div class="foundation-member-modal-content">
+
+            <!-- MODAL HEADER -->
+
+            <div class="foundation-member-modal-header">
+
+                <div class="foundation-member-modal-title-wrapper">
+
+                    <div class="foundation-member-modal-icon"
+                         id="foundationMemberModalIcon">
+
+                        <i class="bi bi-person-badge-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h2 id="foundationMemberModalTitle">
+                            Foundation Member
+                        </h2>
+
+                        <p id="foundationMemberModalSubtitle">
+                            Manage foundation leadership information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button type="button"
+                        class="foundation-member-modal-close"
+                        onclick="closeFoundationMemberModal()"
+                        aria-label="Close">
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+            </div>
+
+
+            <!-- MODAL BODY -->
+
+            <div class="foundation-member-modal-body"
+                 id="foundationMemberModalBody">
+
+                <div class="foundation-member-loading">
+
+                    <div class="foundation-loading-spinner"></div>
+
+                    <span>
+                        Loading...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     DELETE CONFIRMATION MODAL
+     ============================================================= -->
+
+<div class="foundation-delete-modal"
+     id="foundationDeleteModal"
+     aria-hidden="true">
+
+    <div class="foundation-delete-backdrop"
+         onclick="closeFoundationDeleteModal()">
+    </div>
+
+    <div class="foundation-delete-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="foundationDeleteTitle">
+
+        <div class="foundation-delete-content">
+
+            <div class="foundation-delete-icon">
+                <i class="bi bi-trash3-fill"></i>
+            </div>
+
+            <h2 id="foundationDeleteTitle">
+                Delete Member?
+            </h2>
+
+            <p>
+                Are you sure you want to delete
+                <strong id="foundationDeleteMemberName"></strong>?
+            </p>
+
+            <p class="foundation-delete-warning">
+                This action cannot be undone.
+            </p>
+
+
+            <form asp-area="Admin"
+                  asp-controller="FoundationMembers"
+                  asp-action="Delete"
+                  method="post"
+                  id="foundationDeleteForm">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       id="foundationDeleteMemberId" />
+
+                <div class="foundation-delete-actions">
+
+                    <button type="button"
+                            class="admin-btn-secondary"
+                            onclick="closeFoundationDeleteModal()">
+
+                        <i class="bi bi-x-lg"></i>
+
+                        Cancel
+
+                    </button>
+
+                    <button type="submit"
+                            class="admin-btn-danger">
+
+                        <i class="bi bi-trash3-fill"></i>
+
+                        Delete Member
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        /* =========================================================
+           ELEMENTS
+           ========================================================= */
+
+        const foundationMemberModal =
+            document.getElementById("foundationMemberModal");
+
+        const foundationMemberModalBody =
+            document.getElementById("foundationMemberModalBody");
+
+        const foundationMemberModalTitle =
+            document.getElementById("foundationMemberModalTitle");
+
+        const foundationMemberModalSubtitle =
+            document.getElementById("foundationMemberModalSubtitle");
+
+        const foundationMemberModalIcon =
+            document.getElementById("foundationMemberModalIcon");
+
+        const foundationDeleteModal =
+            document.getElementById("foundationDeleteModal");
+
+
+        /* =========================================================
+           LOADING
+           ========================================================= */
+
+        function showFoundationMemberLoading() {
+
+            foundationMemberModalBody.innerHTML = `
+                <div class="foundation-member-loading">
+                    <div class="foundation-loading-spinner"></div>
+                    <span>Loading...</span>
+                </div>
+            `;
+        }
+
+
+        /* =========================================================
+           OPEN MODAL
+           ========================================================= */
+
+        function openFoundationMemberModal() {
+
+            foundationMemberModal.classList.add("show");
+
+            foundationMemberModal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            document.body.classList.add(
+                "foundation-member-modal-open"
+            );
+        }
+
+
+        /* =========================================================
+           CLOSE MODAL
+           ========================================================= */
+
+        function closeFoundationMemberModal() {
+
+            foundationMemberModal.classList.remove("show");
+
+            foundationMemberModal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            document.body.classList.remove(
+                "foundation-member-modal-open"
+            );
+
+            foundationMemberModalBody.innerHTML = "";
+        }
+
+
+        /* =========================================================
+           SET MODAL HEADER
+           ========================================================= */
+
+        function setFoundationMemberModalHeader(
+            title,
+            subtitle,
+            icon
+        ) {
+
+            foundationMemberModalTitle.textContent =
+                title;
+
+            foundationMemberModalSubtitle.textContent =
+                subtitle;
+
+            foundationMemberModalIcon.innerHTML =
+                `<i class="bi ${icon}"></i>`;
+        }
+
+
+        /* =========================================================
+           LOAD PARTIAL
+           ========================================================= */
+
+        async function loadFoundationMemberPartial(
+            url,
+            title,
+            subtitle,
+            icon
+        ) {
+
+            setFoundationMemberModalHeader(
+                title,
+                subtitle,
+                icon
+            );
+
+            showFoundationMemberLoading();
+
+            openFoundationMemberModal();
+
+            try {
+
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                });
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const html =
+                    await response.text();
+
+                foundationMemberModalBody.innerHTML =
+                    html;
+
+                initializeFoundationMemberForms();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Foundation member modal error:",
+                    error
+                );
+
+                foundationMemberModalBody.innerHTML = `
+                    <div class="foundation-member-load-error">
+
+                        <div class="foundation-error-icon">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+
+                        <h3>
+                            Unable to load content
+                        </h3>
+
+                        <p>
+                            Something went wrong while loading this page.
+                            Please try again.
+                        </p>
+
+                        <button type="button"
+                                class="admin-btn-primary"
+                                onclick="closeFoundationMemberModal()">
+
+                            <i class="bi bi-x-lg"></i>
+
+                            Close
+
+                        </button>
+
+                    </div>
+                `;
+            }
+        }
+
+
+        /* =========================================================
+           CREATE
+           ========================================================= */
+
+        function openFoundationMemberCreate() {
+
+            loadFoundationMemberPartial(
+                '@Url.Action("Create", "FoundationMembers", new { area = "Admin" })',
+                "Add Foundation Member",
+                "Add a new foundation leadership member.",
+                "bi-person-plus-fill"
+            );
+        }
+
+
+        /* =========================================================
+           EDIT
+           ========================================================= */
+
+        function openFoundationMemberEdit(id) {
+
+            loadFoundationMemberPartial(
+                '@Url.Action("Edit", "FoundationMembers", new { area = "Admin" })'
+                + "?id=" + encodeURIComponent(id),
+                "Edit Foundation Member",
+                "Update foundation leadership information.",
+                "bi-pencil-square"
+            );
+        }
+
+
+        /* =========================================================
+           DETAILS
+           ========================================================= */
+
+        function openFoundationMemberDetails(id) {
+
+            loadFoundationMemberPartial(
+                '@Url.Action("Details", "FoundationMembers", new { area = "Admin" })'
+                + "?id=" + encodeURIComponent(id),
+                "Member Details",
+                "View foundation leadership information.",
+                "bi-person-vcard-fill"
+            );
+        }
+
+
+        /* =========================================================
+           INITIALIZE FORMS
+           ========================================================= */
+
+        function initializeFoundationMemberForms() {
+
+            const forms =
+                foundationMemberModalBody.querySelectorAll("form");
+
+            forms.forEach(function (form) {
+
+                form.addEventListener(
+                    "submit",
+                    handleFoundationMemberFormSubmit
+                );
+
+            });
+
+
+            /*
+             * Re-parse unobtrusive validation after
+             * loading the partial dynamically.
+             */
+
+            if (
+                window.jQuery &&
+                window.jQuery.validator &&
+                window.jQuery.validator.unobtrusive
+            ) {
+
+                const forms =
+                    foundationMemberModalBody.querySelectorAll("form");
+
+                forms.forEach(function (form) {
+
+                    window.jQuery(form).removeData(
+                        "validator"
+                    );
+
+                    window.jQuery(form).removeData(
+                        "unobtrusiveValidation"
+                    );
+
+                    window.jQuery.validator.unobtrusive.parse(
+                        form
+                    );
+
+                });
+            }
+        }
+
+
+        /* =========================================================
+           FORM SUBMIT
+           ========================================================= */
+
+        async function handleFoundationMemberFormSubmit(event) {
+
+            if (
+                !event.target.closest(
+                    "#foundationMemberModalBody"
+                )
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const form = event.target;
+
+
+            /* CLIENT VALIDATION */
+
+            if (
+                window.jQuery &&
+                window.jQuery.validator &&
+                !window.jQuery(form).valid()
+            ) {
+                return;
+            }
+
+
+            const submitButton =
+                form.querySelector(
+                    'button[type="submit"]'
+                );
+
+            const originalButtonHtml =
+                submitButton
+                    ? submitButton.innerHTML
+                    : "";
+
+
+            if (submitButton) {
+
+                submitButton.disabled = true;
+
+                submitButton.innerHTML = `
+                    <span class="foundation-button-spinner"></span>
+                    Saving...
+                `;
+            }
+
+
+            try {
+
+                const formData =
+                    new FormData(form);
+
+                const response =
+                    await fetch(
+                        form.action,
+                        {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+
+
+                /*
+                 * Successful POST normally redirects to Index.
+                 */
+
+                if (response.redirected) {
+
+                    window.location.href =
+                        response.url;
+
+                    return;
+                }
+
+
+                const contentType =
+                    response.headers.get(
+                        "content-type"
+                    ) || "";
+
+
+                if (
+                    contentType.includes(
+                        "application/json"
+                    )
+                ) {
+
+                    const result =
+                        await response.json();
+
+                    if (result.success) {
+
+                        window.location.reload();
+
+                        return;
+                    }
+                }
+
+
+                const html =
+                    await response.text();
+
+                foundationMemberModalBody.innerHTML =
+                    html;
+
+                initializeFoundationMemberForms();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Foundation member form error:",
+                    error
+                );
+
+                foundationMemberModalBody.innerHTML = `
+                    <div class="foundation-member-load-error">
+
+                        <div class="foundation-error-icon">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+
+                        <h3>
+                            Unable to save
+                        </h3>
+
+                        <p>
+                            Something went wrong.
+                            Please try again.
+                        </p>
+
+                        <button type="button"
+                                class="admin-btn-primary"
+                                onclick="closeFoundationMemberModal()">
+
+                            <i class="bi bi-x-lg"></i>
+
+                            Close
+
+                        </button>
+
+                    </div>
+                `;
+            }
+            finally {
+
+                if (submitButton) {
+
+                    submitButton.disabled = false;
+
+                    submitButton.innerHTML =
+                        originalButtonHtml;
+                }
+            }
+        }
+
+
+        /* =========================================================
+           DELETE MODAL
+           ========================================================= */
+
+        function confirmFoundationMemberDelete(
+            id,
+            name
+        ) {
+
+            document.getElementById(
+                "foundationDeleteMemberId"
+            ).value = id;
+
+            document.getElementById(
+                "foundationDeleteMemberName"
+            ).textContent = name;
+
+            foundationDeleteModal.classList.add(
+                "show"
+            );
+
+            foundationDeleteModal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            document.body.classList.add(
+                "foundation-delete-modal-open"
+            );
+        }
+
+
+        /* =========================================================
+           CLOSE DELETE MODAL
+           ========================================================= */
+
+        function closeFoundationDeleteModal() {
+
+            foundationDeleteModal.classList.remove(
+                "show"
+            );
+
+            foundationDeleteModal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            document.body.classList.remove(
+                "foundation-delete-modal-open"
+            );
+        }
+
+
+        /* =========================================================
+           ESC KEY
+           ========================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key !== "Escape") {
+                    return;
+                }
+
+                if (
+                    foundationMemberModal.classList.contains(
+                        "show"
+                    )
+                ) {
+
+                    closeFoundationMemberModal();
+                }
+
+                if (
+                    foundationDeleteModal.classList.contains(
+                        "show"
+                    )
+                ) {
+
+                    closeFoundationDeleteModal();
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           CLICK OUTSIDE MODAL
+           ========================================================= */
+
+        foundationMemberModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    foundationMemberModal
+                ) {
+
+                    closeFoundationMemberModal();
+                }
+
+            }
+        );
+
+
+        foundationDeleteModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    foundationDeleteModal
+                ) {
+
+                    closeFoundationDeleteModal();
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           AUTO HIDE SUCCESS ALERT
+           ========================================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const alert =
+                    document.querySelector(
+                        ".foundation-members-page .admin-alert"
+                    );
+
+                if (!alert) {
+                    return;
+                }
+
+                setTimeout(
+                    function () {
+
+                        alert.style.opacity = "0";
+
+                        alert.style.transform =
+                            "translateY(-5px)";
+
+                        setTimeout(
+                            function () {
+
+                                if (alert) {
+                                    alert.remove();
+                                }
+
+                            },
+                            300
+                        );
+
+                    },
+                    5000
+                );
+
+            }
+        );
+
+    </script>
+}

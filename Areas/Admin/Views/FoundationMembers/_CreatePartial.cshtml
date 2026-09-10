@@ -1,0 +1,241 @@
+﻿@model FoundationDonationSystem.Models.FoundationMember
+<form asp-area="Admin"
+      asp-controller="FoundationMembers"
+      asp-action="Create"
+      method="post"
+      enctype="multipart/form-data"
+      id="foundationMemberCreateForm">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly"
+         class="validation-summary-errors"></div>
+    <div class="admin-form-grid">
+        <!-- FULL NAME -->
+        <div class="admin-form-group">
+            <label asp-for="FullName"
+                   class="admin-form-label">
+                Full Name
+            </label>
+            <input asp-for="FullName"
+                   class="admin-form-control"
+                   placeholder="Enter full name"
+                   autocomplete="off" />
+            <span asp-validation-for="FullName"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- DESIGNATION -->
+        <div class="admin-form-group">
+            <label asp-for="Designation"
+                   class="admin-form-label">
+                Designation
+            </label>
+            <select asp-for="Designation"
+                    class="admin-form-control">
+                <option value="">Select designation</option>
+                <option value="Founder">
+                    Founder
+                </option>
+                <option value="President">
+                    President
+                </option>
+                <option value="Vice President">
+                    Vice President
+                </option>
+                <option value="General Secretary">
+                    General Secretary
+                </option>
+                <option value="Joint Secretary">
+                    Joint Secretary
+                </option>
+                <option value="Treasurer">
+                    Treasurer
+                </option>
+                <option value="Executive Member">
+                    Executive Member
+                </option>
+                <option value="Advisory Member">
+                    Advisory Member
+                </option>
+            </select>
+            <span asp-validation-for="Designation"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- PROFILE IMAGE -->
+        <div class="admin-form-group admin-form-group-full">
+            <label asp-for="ProfileImageFile"
+                   class="admin-form-label">
+                Profile Image
+            </label>
+            <div class="foundation-image-upload">
+                <div class="foundation-image-preview"
+                     id="foundationImagePreview">
+                    <div class="foundation-image-placeholder">
+                        <i class="bi bi-person-bounding-box"></i>
+                        <span>
+                            No image selected
+                        </span>
+                    </div>
+                </div>
+                <div class="foundation-image-upload-content">
+                    <label for="ProfileImageFile"
+                           class="foundation-image-upload-button">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        <span>
+                            Choose Image
+                        </span>
+                    </label>
+                    <input asp-for="ProfileImageFile"
+                           type="file"
+                           accept="image/jpeg,image/png,image/webp"
+                           class="foundation-image-file-input"
+                           id="ProfileImageFile" />
+                    <div class="foundation-image-upload-info">
+                        <strong>
+                            JPG, PNG or WEBP
+                        </strong>
+                        <span>
+                            Maximum size: 2 MB
+                        </span>
+                    </div>
+                    <div class="foundation-image-file-name"
+                         id="foundationImageFileName">
+                        No file selected
+                    </div>
+                </div>
+            </div>
+            <span asp-validation-for="ProfileImageFile"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- BIO -->
+        <div class="admin-form-group admin-form-group-full">
+            <label asp-for="ShortBio"
+                   class="admin-form-label">
+                Biography
+            </label>
+            <textarea asp-for="ShortBio"
+                      class="admin-form-control"
+                      rows="6"
+                      placeholder="Write a short biography..."></textarea>
+            <span asp-validation-for="ShortBio"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- DISPLAY ORDER -->
+        <div class="admin-form-group">
+            <label asp-for="DisplayOrder"
+                   class="admin-form-label">
+                Display Order
+            </label>
+            <input asp-for="DisplayOrder"
+                   type="number"
+                   min="0"
+                   class="admin-form-control" />
+            <span asp-validation-for="DisplayOrder"
+                  class="field-validation-error"></span>
+        </div>
+        <!-- STATUS -->
+        <div class="admin-form-group">
+            <label class="admin-form-label">
+                Status
+            </label>
+            <label class="admin-form-checkbox">
+                <input asp-for="IsActive"
+                       type="checkbox" />
+                <span>
+                    Show this member publicly
+                </span>
+            </label>
+        </div>
+    </div>
+    <!-- ACTIONS -->
+    <div class="admin-form-actions">
+        <button type="button"
+                class="admin-btn-secondary"
+                onclick="closeFoundationMemberModal()">
+            <i class="bi bi-x-lg"></i>
+            Cancel
+        </button>
+        <button type="submit"
+                class="admin-btn-primary">
+            <i class="bi bi-check-lg"></i>
+            Save Member
+        </button>
+    </div>
+</form>
+<script>
+    (function() {
+        const input =
+            document.getElementById("ProfileImageFile");
+        const preview =
+            document.getElementById(
+                "foundationImagePreview"
+            );
+        const fileName =
+            document.getElementById(
+                "foundationImageFileName"
+            );
+        if (!input) {
+            return;
+        }
+        input.addEventListener(
+            "change",
+            function() {
+                const file =
+                    this.files && this.files.length
+                        ? this.files[0]
+                        : null;
+                if (!file) {
+                    fileName.textContent =
+                        "No file selected";
+                    preview.innerHTML = `
+                            <div class="foundation-image-placeholder">
+                                <i class="bi bi-person-bounding-box"></i>
+                                <span>
+                                    No image selected
+                                </span>
+                            </div>
+                        `;
+                    return;
+                }
+                fileName.textContent =
+                    file.name;
+                /*
+                 * Client-side size check
+                 * Maximum: 2 MB
+                 */
+                if (file.size > 2 * 1024 * 1024) {
+                    fileName.textContent =
+                        "Image is larger than 2 MB";
+                    this.value = "";
+                    preview.innerHTML = `
+                            <div class="foundation-image-placeholder foundation-image-error">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span>
+                                    Maximum size is 2 MB
+                                </span>
+                            </div>
+                        `;
+                    return;
+                }
+                /*
+                 * Preview
+                 */
+                if (!file.type.startsWith("image/")) {
+                    fileName.textContent =
+                        "Invalid image file";
+                    this.value = "";
+                    return;
+                }
+                const reader =
+                    new FileReader();
+                reader.onload =
+                    function(event) {
+                        preview.innerHTML = `
+                                <img src="${event.target.result}"
+                                     alt="Profile preview"
+                                     class="foundation-image-preview-img" />
+                            `;
+                    };
+                reader.readAsDataURL(file);
+            }
+        );
+    })();
+</script>

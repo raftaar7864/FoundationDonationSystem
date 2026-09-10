@@ -2,6 +2,40 @@
 @inject FoundationDonationSystem.Services.IFoundationSettingsService FoundationSettingsService
 @{
     var foundationSettings = await FoundationSettingsService.GetAsync();
+
+    // =========================================================
+    // SEO META DETAILS
+    // =========================================================
+    var seoTitle =
+        ViewData["SeoTitle"]?.ToString()
+        ?? ViewData["Title"]?.ToString()
+        ?? foundationSettings.FoundationName;
+
+    var seoDescription =
+        ViewData["SeoDescription"]?.ToString()
+        ?? $"{foundationSettings.FoundationName} - Working together to create a better future and make a meaningful difference in our community.";
+
+    var seoKeywords =
+        ViewData["SeoKeywords"]?.ToString()
+        ?? $"{foundationSettings.FoundationName}, foundation, charity, donation, community development, social work, nonprofit";
+
+    var seoImage =
+        ViewData["SeoImage"]?.ToString()
+        ?? foundationSettings.LogoPath
+        ?? "~/images/foundation-logo.png";
+
+    var seoCanonical =
+        ViewData["SeoCanonical"]?.ToString()
+        ?? $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}{Context.Request.Path}";
+
+    if (seoImage.StartsWith("~/"))
+    {
+        seoImage = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}{Url.Content(seoImage)}";
+    }
+    else if (seoImage.StartsWith("/"))
+    {
+        seoImage = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}{seoImage}";
+    }
 }
 @{
     var controllerName =
@@ -17,15 +51,87 @@
     <meta charset="utf-8" />
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
-    <title>
-        @ViewData["Title"] - @foundationSettings.FoundationName
-    </title>
+    <title>@seoTitle | @foundationSettings.FoundationName</title>
+
+    <!-- =====================================================
+         SEO META DETAILS
+         ===================================================== -->
+    <meta name="description"
+          content="@seoDescription" />
+    <meta name="keywords"
+          content="@seoKeywords" />
+    <meta name="author"
+          content="@foundationSettings.FoundationName" />
+    <meta name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot"
+          content="index, follow" />
+    <meta name="bingbot"
+          content="index, follow" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical"
+          href="@seoCanonical" />
+
+    <!-- =====================================================
+         OPEN GRAPH / SOCIAL SHARING
+         ===================================================== -->
+    <meta property="og:type"
+          content="website" />
+    <meta property="og:site_name"
+          content="@foundationSettings.FoundationName" />
+    <meta property="og:title"
+          content="@seoTitle" />
+    <meta property="og:description"
+          content="@seoDescription" />
+    <meta property="og:url"
+          content="@seoCanonical" />
+    <meta property="og:image"
+          content="@seoImage" />
+    <meta property="og:image:alt"
+          content="@foundationSettings.FoundationName" />
+    <meta property="og:locale"
+          content="en_IN" />
+
+    <!-- =====================================================
+         TWITTER / X CARD
+         ===================================================== -->
+    <meta name="twitter:card"
+          content="summary_large_image" />
+    <meta name="twitter:title"
+          content="@seoTitle" />
+    <meta name="twitter:description"
+          content="@seoDescription" />
+    <meta name="twitter:image"
+          content="@seoImage" />
+    <meta name="twitter:image:alt"
+          content="@foundationSettings.FoundationName" />
+
+    <!-- =====================================================
+         ADDITIONAL SEO / BROWSER DETAILS
+         ===================================================== -->
+    <meta name="theme-color"
+          content="#ea580c" />
+    <meta name="application-name"
+          content="@foundationSettings.FoundationName" />
+    <meta name="apple-mobile-web-app-title"
+          content="@foundationSettings.FoundationName" />
+    <meta name="format-detection"
+          content="telephone=no" />
     <script type="importmap"></script>
+    <!-- =====================================================
+         BOOTSTRAP
+         ===================================================== -->
     <link rel="stylesheet"
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <!-- Bootstrap Icons -->
+    <!-- =====================================================
+         BOOTSTRAP ICONS
+         ===================================================== -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- =====================================================
+         SITE CSS
+         ===================================================== -->
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
@@ -38,6 +144,19 @@
     @await RenderSectionAsync(
         "Styles",
         required: false)
+    <!-- =====================================================
+         STRUCTURED DATA — ORGANIZATION
+         ===================================================== -->
+    <script type="application/ld+json">
+            {
+                "@@context": "https://schema.org",
+                "@@type": "Organization",
+                "name": @Html.Raw(System.Text.Json.JsonSerializer.Serialize(foundationSettings.FoundationName)),
+                "url": @Html.Raw(System.Text.Json.JsonSerializer.Serialize($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/")),
+                "logo": @Html.Raw(System.Text.Json.JsonSerializer.Serialize(seoImage)),
+                "description": @Html.Raw(System.Text.Json.JsonSerializer.Serialize(seoDescription))
+            }
+    </script>
 </head>
 <body>
     <!-- =====================================================
@@ -98,21 +217,26 @@
                            asp-controller="Home"
                            asp-action="Index"
                            class="public-nav-link @(controllerName.Equals("Home", StringComparison.OrdinalIgnoreCase) && actionName.Equals("Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
-                            Home
+                            <i class="bi bi-house-door-fill"
+                               aria-hidden="true"></i>
+                            <span>Home</span>
                         </a>
                         <!-- OUR WORK -->
                         <a asp-area=""
                            asp-controller="Home"
                            asp-action="Causes"
                            class="public-nav-link @(controllerName.Equals("Home", StringComparison.OrdinalIgnoreCase) && actionName.Equals("Causes", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
-                            Our Work
+                            <i class="bi bi-heart-fill"
+                               aria-hidden="true"></i>
+                            <span>Our Work</span>
                         </a>
                         <!-- UPDATES -->
                         <a asp-area=""
                            asp-controller="Posts"
                            asp-action="Index"
                            class="public-nav-link @(controllerName.Equals("Posts", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
-                            <i class="bi bi-newspaper"></i>
+                            <i class="bi bi-newspaper"
+                               aria-hidden="true"></i>
                             <span>Updates</span>
                         </a>
                         <!-- DONATION STATUS -->
@@ -120,22 +244,24 @@
                            asp-controller="DonationStatus"
                            asp-action="Index"
                            class="public-nav-link @(controllerName.Equals("DonationStatus", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
-                            Donation Status
+                            <i class="bi bi-search-heart-fill"
+                               aria-hidden="true"></i>
+                            <span>Donation Status</span>
                         </a>
                     </div>
-                    <!-- DONATE -->
-                        <a class="public-donate-button"
-                           asp-area=""
-                           asp-controller="Donation"
-                           asp-action="Index">
-                            <span class="public-donate-icon">
-                                <svg viewBox="0 0 24 24"
-                                     aria-hidden="true">
-                                    <path d="M12 21s-7-4.35-9.33-8.2C.54 9.82 2.15 6 5.67 6c1.88 0 3.07 1.05 4.33 2.4C11.26 7.05 12.45 6 14.33 6 17.85 6 19.46 9.82 17.33 12.8 15 16.65 12 21 12 21Z" />
-                                </svg>
-                            </span>
-                            Donate Now
-                        </a>
+                    <!-- =================================================
+                         DONATE BUTTON
+                         ================================================= -->
+                    <a class="public-donate-button"
+                       asp-area=""
+                       asp-controller="Donation"
+                       asp-action="Index">
+                        <span class="public-donate-icon">
+                            <i class="bi bi-heart-fill"
+                               aria-hidden="true"></i>
+                        </span>
+                        <span>Donate Now</span>
+                    </a>
                     <!-- =================================================
                          HEADER ACTIONS
                          ================================================= -->
@@ -147,21 +273,34 @@
                                     id="publicLanguageButton"
                                     aria-haspopup="true"
                                     aria-expanded="false">
-                                <i class="bi bi-translate" aria-hidden="true"></i>
-                                <span id="publicLanguageLabel">English</span>
-                                <i class="bi bi-chevron-down public-language-chevron" aria-hidden="true"></i>
+                                <i class="bi bi-translate"
+                                   aria-hidden="true"></i>
+                                <span id="publicLanguageLabel">
+                                    English
+                                </span>
+                                <i class="bi bi-chevron-down public-language-chevron"
+                                   aria-hidden="true"></i>
                             </button>
                             <div class="public-language-menu"
                                  id="publicLanguageMenu"
                                  role="menu"
                                  aria-hidden="true">
-                                <button type="button" class="public-language-option active" data-language="en" role="menuitem">
+                                <button type="button"
+                                        class="public-language-option active"
+                                        data-language="en"
+                                        role="menuitem">
                                     <span>English</span>
                                 </button>
-                                <button type="button" class="public-language-option" data-language="bn" role="menuitem">
+                                <button type="button"
+                                        class="public-language-option"
+                                        data-language="bn"
+                                        role="menuitem">
                                     <span>বাংলা</span>
                                 </button>
-                                <button type="button" class="public-language-option" data-language="hi" role="menuitem">
+                                <button type="button"
+                                        class="public-language-option"
+                                        data-language="hi"
+                                        role="menuitem">
                                     <span>हिन्दी</span>
                                 </button>
                             </div>
@@ -178,7 +317,8 @@
                                    asp-area="Admin"
                                    asp-controller="Dashboard"
                                    asp-action="Index">
-                                    <i class="bi bi-speedometer2"></i>
+                                    <i class="bi bi-speedometer2"
+                                       aria-hidden="true"></i>
                                     <span>Dashboard</span>
                                 </a>
                             }
@@ -188,7 +328,8 @@
                                    asp-area="Admin"
                                    asp-controller="Posts"
                                    asp-action="Index">
-                                    <i class="bi bi-file-earmark-text"></i>
+                                    <i class="bi bi-file-earmark-text"
+                                       aria-hidden="true"></i>
                                     <span>Posts</span>
                                 </a>
                             }
@@ -198,7 +339,8 @@
                                    asp-area=""
                                    asp-controller="Account"
                                    asp-action="Login">
-                                    <i class="bi bi-person-circle"></i>
+                                    <i class="bi bi-person-circle"
+                                       aria-hidden="true"></i>
                                     <span>Account</span>
                                 </a>
                             }
@@ -209,7 +351,8 @@
                                asp-area=""
                                asp-controller="Account"
                                asp-action="Login">
-                                <i class="bi bi-box-arrow-in-right"></i>
+                                <i class="bi bi-box-arrow-in-right"
+                                   aria-hidden="true"></i>
                                 <span>Admin Login</span>
                             </a>
                         }
@@ -230,6 +373,9 @@
          ===================================================== -->
     <footer class="public-footer">
         <div class="public-container">
+            <!-- =================================================
+                 FOOTER MAIN GRID
+                 ================================================= -->
             <div class="footer-grid">
                 <!-- =================================================
                      FOUNDATION
@@ -253,44 +399,68 @@
                             @foundationSettings.FoundationName
                         </span>
                     </div>
-                    <p>
+                    <p class="footer-about-text">
                         @foundationSettings.FoundationName
-                        Working together to create a better
-                        future and make a meaningful difference
-                        in our community.
+                        is committed to working together
+                        to create a better future and make
+                        a meaningful difference in our community.
                     </p>
+                    <!-- SOCIAL LINKS -->
+                    <div class="footer-social-links">
+                        <a href="https://www.facebook.com/profile.php?id=61580846158459"
+                           class="footer-social-link footer-facebook-link"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="Visit us on Facebook">
+                            <i class="bi bi-facebook"
+                               aria-hidden="true"></i>
+                            <span>Facebook</span>
+                        </a>
+                    </div>
                 </div>
                 <!-- =================================================
                      QUICK LINKS
                      ================================================= -->
                 <div class="footer-column">
                     <h3>
-                        Quick Links
+                        <i class="bi bi-link-45deg"
+                           aria-hidden="true"></i>
+                        <span>Quick Links</span>
                     </h3>
                     <a asp-area=""
                        asp-controller="Home"
                        asp-action="Index">
-                        Home
+                        <i class="bi bi-house-door"
+                           aria-hidden="true"></i>
+                        <span>Home</span>
                     </a>
                     <a asp-area=""
                        asp-controller="Home"
                        asp-action="About">
-                        About Us
+                        <i class="bi bi-info-circle"
+                           aria-hidden="true"></i>
+                        <span>About Us</span>
                     </a>
                     <a asp-area=""
                        asp-controller="Home"
                        asp-action="Causes">
-                        Our Work
+                        <i class="bi bi-heart"
+                           aria-hidden="true"></i>
+                        <span>Our Work</span>
                     </a>
                     <a asp-area=""
                        asp-controller="Posts"
                        asp-action="Index">
-                        Updates
+                        <i class="bi bi-newspaper"
+                           aria-hidden="true"></i>
+                        <span>Updates</span>
                     </a>
                     <a asp-area=""
                        asp-controller="Home"
                        asp-action="Contact">
-                        Contact
+                        <i class="bi bi-envelope"
+                           aria-hidden="true"></i>
+                        <span>Contact</span>
                     </a>
                 </div>
                 <!-- =================================================
@@ -298,19 +468,25 @@
                      ================================================= -->
                 <div class="footer-column">
                     <h3>
-                        Donations
+                        <i class="bi bi-heart-fill"
+                           aria-hidden="true"></i>
+                        <span>Donations</span>
                     </h3>
                     <a asp-area=""
                        asp-controller="Donation"
                        asp-action="Index">
-                        Donate Now
+                        <i class="bi bi-heart-fill"
+                           aria-hidden="true"></i>
+                        <span>Donate Now</span>
                     </a>
                     <a asp-area=""
                        asp-controller="DonationStatus"
                        asp-action="Index">
-                        Check Donation Status
+                        <i class="bi bi-search-heart"
+                           aria-hidden="true"></i>
+                        <span>Check Donation Status</span>
                     </a>
-                    <!-- SUPPORT & GRIEVANCE -->
+                    <!-- SUPPORT -->
                     <div class="footer-help-buttons">
                         <a asp-area=""
                            asp-controller="Support"
@@ -320,6 +496,7 @@
                                aria-hidden="true"></i>
                             <span>Request Support</span>
                         </a>
+                        <!-- GRIEVANCE -->
                         <a asp-area=""
                            asp-controller="Grievance"
                            asp-action="Index"
@@ -335,16 +512,29 @@
                      ================================================= -->
                 <div class="footer-column">
                     <h3>
-                        Administration
+                        <i class="bi bi-building"
+                           aria-hidden="true"></i>
+                        <span>Administration</span>
                     </h3>
+                    <!-- LEADERSHIP -->
+                    <a asp-area=""
+                       asp-controller="Foundation"
+                       asp-action="Leadership">
+                        <i class="bi bi-people-fill"
+                           aria-hidden="true"></i>
+                        <span>Leadership</span>
+                    </a>
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        if (User.IsInRole("Admin"))
+                        if (User.IsInRole("Administrator") ||
+                            User.IsInRole("DonationVerifier"))
                         {
                             <a asp-area="Admin"
                                asp-controller="Dashboard"
                                asp-action="Index">
-                                Dashboard
+                                <i class="bi bi-speedometer2"
+                                   aria-hidden="true"></i>
+                                <span>Dashboard</span>
                             </a>
                         }
                         else if (User.IsInRole("PostManager"))
@@ -352,7 +542,9 @@
                             <a asp-area="Admin"
                                asp-controller="Posts"
                                asp-action="Index">
-                                Posts
+                                <i class="bi bi-file-earmark-text"
+                                   aria-hidden="true"></i>
+                                <span>Posts</span>
                             </a>
                         }
                         else
@@ -360,7 +552,9 @@
                             <a asp-area=""
                                asp-controller="Account"
                                asp-action="Login">
-                                Account
+                                <i class="bi bi-person-circle"
+                                   aria-hidden="true"></i>
+                                <span>Account</span>
                             </a>
                         }
                     }
@@ -369,7 +563,9 @@
                         <a asp-area=""
                            asp-controller="Account"
                            asp-action="Login">
-                            Admin Login
+                            <i class="bi bi-shield-lock"
+                               aria-hidden="true"></i>
+                            <span>Admin Login</span>
                         </a>
                     }
                 </div>
@@ -377,15 +573,20 @@
             <!-- =================================================
                  LOCATION
                  ================================================= -->
-            @if (!string.IsNullOrWhiteSpace(foundationSettings.Address))
+            @if (!string.IsNullOrWhiteSpace(
+                            foundationSettings.Address))
             {
                 <div class="footer-location">
                     <div class="footer-location-header">
                         <div>
                             <span class="footer-location-eyebrow">
+                                <i class="bi bi-geo-alt-fill"
+                                   aria-hidden="true"></i>
                                 Visit Us
                             </span>
-                            <h3>Our Location</h3>
+                            <h3>
+                                Our Location
+                            </h3>
                             <p>
                                 @foundationSettings.Address
                             </p>
@@ -394,18 +595,17 @@
                            href="https://www.google.com/maps/search/?api=1&query=@Uri.EscapeDataString(foundationSettings.Address)"
                            target="_blank"
                            rel="noopener noreferrer">
-                            <i class="bi bi-geo-alt-fill"
+                            <i class="bi bi-map"
                                aria-hidden="true"></i>
-                            Open in Google Maps
+                            <span>Open in Google Maps</span>
                         </a>
                     </div>
                     <div class="footer-map-frame">
-                        <iframe
-                            src="https://www.google.com/maps?q=@Uri.EscapeDataString(foundationSettings.Address)&output=embed"
-                            title="Foundation location map"
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            allowfullscreen>
+                        <iframe src="https://www.google.com/maps?q=@Uri.EscapeDataString(foundationSettings.Address)&output=embed"
+                                title="Foundation location map"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                allowfullscreen>
                         </iframe>
                     </div>
                 </div>
@@ -414,17 +614,27 @@
                  FOOTER BOTTOM
                  ================================================= -->
             <div class="footer-bottom">
+                <!-- COPYRIGHT -->
                 <div class="footer-copyright">
-                    &copy; @DateTime.Now.Year
-                    @foundationSettings.FoundationName.
-                    All rights reserved.
+                    <i class="bi bi-c-circle"
+                       aria-hidden="true"></i>
+                    <span>
+                        @DateTime.Now.Year
+                        @foundationSettings.FoundationName.
+                        All rights reserved.
+                    </span>
                 </div>
+                <!-- LEGAL + SOCIAL -->
                 <div class="footer-legal">
+                    <!-- PRIVACY -->
                     <a asp-area=""
                        asp-controller="Home"
                        asp-action="Privacy">
-                        Privacy Policy
+                        <i class="bi bi-shield-check"
+                           aria-hidden="true"></i>
+                        <span>Privacy Policy</span>
                     </a>
+                    <!-- FACEBOOK -->
                     <a href="https://www.facebook.com/profile.php?id=61580846158459"
                        class="footer-facebook-link"
                        target="_blank"
@@ -438,273 +648,567 @@
             </div>
         </div>
     </footer>
+    <!-- =====================================================
+         FOOTER / LAYOUT STYLES
+         ===================================================== -->
     <style>
-        /* =========================================================
-           FACEBOOK FOOTER LINK
-           ========================================================= */
-        .footer-legal {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-        .footer-facebook-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            color: inherit;
-            text-decoration: none;
-            transition: color .18s ease, transform .18s ease;
-        }
-        .footer-facebook-link i {
-            font-size: 13px;
-            line-height: 1;
-        }
-        .footer-facebook-link:hover {
-            color: #1877f2;
-            text-decoration: none;
-            transform: translateY(-1px);
-        }
-        /* =========================================================
-           SUPPORT & GRIEVANCE FOOTER BUTTONS
-           ========================================================= */
-        .footer-help-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .footer-help-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            min-height: 36px;
-            padding: 7px 11px;
-            border: 1px solid rgba(255, 255, 255, .16);
-            border-radius: 7px;
-            background: rgba(255, 255, 255, .07);
-            color: inherit;
-            font-size: 12px;
-            line-height: 1.2;
-            font-weight: 700;
-            text-decoration: none;
-            transition: background-color .18s ease,
-                        border-color .18s ease,
-                        color .18s ease,
-                        transform .18s ease,
-                        box-shadow .18s ease;
-        }
-        .footer-help-button i {
-            font-size: 13px;
-            line-height: 1;
-        }
-        .footer-help-button:hover {
-            background: #ea580c;
-            border-color: #ea580c;
-            color: #ffffff;
-            text-decoration: none;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(234, 88, 12, .20);
-        }
-        .footer-support-link {
-            background: rgba(234, 88, 12, .10);
-            border-color: rgba(251, 146, 60, .35);
-        }
-        .footer-grievance-link {
-            background: rgba(245, 158, 11, .08);
-            border-color: rgba(251, 191, 36, .30);
-        }
-        .footer-grievance-link:hover {
-            background: #d97706;
-            border-color: #d97706;
-        }
-        @@media (max-width: 560px) {
-            .footer-legal {
+            /* =====================================================
+                                   FOOTER COLUMN HEADINGS
+                                   ===================================================== */
+            .footer-column h3 {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+            }
+
+                .footer-column h3 i {
+                    color: #fb923c;
+                    font-size: 14px;
+                    line-height: 1;
+                }
+            /* =====================================================
+                                   FOOTER LINKS
+                                   ===================================================== */
+            .footer-column > a {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+            }
+
+                .footer-column > a i {
+                    width: 17px;
+                    color: #fb923c;
+                    font-size: 13px;
+                    text-align: center;
+                    flex: 0 0 17px;
+                }
+
+                .footer-column > a span {
+                    min-width: 0;
+                }
+            /* =====================================================
+                                   FOOTER ABOUT
+                                   ===================================================== */
+            .footer-about-text {
+                max-width: 360px;
+            }
+            /* =====================================================
+                                   SOCIAL LINKS
+                                   ===================================================== */
+            .footer-social-links {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                margin-top: 20px;
+            }
+
+            .footer-social-link {
+                display: inline-flex;
+                align-items: center;
                 justify-content: center;
-                gap: 10px;
+                gap: 8px;
+                min-height: 36px;
+                padding: 8px 13px;
+                border: 1px solid rgba(255, 255, 255, .14);
+                border-radius: 8px;
+                background: rgba(255, 255, 255, .055);
+                color: inherit;
+                font-size: 12px;
+                font-weight: 700;
+                text-decoration: none;
+                transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
             }
+
+                .footer-social-link i {
+                    font-size: 14px;
+                    line-height: 1;
+                }
+
+                .footer-social-link:hover {
+                    color: #ffffff;
+                    background: #1877f2;
+                    border-color: #1877f2;
+                    text-decoration: none;
+                    transform: translateY(-2px);
+                }
+            /* =====================================================
+                                   SUPPORT / GRIEVANCE
+                                   ===================================================== */
             .footer-help-buttons {
+                display: flex;
                 flex-direction: column;
-                align-items: stretch;
+                align-items: flex-start;
+                gap: 8px;
+                margin-top: 12px;
             }
+
             .footer-help-button {
-                width: 100%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                min-height: 36px;
+                padding: 8px 12px;
+                border: 1px solid rgba(255, 255, 255, .14);
+                border-radius: 8px;
+                color: inherit;
+                font-size: 12px;
+                line-height: 1.2;
+                font-weight: 700;
+                text-decoration: none;
+                transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
             }
-        }
+
+                .footer-help-button i {
+                    font-size: 13px;
+                    line-height: 1;
+                }
+
+                .footer-help-button:hover {
+                    color: #ffffff;
+                    text-decoration: none;
+                    transform: translateY(-1px);
+                }
+
+            .footer-support-link {
+                background: rgba(234, 88, 12, .10);
+                border-color: rgba(251, 146, 60, .30);
+            }
+
+                .footer-support-link:hover {
+                    background: #ea580c;
+                    border-color: #ea580c;
+                    box-shadow: 0 5px 14px rgba(234, 88, 12, .20);
+                }
+
+            .footer-grievance-link {
+                background: rgba(245, 158, 11, .08);
+                border-color: rgba(251, 191, 36, .25);
+            }
+
+                .footer-grievance-link:hover {
+                    background: #d97706;
+                    border-color: #d97706;
+                    box-shadow: 0 5px 14px rgba(217, 119, 6, .18);
+                }
+            /* =====================================================
+                                   LOCATION
+                                   ===================================================== */
+            .footer-location-eyebrow {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+            }
+
+                .footer-location-eyebrow i {
+                    color: #fb923c;
+                }
+
+            .footer-map-link {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+
+                .footer-map-link i {
+                    font-size: 14px;
+                }
+            /* =====================================================
+                                   FOOTER BOTTOM
+                                   ===================================================== */
+            .footer-bottom {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .footer-copyright {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+            }
+
+                .footer-copyright i {
+                    font-size: 12px;
+                }
+
+            .footer-legal {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+
+                .footer-legal a {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                }
+
+                    .footer-legal a i {
+                        font-size: 13px;
+                    }
+            /* =====================================================
+                                   MOBILE FOOTER
+                                   ===================================================== */
+            @@media (max-width: 768px) {
+                .footer-bottom {
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                }
+
+                .footer-legal {
+                    justify-content: center;
+                }
+
+                .footer-help-buttons {
+                    align-items: stretch;
+                }
+
+                .footer-help-button {
+                    width: 100%;
+                }
+
+                .footer-social-links {
+                    justify-content: flex-start;
+                }
+            }
+
+            @@media (max-width: 560px) {
+                .footer-legal {
+                    gap: 10px;
+                    justify-content: center;
+                }
+
+                .footer-social-links {
+                    width: 100%;
+                }
+
+                .footer-social-link {
+                    width: 100%;
+                }
+
+                .footer-map-link {
+                    width: 100%;
+                    margin-top: 15px;
+                }
+            }
     </style>
-    <!-- Google Translate engine (hidden; controlled by our language selector) -->
-    <div id="google_translate_element" aria-hidden="true"></div>
+    <!-- =====================================================
+         GOOGLE TRANSLATE ENGINE
+         ===================================================== -->
+    <div id="google_translate_element"
+         aria-hidden="true">
+    </div>
     <!-- =====================================================
          JAVASCRIPT
          ===================================================== -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js"
-            asp-append-version="true"></script>
+            asp-append-version="true">
+    </script>
     <!-- =====================================================
          TRANSLATION
          ===================================================== -->
     <script>
-        window.foundationTranslationReady = false;
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,bn,hi',
-                autoDisplay: false
-            }, 'google_translate_element');
-            window.foundationTranslationReady = true;
-        }
-        (function () {
-            const languageButton = document.getElementById('publicLanguageButton');
-            const languageMenu = document.getElementById('publicLanguageMenu');
-            const languageLabel = document.getElementById('publicLanguageLabel');
-            if (!languageButton || !languageMenu || !languageLabel) {
-                return;
+            window.foundationTranslationReady = false;
+            function googleTranslateElementInit() {
+                new google.translate.TranslateElement(
+                    {
+                        pageLanguage: 'en',
+                        includedLanguages: 'en,bn,hi',
+                        autoDisplay: false
+                    },
+                    'google_translate_element'
+                );
+                window.foundationTranslationReady = true;
             }
-            const labels = {
-                en: 'English',
-                bn: 'বাংলা',
-                hi: 'हिन्दी'
-            };
-            function getCookie(name) {
-                const value = document.cookie
-                    .split('; ')
-                    .find(row => row.startsWith(name + '='));
-                return value ? decodeURIComponent(value.split('=')[1]) : '';
-            }
-            function getCurrentLanguage() {
-                const cookie = getCookie('googtrans');
-                const match = cookie.match(/\/en\/([a-z-]+)/i);
-                return match ? match[1].toLowerCase() : 'en';
-            }
-            function setCookie(name, value) {
-                document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=31536000; SameSite=Lax';
-            }
-            function applyLanguage(language) {
-                language = labels[language] ? language : 'en';
-                setCookie('googtrans', '/en/' + language);
-                setCookie('googtrans', '/en/' + language, location.hostname);
-                languageLabel.textContent = labels[language];
-                document.querySelectorAll('.public-language-option').forEach(function (option) {
-                    option.classList.toggle('active', option.dataset.language === language);
-                });
-                const select = document.querySelector('.goog-te-combo');
-                if (select) {
-                    select.value = language;
-                    select.dispatchEvent(new Event('change'));
-                } else {
-                    // The Google Translate widget can load slightly after our UI.
-                    // Reloading with the cookie guarantees translation on the first selection.
-                    window.location.reload();
-                }
-                closeLanguageMenu();
-            }
-            function openLanguageMenu() {
-                languageMenu.classList.add('show');
-                languageMenu.setAttribute('aria-hidden', 'false');
-                languageButton.setAttribute('aria-expanded', 'true');
-            }
-            function closeLanguageMenu() {
-                languageMenu.classList.remove('show');
-                languageMenu.setAttribute('aria-hidden', 'true');
-                languageButton.setAttribute('aria-expanded', 'false');
-            }
-            languageButton.addEventListener('click', function (event) {
-                event.stopPropagation();
-                if (languageMenu.classList.contains('show')) {
-                    closeLanguageMenu();
-                } else {
-                    openLanguageMenu();
-                }
-            });
-            languageMenu.querySelectorAll('.public-language-option').forEach(function (option) {
-                option.addEventListener('click', function () {
-                    applyLanguage(option.dataset.language);
-                });
-            });
-            document.addEventListener('click', function (event) {
-                if (!languageMenu.contains(event.target) && !languageButton.contains(event.target)) {
-                    closeLanguageMenu();
-                }
-            });
-            document.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape') {
-                    closeLanguageMenu();
-                }
-            });
-            const current = getCurrentLanguage();
-            languageLabel.textContent = labels[current] || labels.en;
-            document.querySelectorAll('.public-language-option').forEach(function (option) {
-                option.classList.toggle('active', option.dataset.language === current);
-            });
-        })();
-    </script>
-    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <!-- =====================================================
-         MOBILE NAVIGATION
-         ===================================================== -->
-    <script>
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
-                const toggle =
-                    document.querySelector(
-                        ".public-menu-toggle"
+            (function() {
+                const languageButton =
+                    document.getElementById(
+                        'publicLanguageButton'
                     );
-                const navigation =
-                    document.querySelector(
-                        ".public-navigation"
+                const languageMenu =
+                    document.getElementById(
+                        'publicLanguageMenu'
                     );
-                if (!toggle || !navigation) {
+                const languageLabel =
+                    document.getElementById(
+                        'publicLanguageLabel'
+                    );
+                if (
+                    !languageButton ||
+                    !languageMenu ||
+                    !languageLabel
+                ) {
                     return;
                 }
-                toggle.addEventListener(
-                    "click",
-                    function () {
-                        const isOpen =
-                            navigation.classList.toggle(
-                                "is-open"
+                const labels = {
+                    en: 'English',
+                    bn: 'বাংলা',
+                    hi: 'हिन्दी'
+                };
+                function getCookie(name) {
+                    const value =
+                        document.cookie
+                            .split('; ')
+                            .find(
+                                row =>
+                                    row.startsWith(
+                                        name + '='
+                                    )
                             );
-                        toggle.classList.toggle(
-                            "is-open",
-                            isOpen
+                    return value
+                        ? decodeURIComponent(
+                            value.split('=')[1]
+                        )
+                        : '';
+                }
+                function getCurrentLanguage() {
+                    const cookie =
+                        getCookie('googtrans');
+                    const match =
+                        cookie.match(
+                            /\/en\/([a-z-]+)/i
                         );
-                        toggle.setAttribute(
-                            "aria-expanded",
-                            isOpen.toString()
+                    return match
+                        ? match[1].toLowerCase()
+                        : 'en';
+                }
+                function setCookie(
+                    name,
+                    value
+                ) {
+                    document.cookie =
+                        name +
+                        '=' +
+                        encodeURIComponent(value) +
+                        '; path=/; max-age=31536000; SameSite=Lax';
+                }
+                function applyLanguage(
+                    language
+                ) {
+                    language =
+                        labels[language]
+                            ? language
+                            : 'en';
+                    setCookie(
+                        'googtrans',
+                        '/en/' + language
+                    );
+                    setCookie(
+                        'googtrans',
+                        '/en/' + language,
+                        location.hostname
+                    );
+                    languageLabel.textContent =
+                        labels[language];
+                    document
+                        .querySelectorAll(
+                            '.public-language-option'
+                        )
+                        .forEach(
+                            function(option) {
+                                option.classList.toggle(
+                                    'active',
+                                    option.dataset.language === language
+                                );
+                            }
+                        );
+                    const select =
+                        document.querySelector(
+                            '.goog-te-combo'
+                        );
+                    if (select) {
+                        select.value =
+                            language;
+                        select.dispatchEvent(
+                            new Event('change')
                         );
                     }
+                    else {
+                        window.location.reload();
+                    }
+                    closeLanguageMenu();
+                }
+                function openLanguageMenu() {
+                    languageMenu.classList.add(
+                        'show'
+                    );
+                    languageMenu.setAttribute(
+                        'aria-hidden',
+                        'false'
+                    );
+                    languageButton.setAttribute(
+                        'aria-expanded',
+                        'true'
+                    );
+                }
+                function closeLanguageMenu() {
+                    languageMenu.classList.remove(
+                        'show'
+                    );
+                    languageMenu.setAttribute(
+                        'aria-hidden',
+                        'true'
+                    );
+                    languageButton.setAttribute(
+                        'aria-expanded',
+                        'false'
+                    );
+                }
+                languageButton.addEventListener(
+                    'click',
+                    function(event) {
+                        event.stopPropagation();
+                        if (
+                            languageMenu.classList.contains(
+                                'show'
+                            )
+                        ) {
+                            closeLanguageMenu();
+                        }
+                        else {
+                            openLanguageMenu();
+                        }
+                    }
                 );
-                /*
-                 * Close mobile menu when a navigation
-                 * link is clicked.
-                 */
-                navigation
-                    .querySelectorAll("a")
+                languageMenu
+                    .querySelectorAll(
+                        '.public-language-option'
+                    )
                     .forEach(
-                        function (link) {
-                            link.addEventListener(
-                                "click",
-                                function () {
-                                    navigation.classList.remove(
-                                        "is-open"
-                                    );
-                                    toggle.classList.remove(
-                                        "is-open"
-                                    );
-                                    toggle.setAttribute(
-                                        "aria-expanded",
-                                        "false"
+                        function(option) {
+                            option.addEventListener(
+                                'click',
+                                function() {
+                                    applyLanguage(
+                                        option.dataset.language
                                     );
                                 }
                             );
                         }
                     );
-            }
-        );
+                document.addEventListener(
+                    'click',
+                    function(event) {
+                        if (
+                            !languageMenu.contains(
+                                event.target
+                            ) &&
+                            !languageButton.contains(
+                                event.target
+                            )
+                        ) {
+                            closeLanguageMenu();
+                        }
+                    }
+                );
+                document.addEventListener(
+                    'keydown',
+                    function(event) {
+                        if (
+                            event.key === 'Escape'
+                        ) {
+                            closeLanguageMenu();
+                        }
+                    }
+                );
+                const current =
+                    getCurrentLanguage();
+                languageLabel.textContent =
+                    labels[current] ||
+                    labels.en;
+                document
+                    .querySelectorAll(
+                        '.public-language-option'
+                    )
+                    .forEach(
+                        function(option) {
+                            option.classList.toggle(
+                                'active',
+                                option.dataset.language === current
+                            );
+                        }
+                    );
+            })();
+    </script>
+    <!-- =====================================================
+         GOOGLE TRANSLATE SCRIPT
+         ===================================================== -->
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+    </script>
+    <!-- =====================================================
+         MOBILE NAVIGATION
+         ===================================================== -->
+    <script>
+            document.addEventListener(
+                "DOMContentLoaded",
+                function() {
+                    const toggle =
+                        document.querySelector(
+                            ".public-menu-toggle"
+                        );
+                    const navigation =
+                        document.querySelector(
+                            ".public-navigation"
+                        );
+                    if (
+                        !toggle ||
+                        !navigation
+                    ) {
+                        return;
+                    }
+                    toggle.addEventListener(
+                        "click",
+                        function() {
+                            const isOpen =
+                                navigation.classList.toggle(
+                                    "is-open"
+                                );
+                            toggle.classList.toggle(
+                                "is-open",
+                                isOpen
+                            );
+                            toggle.setAttribute(
+                                "aria-expanded",
+                                isOpen.toString()
+                            );
+                        }
+                    );
+                    /*
+                     * Close mobile menu when
+                     * navigation link is clicked.
+                     */
+                    navigation
+                        .querySelectorAll("a")
+                        .forEach(
+                            function(link) {
+                                link.addEventListener(
+                                    "click",
+                                    function() {
+                                        navigation.classList.remove(
+                                            "is-open"
+                                        );
+                                        toggle.classList.remove(
+                                            "is-open"
+                                        );
+                                        toggle.setAttribute(
+                                            "aria-expanded",
+                                            "false"
+                                        );
+                                    }
+                                );
+                            }
+                        );
+                }
+            );
     </script>
     @await RenderSectionAsync(
         "Scripts",

@@ -1,0 +1,113 @@
+﻿@model IEnumerable<FoundationDonationSystem.Models.FoundationMember>
+@{
+    ViewData["Title"] = "Foundation Leadership";
+}
+<link rel="stylesheet"
+      href="~/css/foundation-leadership.css"
+      asp-append-version="true" />
+<!-- =========================================================
+     FOUNDATION LEADERSHIP
+     ========================================================= -->
+<section class="foundation-leadership-page">
+    <div class="foundation-leadership-container">
+        <!-- =====================================================
+             PAGE HEADER
+             ===================================================== -->
+        <div class="foundation-leadership-header">
+            <span class="foundation-leadership-eyebrow">
+                Our Foundation
+            </span>
+            <h1>
+                Foundation Leadership
+            </h1>
+            <p>
+                Meet the dedicated leaders who guide our foundation
+                and work towards creating a meaningful impact in society.
+            </p>
+        </div>
+        <!-- =====================================================
+             MEMBERS
+             ===================================================== -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="foundation-leadership-grid">
+                @foreach (var member in Model)
+                {
+                    var initials = string.IsNullOrWhiteSpace(member.FullName)
+                        ? "FM"
+                        : string.Join(
+                            "",
+                            member.FullName
+                                .Split(
+                                    ' ',
+                                    StringSplitOptions.RemoveEmptyEntries
+                                )
+                                .Take(2)
+                                .Select(x => x[0])
+                        ).ToUpperInvariant();
+                    <article class="foundation-leader-card">
+                        <!-- =================================================
+                             PROFILE IMAGE
+                             ================================================= -->
+                        <div class="foundation-leader-image-wrapper">
+                            @if (!string.IsNullOrWhiteSpace(member.ProfileImage))
+                            {
+                                <img src="@member.ProfileImage"
+                                     alt="@member.FullName"
+                                     class="foundation-leader-image"
+                                     loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="foundation-leader-avatar">
+                                    @initials
+                                </div>
+                            }
+                        </div>
+                        <!-- =================================================
+                             MEMBER INFORMATION
+                             ================================================= -->
+                        <div class="foundation-leader-content">
+                            <h2 class="foundation-leader-name">
+                                @member.FullName
+                            </h2>
+                            <div class="foundation-leader-designation">
+                                <span class="foundation-leader-designation-icon">
+                                    <i class="bi bi-person-badge-fill"
+                                       aria-hidden="true"></i>
+                                </span>
+                                <span>
+                                    @member.Designation
+                                </span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(member.ShortBio))
+                            {
+                                <p class="foundation-leader-bio">
+                                    @member.ShortBio
+                                </p>
+                            }
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- =================================================
+                 EMPTY STATE
+                 ================================================= -->
+            <div class="foundation-leadership-empty">
+                <div class="foundation-leadership-empty-icon">
+                    <i class="bi bi-people-fill"
+                       aria-hidden="true"></i>
+                </div>
+                <h2>
+                    Our Leadership Team
+                </h2>
+                <p>
+                    Leadership information will be available soon.
+                </p>
+            </div>
+        }
+    </div>
+</section>
